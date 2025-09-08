@@ -544,7 +544,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             using var desktopNameSpaceKey = Registry.CurrentUser.OpenSubKey(DesktopNameSpaceKeyName, writable: true)
                       ?? throw new InvalidOperationException($"Registry key '{DesktopNameSpaceKeyName}' not found");
 
-            desktopNameSpaceKey.DeleteSubKey(namespaceClassId);
+            desktopNameSpaceKey.DeleteSubKey(namespaceClassId, throwOnMissingSubKey: false);
         }
         catch (Exception ex) when (ex is InvalidOperationException or ObjectDisposedException or SecurityException or UnauthorizedAccessException)
         {
