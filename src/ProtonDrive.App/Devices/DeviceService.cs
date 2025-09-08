@@ -11,15 +11,17 @@ using ProtonDrive.App.Settings;
 using ProtonDrive.App.Volumes;
 using ProtonDrive.Client;
 using ProtonDrive.Client.Devices;
+using ProtonDrive.Client.Volumes.Contracts;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Offline;
 using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Threading;
+using VolumeState = ProtonDrive.App.Volumes.VolumeState;
 
 namespace ProtonDrive.App.Devices;
 
-internal sealed class DeviceService : IDeviceService, IStartableService, IStoppableService, IVolumeStateAware
+internal sealed class DeviceService : IDeviceService, IStartableService, IStoppableService, IMainVolumeStateAware
 {
     private readonly IDeviceClient _deviceClient;
     private readonly IRepository<DeviceSettings> _settingsRepository;
@@ -34,7 +36,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
 
     private DeviceServiceStatus _status = DeviceServiceStatus.Idle;
     private DeviceSettings _settings = new();
-    private VolumeState _volumeState = VolumeState.Idle;
+    private VolumeState _mainVolumeState = VolumeState.Idle;
     private volatile bool _stopping;
 
     public DeviceService(
@@ -97,9 +99,9 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
         _logger.LogInformation($"{nameof(DeviceService)} stopped");
     }
 
-    void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
+    void IMainVolumeStateAware.OnMainVolumeStateChanged(VolumeState value)
     {
-        _volumeState = value;
+        _mainVolumeState = value;
 
         if (value.Status is VolumeStatus.Ready)
         {
@@ -135,7 +137,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
 
     private async Task InternalSetUpDevicesAsync(CancellationToken cancellationToken)
     {
-        if (_volumeState.Status is not VolumeStatus.Ready ||
+        if (_mainVolumeState.Status is not VolumeStatus.Ready ||
             _status is DeviceServiceStatus.Succeeded)
         {
             return;
@@ -227,10 +229,10 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
             return DeviceSetupResult.Failure;
         }
 
-        var volumeState = _volumeState;
+        var volumeState = _mainVolumeState;
         if (volumeState.Status is not VolumeStatus.Ready || volumeState.Volume is null)
         {
-            _logger.LogWarning("Remote volume is not available");
+            _logger.LogWarning("Remote {Type} volume is not available", VolumeType.Main);
             return DeviceSetupResult.Failure;
         }
 

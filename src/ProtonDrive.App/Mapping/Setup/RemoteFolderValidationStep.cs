@@ -12,18 +12,18 @@ namespace ProtonDrive.App.Mapping.Setup;
 
 internal class RemoteFolderValidationStep : IRemoteFolderValidationStep
 {
-    private readonly IVolumeService _volumeService;
+    private readonly IMainVolumeService _mainVolumeService;
     private readonly IRemoteFolderService _remoteFolderService;
     private readonly VolumeIdentityProvider _volumeIdentityProvider;
     private readonly ILogger<RemoteFolderValidationStep> _logger;
 
     public RemoteFolderValidationStep(
-        IVolumeService volumeService,
+        IMainVolumeService mainVolumeService,
         IRemoteFolderService remoteFolderService,
         VolumeIdentityProvider volumeIdentityProvider,
         ILogger<RemoteFolderValidationStep> logger)
     {
-        _volumeService = volumeService;
+        _mainVolumeService = mainVolumeService;
         _remoteFolderService = remoteFolderService;
         _volumeIdentityProvider = volumeIdentityProvider;
         _logger = logger;
@@ -49,7 +49,7 @@ internal class RemoteFolderValidationStep : IRemoteFolderValidationStep
             return null;
         }
 
-        var volume = await _volumeService.GetActiveVolumeAsync().ConfigureAwait(false);
+        var volume = await _mainVolumeService.GetVolumeAsync().ConfigureAwait(false);
 
         cancellationToken.ThrowIfCancellationRequested();
 

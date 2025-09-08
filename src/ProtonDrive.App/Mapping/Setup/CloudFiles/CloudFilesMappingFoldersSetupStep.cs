@@ -17,7 +17,7 @@ namespace ProtonDrive.App.Mapping.Setup.CloudFiles;
 
 internal sealed class CloudFilesMappingFoldersSetupStep
 {
-    private readonly IVolumeService _volumeService;
+    private readonly IMainVolumeService _mainVolumeService;
     private readonly ILocalFolderService _localFolderService;
     private readonly IRemoteFolderService _remoteFolderService;
     private readonly LocalFolderIdentityValidator _localFolderIdentityValidator;
@@ -28,14 +28,14 @@ internal sealed class CloudFilesMappingFoldersSetupStep
 
     public CloudFilesMappingFoldersSetupStep(
         AppConfig appConfig,
-        IVolumeService volumeService,
+        IMainVolumeService mainVolumeService,
         ILocalFolderService localFolderService,
         IRemoteFolderService remoteFolderService,
         LocalFolderIdentityValidator localFolderIdentityValidator,
         VolumeIdentityProvider volumeIdentityProvider,
         ILogger<CloudFilesMappingFoldersSetupStep> logger)
     {
-        _volumeService = volumeService;
+        _mainVolumeService = mainVolumeService;
         _localFolderService = localFolderService;
         _remoteFolderService = remoteFolderService;
         _localFolderIdentityValidator = localFolderIdentityValidator;
@@ -72,7 +72,7 @@ internal sealed class CloudFilesMappingFoldersSetupStep
 
         async Task<MappingErrorCode?> SetUpRemoteFolder()
         {
-            var volume = await _volumeService.GetActiveVolumeAsync().ConfigureAwait(false);
+            var volume = await _mainVolumeService.GetVolumeAsync().ConfigureAwait(false);
 
             if (volume == null)
             {

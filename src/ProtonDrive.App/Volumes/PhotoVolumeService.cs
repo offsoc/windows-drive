@@ -13,7 +13,7 @@ using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Volumes;
 
-internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableService, IVolumeStateAware, IPhotosFeatureStateAware
+internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableService, IMainVolumeStateAware, IPhotosFeatureStateAware
 {
     private readonly IActiveVolumeService _activeVolumeService;
     private readonly Lazy<IEnumerable<IPhotoVolumeStateAware>> _photoVolumeStateAware;
@@ -53,7 +53,7 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
         _logger.LogDebug($"{nameof(PhotoVolumeService)} stopped");
     }
 
-    void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
+    void IMainVolumeStateAware.OnMainVolumeStateChanged(VolumeState value)
     {
         if (value.Status is VolumeStatus.Ready)
         {

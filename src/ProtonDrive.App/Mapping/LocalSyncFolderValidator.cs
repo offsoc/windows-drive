@@ -24,18 +24,42 @@ internal sealed class LocalSyncFolderValidator : ILocalSyncFolderValidator
         _localFolderService = localFolderService;
     }
 
-    public SyncFolderValidationResult ValidatePath(string path, IReadOnlySet<string> otherPaths)
+    public SyncFolderValidationResult? ValidateDrive(string path)
+    {
+        return
+            ValidateFolderExists(path) ??
+            ValidateDriveType(path) ??
+            ValidateFileSystem(path);
+    }
+
+    public SyncFolderValidationResult? ValidatePath(string path, IReadOnlySet<string> otherPaths)
     {
         path = PathComparison.EnsureTrailingSeparator(path);
 
-        if (_nonSyncablePathProvider.Paths
-            .Select(PathComparison.EnsureTrailingSeparator)
-            .Any(prohibitedPath => path.StartsWith(prohibitedPath, StringComparison.OrdinalIgnoreCase) ||
-                                   prohibitedPath.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
+        return
+            ValidateFolderIsSyncable(path) ??
+            ValidateFoldersDoNotOverlap(path, otherPaths);
+    }
+
+    public SyncFolderValidationResult? ValidateFolder(string path, bool shouldBeEmpty)
+    {
+        return
+            ValidateFolderExists(path) ??
+            ValidateFolderIsEmpty(path, shouldBeEmpty);
+    }
+
+    private static SyncFolderValidationResult? ValidateFolderExists(string path)
+    {
+        if (!Directory.Exists(path))
         {
-            return SyncFolderValidationResult.NonSyncableFolder;
+            return SyncFolderValidationResult.LocalFolderDoesNotExist;
         }
 
+        return null;
+    }
+
+    private static SyncFolderValidationResult? ValidateFoldersDoNotOverlap(string path, IReadOnlySet<string> otherPaths)
+    {
         foreach (var otherPath in otherPaths.Select(PathComparison.EnsureTrailingSeparator))
         {
             if (path.StartsWith(otherPath, StringComparison.OrdinalIgnoreCase))
@@ -49,58 +73,59 @@ internal sealed class LocalSyncFolderValidator : ILocalSyncFolderValidator
             }
         }
 
-        return SyncFolderValidationResult.Succeeded;
+        return null;
     }
 
-    public SyncFolderValidationResult ValidatePathAndDrive(string path, IReadOnlySet<string> otherPaths)
-    {
-        var driveValidationResult = ValidateDrive(path);
-
-        if (driveValidationResult is not SyncFolderValidationResult.Succeeded)
-        {
-            return driveValidationResult;
-        }
-
-        return ValidatePath(path, otherPaths);
-    }
-
-    public SyncFolderValidationResult ValidateFolder(string path, bool shouldBeEmpty)
-    {
-        try
-        {
-            if (!Directory.Exists(path))
-            {
-                return SyncFolderValidationResult.LocalFolderDoesNotExist;
-            }
-
-            if (!_localVolumeInfoProvider.IsNtfsFileSystem(path))
-            {
-                return SyncFolderValidationResult.LocalVolumeNotSupported;
-            }
-
-            if (shouldBeEmpty && _localFolderService.NonEmptyFolderExists(path))
-            {
-                return SyncFolderValidationResult.LocalFolderNotEmpty;
-            }
-
-            return SyncFolderValidationResult.Succeeded;
-        }
-        catch (Exception e) when (e.IsFileAccessException())
-        {
-            return SyncFolderValidationResult.LocalFileSystemAccessFailed;
-        }
-    }
-
-    private SyncFolderValidationResult ValidateDrive(string path)
+    private SyncFolderValidationResult? ValidateDriveType(string path)
     {
         var driveType = _localVolumeInfoProvider.GetDriveType(path);
 
         return driveType switch
         {
-            DriveType.Fixed => SyncFolderValidationResult.Succeeded,
+            DriveType.Fixed => null,
             DriveType.Network => SyncFolderValidationResult.NetworkFolderNotSupported,
             DriveType.Unknown => SyncFolderValidationResult.LocalFileSystemAccessFailed,
             _ => SyncFolderValidationResult.LocalVolumeNotSupported,
         };
+    }
+
+    private SyncFolderValidationResult? ValidateFileSystem(string path)
+    {
+        if (!_localVolumeInfoProvider.IsNtfsFileSystem(path))
+        {
+            return SyncFolderValidationResult.LocalVolumeNotSupported;
+        }
+
+        return null;
+    }
+
+    private SyncFolderValidationResult? ValidateFolderIsSyncable(string path)
+    {
+        if (_nonSyncablePathProvider.Paths
+            .Select(PathComparison.EnsureTrailingSeparator)
+            .Any(prohibitedPath => path.StartsWith(prohibitedPath, StringComparison.OrdinalIgnoreCase) ||
+                prohibitedPath.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
+        {
+            return SyncFolderValidationResult.NonSyncableFolder;
+        }
+
+        return null;
+    }
+
+    private SyncFolderValidationResult? ValidateFolderIsEmpty(string path, bool shouldBeEmpty)
+    {
+        try
+        {
+            if (shouldBeEmpty && _localFolderService.NonEmptyFolderExists(path))
+            {
+                return SyncFolderValidationResult.LocalFolderNotEmpty;
+            }
+
+            return null;
+        }
+        catch (Exception e) when (e.IsFileAccessException())
+        {
+            return SyncFolderValidationResult.LocalFileSystemAccessFailed;
+        }
     }
 }

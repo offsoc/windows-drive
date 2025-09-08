@@ -20,7 +20,7 @@ using ProtonDrive.Sync.Shared.SyncActivity;
 namespace ProtonDrive.App.Mapping;
 
 internal sealed class MappingSetupService
-    : IMappingSetupService, IStoppableService, IMappingsAware, IVolumeStateAware, ISyncStateAware, IOnboardingStateAware, IRootDeletionHandler
+    : IMappingSetupService, IStoppableService, IMappingsAware, IMainVolumeStateAware, ISyncStateAware, IOnboardingStateAware, IRootDeletionHandler
 {
     // Sync folder mappings are set up in a specific order based on mapping type
     private static readonly MappingType[] MappingTypesToSetUp =
@@ -46,7 +46,7 @@ internal sealed class MappingSetupService
     private readonly ConcurrentQueue<int> _deletedSyncRootIds = new();
 
     private volatile bool _stopping;
-    private VolumeState _volumeState = VolumeState.Idle;
+    private VolumeState _mainVolumeState = VolumeState.Idle;
     private SyncState _syncState = SyncState.Terminated;
     private OnboardingState _onboardingState = OnboardingState.Initial;
 
@@ -105,15 +105,15 @@ internal sealed class MappingSetupService
         ScheduleSetup(forceRestart: true);
     }
 
-    void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
+    void IMainVolumeStateAware.OnMainVolumeStateChanged(VolumeState value)
     {
         // Checking whether status changed into Ready from
         // a different one, or from Ready into a different one
-        var statusChanged = _volumeState.Status != value.Status
-                            && (_volumeState.Status == VolumeStatus.Ready
+        var statusChanged = _mainVolumeState.Status != value.Status
+                            && (_mainVolumeState.Status == VolumeStatus.Ready
                                 || value.Status == VolumeStatus.Ready);
 
-        _volumeState = value;
+        _mainVolumeState = value;
 
         if (statusChanged)
         {
@@ -305,7 +305,7 @@ internal sealed class MappingSetupService
     private bool ValidatePreconditions()
     {
         return _hasReceivedMappings
-            && _volumeState.Status is VolumeStatus.Ready
+            && _mainVolumeState.Status is VolumeStatus.Ready
             && _onboardingState.Status is not OnboardingStatus.Onboarding;
     }
 

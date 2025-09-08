@@ -2,9 +2,9 @@
 
 namespace ProtonDrive.App.Volumes;
 
-public interface IVolumeService
+public interface IMainVolumeService
 {
     VolumeState State { get; }
 
-    Task<VolumeInfo?> GetActiveVolumeAsync();
+    Task<VolumeInfo?> GetVolumeAsync();
 }

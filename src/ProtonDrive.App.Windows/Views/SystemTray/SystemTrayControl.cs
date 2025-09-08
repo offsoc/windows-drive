@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using ProtonDrive.App.Windows.SystemIntegration;
 using ProtonDrive.App.Windows.Toolkit.Converters;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
@@ -16,6 +17,7 @@ internal sealed class SystemTrayControl : IDisposable
 
     private readonly SystemTrayViewModel _dataContext;
 
+    private readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
     private readonly Window _dummyOwnerWindow;
     private readonly NotifyIcon _wrappedControl = new();
     private readonly SystemTrayContextMenuView _contextMenu = new();
@@ -80,12 +82,14 @@ internal sealed class SystemTrayControl : IDisposable
 
     private void UpdateTooltip()
     {
-        _wrappedControl.Text = AppName + CommaSeparator + EnumToDisplayTextConverter.Convert(_dataContext.AppDisplayStatus);
+        _dispatcher.InvokeAsync(() =>
+            _wrappedControl.Text = AppName + CommaSeparator + EnumToDisplayTextConverter.Convert(_dataContext.AppDisplayStatus));
     }
 
     private void UpdateIcon()
     {
-        _wrappedControl.Icon = _iconConverter.Convert(_dataContext.AppIconStatus, ObservableSystemParameters.Instance.SystemThemeColorMode);
+        _dispatcher.InvokeAsync(() =>
+            _wrappedControl.Icon = _iconConverter.Convert(_dataContext.AppIconStatus, ObservableSystemParameters.Instance.SystemThemeColorMode));
     }
 
     private void InitializeContextMenu()
@@ -106,9 +110,9 @@ internal sealed class SystemTrayControl : IDisposable
                 {
                     _dataContext.SignInCommand.Execute(null);
                 }
-                else if (_dataContext.ShowMainWindowCommand.CanExecute(null))
+                else if (_dataContext.ShowAppCommand.CanExecute(null))
                 {
-                    _dataContext.ShowMainWindowCommand.Execute(null);
+                    _dataContext.ShowAppCommand.Execute(null);
                 }
 
                 _dummyOwnerWindow.Activate(); // Necessary to force the context menu to obtain the focus and work properly.

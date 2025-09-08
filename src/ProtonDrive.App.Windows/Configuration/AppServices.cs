@@ -137,7 +137,7 @@ internal static class AppServices
             .AddSingleton<ISyncFoldersAware>(provider => provider.GetRequiredService<AppCommands>())
             .AddSingleton<AppStateViewModel>()
             .AddSingleton<ISessionStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())
-            .AddSingleton<IVolumeStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())
+            .AddSingleton<IMainVolumeStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())
             .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())
             .AddSingleton<IMappingsSetupStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())
             .AddSingleton<ISyncStateAware>(provider => provider.GetRequiredService<AppStateViewModel>())

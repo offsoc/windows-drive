@@ -46,7 +46,7 @@ internal sealed class LocalFolderValidationStep : ILocalFolderValidationStep
         var shouldFolderExist =
             mapping.Status is MappingStatus.Complete
             || mapping.Local.RootFolderId != 0
-            || mapping.Type is MappingType.HostDeviceFolder;
+            || mapping.Type is MappingType.HostDeviceFolder or MappingType.PhotoImport or MappingType.PhotoBackup;
 
         if (!shouldFolderExist)
         {
@@ -59,22 +59,43 @@ internal sealed class LocalFolderValidationStep : ILocalFolderValidationStep
         }
 
         var result =
-            ValidateFolder(mapping.Local.Path, otherLocalSyncFolders)
-            ?? ValidateFolderIdentity(mapping);
+            ValidateDriveOfNewFolder(mapping.Local.Path, mapping.Status is MappingStatus.New) ??
+            ValidateFolder(mapping.Local.Path, otherLocalSyncFolders) ??
+            ValidateFolderIdentity(mapping) ??
+            MappingErrorCode.None;
 
-        return Task.FromResult(result ?? MappingErrorCode.None);
+        return Task.FromResult(result);
+    }
+
+    private MappingErrorCode? ValidateDriveOfNewFolder(string path, bool isNew)
+    {
+        if (!isNew)
+        {
+            // We do not validate drive of already set up local folders, because in the past we
+            // allowed users to add network drives, that are currently forbidden. Their
+            // validation would fail.
+            return null;
+        }
+
+        var result = _syncFolderValidator.ValidateDrive(path);
+
+        if (result is null)
+        {
+            return null;
+        }
+
+        _logger.LogWarning("The local sync folder validation failed with error {ErrorCode}", result);
+
+        return (MappingErrorCode)result;
     }
 
     private MappingErrorCode? ValidateFolder(string path, IReadOnlySet<string> otherLocalSyncFolders)
     {
-        var result = _syncFolderValidator.ValidatePath(path, otherLocalSyncFolders);
+        var result =
+            _syncFolderValidator.ValidatePath(path, otherLocalSyncFolders) ??
+            _syncFolderValidator.ValidateFolder(path, shouldBeEmpty: false);
 
-        if (result is SyncFolderValidationResult.Succeeded)
-        {
-            result = _syncFolderValidator.ValidateFolder(path, shouldBeEmpty: false);
-        }
-
-        if (result is SyncFolderValidationResult.Succeeded)
+        if (result is null)
         {
             return null;
         }

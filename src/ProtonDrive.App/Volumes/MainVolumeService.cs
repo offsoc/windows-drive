@@ -12,11 +12,11 @@ using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Volumes;
 
-internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStoppableService
+internal sealed class MainVolumeService : IAccountStateAware, IMainVolumeService, IStoppableService
 {
     private readonly IActiveVolumeService _activeVolumeService;
-    private readonly Lazy<IEnumerable<IVolumeStateAware>> _volumeStateAware;
-    private readonly ILogger<VolumeService> _logger;
+    private readonly Lazy<IEnumerable<IMainVolumeStateAware>> _volumeStateAware;
+    private readonly ILogger<MainVolumeService> _logger;
 
     private readonly CancellationHandle _cancellationHandle = new();
     private readonly IScheduler _scheduler;
@@ -25,10 +25,10 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
     private AccountStatus _accountStatus;
     private bool _stopping;
 
-    public VolumeService(
+    public MainVolumeService(
         IActiveVolumeService activeVolumeService,
-        Lazy<IEnumerable<IVolumeStateAware>> volumeStateAware,
-        ILogger<VolumeService> logger)
+        Lazy<IEnumerable<IMainVolumeStateAware>> volumeStateAware,
+        ILogger<MainVolumeService> logger)
     {
         _activeVolumeService = activeVolumeService;
         _volumeStateAware = volumeStateAware;
@@ -36,10 +36,10 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
         _scheduler =
             new HandlingCancellationSchedulerDecorator(
-                nameof(VolumeService),
+                nameof(MainVolumeService),
                 logger,
                 new LoggingExceptionsSchedulerDecorator(
-                    nameof(VolumeService),
+                    nameof(MainVolumeService),
                     logger,
                     new SerialScheduler()));
     }
@@ -61,10 +61,10 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
     /// Get the active volume and cache it internally to avoid multiple API calls.
     /// When the user signs out, the cache is cleared.
     /// </summary>
-    /// <returns>The active volume or Null if there is no active volume.</returns>
-    public async Task<VolumeInfo?> GetActiveVolumeAsync()
+    /// <returns>The active volume or <see langword="null"/> if there is no active volume.</returns>
+    public async Task<VolumeInfo?> GetVolumeAsync()
     {
-        return GetCachedVolume() ?? await GetVolumeAsync().ConfigureAwait(false);
+        return GetCachedVolume() ?? await SetUpVolumeAsync().ConfigureAwait(false);
     }
 
     void IAccountStateAware.OnAccountStateChanged(AccountState value)
@@ -73,14 +73,14 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
         if (value.Status == AccountStatus.Succeeded)
         {
-            _logger.LogDebug("Scheduling user volume set up");
+            _logger.LogDebug("Scheduling {Type} volume set up", VolumeType.Main);
             Schedule(SetUpVolumeAsync);
         }
         else
         {
             if (State.Status != VolumeStatus.Idle)
             {
-                _logger.LogDebug("Scheduling cancellation of user volume set up");
+                _logger.LogDebug("Scheduling cancellation of {Type} volume set up", VolumeType.Main);
             }
 
             _cancellationHandle.Cancel();
@@ -90,7 +90,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
     async Task IStoppableService.StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug($"{nameof(VolumeService)} is stopping");
+        _logger.LogDebug($"{nameof(MainVolumeService)} is stopping");
 
         _stopping = true;
         _cancellationHandle.Cancel();
@@ -98,7 +98,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
         // Wait for all scheduled tasks to complete
         await WaitForCompletionAsync().ConfigureAwait(false);
 
-        _logger.LogDebug($"{nameof(VolumeService)} stopped");
+        _logger.LogDebug($"{nameof(MainVolumeService)} stopped");
     }
 
     internal Task WaitForCompletionAsync()
@@ -114,7 +114,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
         return status is VolumeStatus.Ready ? volume : null;
     }
 
-    private async Task<VolumeInfo?> GetVolumeAsync()
+    private async Task<VolumeInfo?> SetUpVolumeAsync()
     {
         await Schedule(SetUpVolumeAsync).ConfigureAwait(false);
 
@@ -155,7 +155,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
         if (State.Status != VolumeStatus.Idle)
         {
-            _logger.LogInformation("Setting up user volume has been cancelled");
+            _logger.LogInformation("Setting up {Type} volume has been cancelled", VolumeType.Main);
         }
 
         SetStatus(VolumeStatus.Idle);
@@ -188,7 +188,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
     {
         try
         {
-            return (await _activeVolumeService.GetMainVolumeAsync(cancellationToken).ConfigureAwait(false), ErrorMessage: null);
+            return (await _activeVolumeService.CreateMainVolumeAsync(cancellationToken).ConfigureAwait(false), ErrorMessage: null);
         }
         catch (Exception ex) when (ex.IsDriveClientException())
         {
@@ -210,11 +210,11 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
     private void OnStateChanged(VolumeState value)
     {
-        _logger.LogInformation("Volume state changed to {Status}", value.Status);
+        _logger.LogInformation("{Type} volume state changed to {Status}", VolumeType.Main, value.Status);
 
         foreach (var listener in _volumeStateAware.Value)
         {
-            listener.OnVolumeStateChanged(value);
+            listener.OnMainVolumeStateChanged(value);
         }
     }
 

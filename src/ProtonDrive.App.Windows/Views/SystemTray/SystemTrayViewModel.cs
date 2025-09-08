@@ -21,8 +21,8 @@ internal sealed class SystemTrayViewModel : ObservableObject
 
         SyncStatusViewModel = syncStatusViewModel;
 
-        _appStateViewModel.PropertyChanged += AppViewModelOnPropertyChanged;
-        SyncStatusViewModel.PropertyChanged += SyncStatusViewModelOnPropertyChanged;
+        _appStateViewModel.PropertyChanged += OnAppViewModelPropertyChanged;
+        SyncStatusViewModel.PropertyChanged += OnSyncStatusViewModelPropertyChanged;
     }
 
     public SyncStateViewModel SyncStatusViewModel { get; }
@@ -30,7 +30,7 @@ internal sealed class SystemTrayViewModel : ObservableObject
     public ICommand SignInCommand => _appCommands.SignInCommand;
     public ICommand OpenAccountRootFolderCommand => _appCommands.OpenAccountRootFolderCommand;
     public ICommand OpenDriveOnlineCommand => _appCommands.OpenDriveOnlineCommand;
-    public ICommand ShowMainWindowCommand => _appCommands.ActivateCommand;
+    public ICommand ShowAppCommand => _appCommands.ActivateCommand;
     public ICommand ExitCommand => _appCommands.ExitCommand;
 
     public AppIconStatus AppIconStatus => _appStateViewModel.IconStatus;
@@ -42,7 +42,7 @@ internal sealed class SystemTrayViewModel : ObservableObject
         set => SyncStatusViewModel.Paused = value;
     }
 
-    private void AppViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnAppViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(AppStateViewModel.IconStatus))
         {
@@ -55,7 +55,7 @@ internal sealed class SystemTrayViewModel : ObservableObject
         }
     }
 
-    private void SyncStatusViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnSyncStatusViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(SyncStatusViewModel.Paused))
         {

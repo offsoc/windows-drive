@@ -7,7 +7,7 @@ public enum PhotosFeatureStatus
     /// <summary>
     /// One of the following conditions is met:
     /// <list type="bullet">
-    /// <item>Related services are not ready. In particular, <see cref="VolumeService"/> has not yet succeeded setup.</item>
+    /// <item>Related services are not ready. In particular, <see cref="MainVolumeService"/> has not yet succeeded setup.</item>
     /// <item>Photos is not configured to be used and there is no active Photo volume.</item>
     /// </list>
     /// </summary>

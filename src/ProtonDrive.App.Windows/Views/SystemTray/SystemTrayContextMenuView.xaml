@@ -16,7 +16,7 @@
     </ContextMenu.Resources>
 
     <MenuItem
-        Command="{Binding ShowMainWindowCommand}"
+        Command="{Binding ShowAppCommand}"
         Header="{loc:Resource SystemTray_Menu_Item_OpenProtonDrive}"
         Style="{StaticResource DarkMenuItemStyle}"
         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={x:Static converters:BooleanToVisibilityConverter.FalseIsCollapsed}}" />

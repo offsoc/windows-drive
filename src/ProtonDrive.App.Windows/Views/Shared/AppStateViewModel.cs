@@ -12,7 +12,7 @@ using ProtonDrive.Sync.Shared.SyncActivity;
 
 namespace ProtonDrive.App.Windows.Views.Shared;
 
-internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, IAccountStateAware, IVolumeStateAware, IMappingsSetupStateAware, ISyncStateAware, IOfflineStateAware, IUserStateAware, IDisposable
+internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, IAccountStateAware, IMainVolumeStateAware, IMappingsSetupStateAware, ISyncStateAware, IOfflineStateAware, IUserStateAware, IDisposable
 {
     private static readonly TimeSpan TimerInterval = TimeSpan.FromSeconds(20);
 
@@ -26,7 +26,7 @@ internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, 
     private UserState? _user;
     private SessionState _sessionState = SessionState.None;
     private AccountState _accountState = AccountState.None;
-    private VolumeState _volumeState = VolumeState.Idle;
+    private VolumeState _mainVolumeState = VolumeState.Idle;
     private MappingsSetupState _mappingsSetupState = MappingsSetupState.None;
     private SyncState _syncState = SyncState.Terminated;
     private bool _isOffline;
@@ -85,9 +85,9 @@ internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, 
         _updateAppState.Run();
     }
 
-    void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
+    void IMainVolumeStateAware.OnMainVolumeStateChanged(VolumeState value)
     {
-        _volumeState = value;
+        _mainVolumeState = value;
         _updateAppState.Run();
     }
 
@@ -148,7 +148,7 @@ internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, 
                 {
                     AccountStatus.None => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
                     AccountStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
-                    AccountStatus.Succeeded => _volumeState.Status switch
+                    AccountStatus.Succeeded => _mainVolumeState.Status switch
                     {
                         VolumeStatus.Idle => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
                         VolumeStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),

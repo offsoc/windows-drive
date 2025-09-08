@@ -42,28 +42,24 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
 
     public SyncFolderValidationResult ValidateAccountRootFolder(string path)
     {
-        var pathValidationResult = _localSyncFolderValidator.ValidatePath(path, new HashSet<string>(0));
+        var allPaths = GetSyncedFolderPaths().ToHashSet();
 
-        if (pathValidationResult is not SyncFolderValidationResult.Succeeded)
-        {
-            return pathValidationResult;
-        }
-
-        return _localSyncFolderValidator.ValidateFolder(path, shouldBeEmpty: true);
+        return
+            _localSyncFolderValidator.ValidateDrive(path) ??
+            _localSyncFolderValidator.ValidatePath(path, allPaths) ??
+            _localSyncFolderValidator.ValidateFolder(path, shouldBeEmpty: true) ??
+            SyncFolderValidationResult.Succeeded;
     }
 
     public SyncFolderValidationResult ValidateSyncFolder(string path, IEnumerable<string> otherPaths)
     {
         var allPaths = GetSyncedFolderPaths().Concat(otherPaths).ToHashSet();
 
-        var pathValidationResult = _localSyncFolderValidator.ValidatePathAndDrive(path, allPaths);
-
-        if (pathValidationResult is not SyncFolderValidationResult.Succeeded)
-        {
-            return pathValidationResult;
-        }
-
-        return _localSyncFolderValidator.ValidateFolder(path, shouldBeEmpty: false);
+        return
+            _localSyncFolderValidator.ValidateDrive(path) ??
+            _localSyncFolderValidator.ValidatePath(path, allPaths) ??
+            _localSyncFolderValidator.ValidateFolder(path, shouldBeEmpty: false) ??
+            SyncFolderValidationResult.Succeeded;
     }
 
     public async Task SetAccountRootFolderAsync(string localPath)

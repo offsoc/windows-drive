@@ -18,7 +18,7 @@ using ProtonDrive.Shared.Threading;
 namespace ProtonDrive.App.Authentication;
 
 public class StatefulSessionService
-    : IStatefulSessionService, IAuthenticationService, IStartableService, IStoppableService, IAccountStateAware, IVolumeStateAware
+    : IStatefulSessionService, IAuthenticationService, IStartableService, IStoppableService, IAccountStateAware, IMainVolumeStateAware
 {
     private readonly Client.Authentication.IAuthenticationService _clientAuthenticationService;
     private readonly IOfflineService _offlineService;
@@ -81,7 +81,7 @@ public class StatefulSessionService
         }
     }
 
-    void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
+    void IMainVolumeStateAware.OnMainVolumeStateChanged(VolumeState value)
     {
         switch (value.Status)
         {

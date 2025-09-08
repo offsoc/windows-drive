@@ -423,6 +423,13 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 HardlinkPolicy = StorageProviderHardlinkPolicy.None,
             };
         }
+        catch (ArgumentException ex)
+        {
+            // StorageFolder.GetFolderFromPathAsync sometimes throws ArgumentException claiming that
+            // an item cannot be found at the specified path.
+            _logger.LogWarning("Failed to create sync root info \"{RootId}\": {ErrorMessage}", rootId, ex.Message);
+            return null;
+        }
         catch (Exception ex) when (ex.IsFileAccessException() || ex is TypeInitializationException || ex is COMException)
         {
             ex.TryGetRelevantFormattedErrorCode(out var errorCode);

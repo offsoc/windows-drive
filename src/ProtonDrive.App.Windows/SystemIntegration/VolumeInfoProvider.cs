@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Windows.Interop;
 using ProtonDrive.Shared;
+using ProtonDrive.Shared.IO;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Sync.Windows.Interop;
 
@@ -26,12 +27,12 @@ public class VolumeInfoProvider : ILocalVolumeInfoProvider
 
     public bool IsNtfsFileSystem(string path)
     {
-        if (!TryGetVolumeName(path, out var volumeName))
+        if (!TryGetVolumeRoot(path, out var volumeRootPath))
         {
             return false;
         }
 
-        if (!TryGetFileSystemName(volumeName, out var fileSystemName))
+        if (!TryGetFileSystemName(volumeRootPath, out var fileSystemName))
         {
             return false;
         }
@@ -66,19 +67,17 @@ public class VolumeInfoProvider : ILocalVolumeInfoProvider
 
     public DriveType GetDriveType(string path)
     {
-        if (!TryGetVolumeName(path, out var volumePath))
+        if (!TryGetVolumeRoot(path, out var volumeRootPath))
         {
             return DriveType.Unknown;
         }
 
-        if (Shlwapi.PathIsNetworkPath(volumePath))
+        if (Shlwapi.PathIsNetworkPath(volumeRootPath))
         {
             return DriveType.Network;
         }
 
-        DriveInfo drive = new DriveInfo(volumePath);
-
-        return drive.DriveType;
+        return Kernel32.GetDriveType(volumeRootPath);
     }
 
     private bool TryGetDiskFreeSpace(string path, out ulong freeBytesAvailable)
@@ -104,35 +103,35 @@ public class VolumeInfoProvider : ILocalVolumeInfoProvider
         return true;
     }
 
-    private bool TryGetVolumeName(string path, [NotNullWhen(true)] out string? volumeName)
+    private bool TryGetVolumeRoot(string path, [NotNullWhen(true)] out string? rootPath)
     {
-        var volumeNameBuffer = new StringBuilder(PathMaxLength);
+        var rootPathBuffer = new StringBuilder(PathMaxLength);
 
-        if (!Kernel32.GetVolumePathName(path, volumeNameBuffer, (uint)volumeNameBuffer.Capacity))
+        if (!Kernel32.GetVolumePathName(path, rootPathBuffer, (uint)rootPathBuffer.Capacity))
         {
             var exception = new Win32Exception();   // Automatically gets the last Win32 error code and description
             var pathToLog = _logger.GetSensitiveValueForLogging(path);
             _logger.LogWarning(
-                "Failed to get local volume name for path \"{Path}\", Win32 error {ErrorCode}: {ErrorMessage}",
+                "Failed to get local volume root path for path \"{Path}\", Win32 error {ErrorCode}: {ErrorMessage}",
                 pathToLog,
                 exception.NativeErrorCode,
                 exception.Message);
 
-            volumeName = null;
+            rootPath = null;
             return false;
         }
 
-        volumeName = volumeNameBuffer.ToString();
+        rootPath = PathComparison.EnsureTrailingSeparator(rootPathBuffer.ToString());
         return true;
     }
 
-    private bool TryGetFileSystemName(string rootPathName, [NotNullWhen(true)] out string? fileSystemName)
+    private bool TryGetFileSystemName(string volumeRootPath, [NotNullWhen(true)] out string? fileSystemName)
     {
         var volumeNameBuffer = new StringBuilder(PathMaxLength);
         var fileSystemNameBuffer = new StringBuilder(PathMaxLength);
 
         if (!Kernel32.GetVolumeInformation(
-                rootPathName,
+                volumeRootPath,
                 volumeNameBuffer,
                 volumeNameBuffer.Capacity,
                 out _,
@@ -144,7 +143,7 @@ public class VolumeInfoProvider : ILocalVolumeInfoProvider
             var exception = new Win32Exception();   // Automatically gets the last Win32 error code and description
             _logger.LogWarning(
                 "Failed to get local file system name for volume \"{Volume}\", Win32 error {ErrorCode}: {ErrorMessage}",
-                rootPathName,
+                volumeRootPath,
                 exception.NativeErrorCode,
                 exception.Message);
 
