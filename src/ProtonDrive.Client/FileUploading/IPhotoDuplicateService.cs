@@ -8,9 +8,13 @@ namespace ProtonDrive.Client.FileUploading;
 
 public interface IPhotoDuplicateService
 {
-    public Task<string> GetContentHash(Stream source, string shareId, string parentLinkId, CancellationToken cancellationToken);
+    public Task<(string ContentHash, string Sha1Digest)> GetContentHashAndSha1DigestAsync(
+        Stream source,
+        string shareId,
+        string parentLinkId,
+        CancellationToken cancellationToken);
 
-    public Task<ILookup<string, PhotoDuplicate>> GetDuplicatesByFilenameAsync(
+    public Task<ILookup<string, PhotoNameCollision>> GetNameCollisionsAsync(
         string volumeId,
         string shareId,
         string parentLinkId,

@@ -2391,11 +2391,29 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Retry.
+        /// </summary>
+        internal static string Main_Photos_Folders_Menu_Item_Retry {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_Menu_Item_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No photos/videos found.
         /// </summary>
         internal static string Main_Photos_Folders_NoItemsFound_Label {
             get {
                 return ResourceManager.GetString("Main_Photos_Folders_NoItemsFound_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting to import....
+        /// </summary>
+        internal static string Main_Photos_Folders_WaitingToImport {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_WaitingToImport", resourceCulture);
             }
         }
         
@@ -3013,6 +3031,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Photos import.
+        /// </summary>
+        internal static string Main_Sidebar_NavigationMenu_Item_PhotosImport {
+            get {
+                return ResourceManager.GetString("Main_Sidebar_NavigationMenu_Item_PhotosImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         internal static string Main_Sidebar_NavigationMenu_Item_Settings {
@@ -3373,6 +3400,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Photo import failed.
+        /// </summary>
+        internal static string MappingErrorCode_Value_PhotoImportFailed {
+            get {
+                return ResourceManager.GetString("MappingErrorCode_Value_PhotoImportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Proton Photos unavailable.
         /// </summary>
         internal static string MappingErrorCode_Value_PhotosDisabled {
@@ -3639,6 +3675,42 @@ namespace ProtonDrive.App.Windows.Resources {
         internal static string Onboarding_UpgradeStorage_Title {
             get {
                 return ResourceManager.GetString("Onboarding_UpgradeStorage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import failed. The album does not exist..
+        /// </summary>
+        internal static string PhotoImportErrorCode_Value_AlbumDoesNotExist {
+            get {
+                return ResourceManager.GetString("PhotoImportErrorCode_Value_AlbumDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import failed. Maximum number of albums reached..
+        /// </summary>
+        internal static string PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached {
+            get {
+                return ResourceManager.GetString("PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import failed. Maximum number of photos per album reached..
+        /// </summary>
+        internal static string PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached {
+            get {
+                return ResourceManager.GetString("PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import failed. Try again..
+        /// </summary>
+        internal static string PhotoImportErrorCode_Value_Unknown {
+            get {
+                return ResourceManager.GetString("PhotoImportErrorCode_Value_Unknown", resourceCulture);
             }
         }
         

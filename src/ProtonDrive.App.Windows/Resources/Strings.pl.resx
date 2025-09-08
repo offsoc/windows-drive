@@ -786,10 +786,10 @@ Włącz ponownie synchronizację, aby go przywrócić i usunąć błąd.</value>
     <value>Dodaj foldery</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because included in a folder already synced to Proton Drive</value>
+    <value>{0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because have a subfolder already synced to Proton Drive</value>
+    <value>{0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>{0} folder(s) cannot be accessed</value>
@@ -798,7 +798,7 @@ Włącz ponownie synchronizację, aby go przywrócić i usunąć błąd.</value>
     <value>{0} folder(s) cannot be found or cannot be opened</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} folder(s) cannot be synced because located on a non-supported drive</value>
+    <value>{0} folder(s) cannot be synced because they are located on a non-supported drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} folder(s) cannot be synced because network folders are not supported</value>
@@ -932,56 +932,80 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
   <data name="Main_MyComputer_Title">
     <value>Moje urządzenie</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Importowanie nie powiodło się. Spróbuj usunąć folder i zaimportować go ponownie. Jeśli problem będzie się powtarzał, skontaktuj się ze wsparciem.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importowanie nie powiodło się. Spróbuj ponownie.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Imported {0} of {1} items</value>
+    <value>Zaimportowano {0} z {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importowanie... {0} z {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>item(s)</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>Otwórz folder</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>remove</value>
+    <value>Usuń</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>Spróbuj ponownie</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
-    <value>No photos/videos found</value>
+    <value>Nie znaleziono zdjęć / filmów</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Oczekiwanie na importowanie...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
-    <value>Step-by-step guide of how to export your Google Photos</value>
+    <value>Przewodnik w wyeksportowaniu Zdjęć Google</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Title">
-    <value>1. Export your Google Photos</value>
+    <value>1. Eksportuj Zdjęcia Google</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Import_Description">
-    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+    <value>Folder ze zdjęciami i filmami musi być rozpakowany.</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Import_Title">
-    <value>2. Import Google Photos folder</value>
+    <value>2. Importuj folder Zdjęcia Google</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
-    <value>Select Folder</value>
+    <value>Wybierz folder</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Title">
-    <value>Import from Google Photos</value>
+    <value>Import ze Zdjęć Google</value>
   </data>
   <data name="Main_Photos_Import_HowImportWorks_Label">
-    <value>How does photo import work?</value>
+    <value>Jak działa import zdjęć?</value>
   </data>
   <data name="Main_Photos_Import_ImportFolder_Description">
-    <value>Import a local folder from your computer</value>
+    <value>Importuj lokalny folder z urządzenia</value>
   </data>
   <data name="Main_Photos_Import_ImportFolder_Title">
-    <value>Import a folder</value>
+    <value>Importuj folder</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Description">
-    <value>Import Google photos from Google Takeout</value>
+    <value>Importuj Zdjęcia Google z Google Takeout</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Title">
-    <value>Import from Google Photos</value>
+    <value>Import ze Zdjęć Google</value>
   </data>
   <data name="Main_Photos_Import_Title">
-    <value>Import photos</value>
+    <value>Importuj zdjęcia</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Zdjęcia</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>Przesyłanie zdjęć jest tymczasowo niedostępne</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>Zmień</value>
@@ -1147,6 +1171,9 @@ Zawartość plików będzie pobierana na żądanie.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Zdjęcia</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Import zdjęć</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Element menu: Zdjęcia</value>
   </data>
@@ -1265,20 +1292,26 @@ Zawartość plików będzie pobierana na żądanie.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>Folder synchronizacji jest nieprawidłowy. Skonfiguruj nowy folder synchronizacji.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Folder synchronizacji został niespodziewanie wyrejestrowany. Skonfiguruj nowy folder synchronizacji.</value>
   </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Importowanie zdjęć nie powiodło się</value>
+  </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
-    <value>Proton Photos unavailable</value>
+    <value>Funkcja Proton Photos jest niedostępna</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosNotReady">
-    <value>Photos feature not ready</value>
+    <value>Funkcja zdjęć nie jest gotowa</value>
   </data>
   <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
-    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+    <value>Nie można uzyskać dostępu do udostępnionego pliku lub folderu Proton Drive. Sprawdź, czy nadal jest Ci udostępniony.</value>
   </data>
   <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
-    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
+    <value>Uprawnienia udostępnionego pliku lub folderu Proton Drive zostały zmienione. Włącz ponownie synchronizację, aby rozwiązać problem.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Udostępnianie jest tymczasowo niedostępne</value>
@@ -1363,6 +1396,27 @@ Zawartość plików będzie pobierana na żądanie.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Uzyskaj więcej przestrzeni dyskowej</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Importowanie nie powiodło się</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>Importowanie zostało przerwane</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Importowanie zakończone</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Nowe funkcje</value>

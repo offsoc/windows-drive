@@ -16,5 +16,6 @@ public sealed class UrlConfig
     public string ManageSessions { get; internal set; } = string.Empty;
     public string Trash { get; internal set; } = string.Empty;
     public string Docs { get; internal set; } = string.Empty;
-    public string ImportPhotosSupport { get; internal set; } = string.Empty;
+    public string HowToImportPhotosFromGoogle { get; internal set; } = string.Empty;
+    public string HowPhotoImportWorks { get; internal set; } = string.Empty;
 }

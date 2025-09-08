@@ -103,11 +103,6 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
          * - If the remote feature flag does not exist, but kill switch exists, the disabled local feature flag
          * overrides the remote kill switch value and makes it enabled.
          */
-        if (!localFeatureFlags.PhotosFeatureEnabled)
-        {
-            yield return (Feature.DrivePhotosUploadDisabled, true);
-            yield return (Feature.DriveAlbumsDisabled, true);
-        }
 
         yield break;
     }

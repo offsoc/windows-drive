@@ -4,12 +4,12 @@ namespace ProtonDrive.Client.Contracts;
 
 public sealed record FolderCreationResponse : ApiResponse
 {
-    private FolderId? _folderId;
+    private readonly FolderId? _folderId;
 
     [JsonPropertyName("Folder")]
     public FolderId FolderId
     {
-        get => _folderId ??= new FolderId();
+        get => _folderId ?? throw new ApiException("Folder ID is not set");
         init => _folderId = value;
     }
 }

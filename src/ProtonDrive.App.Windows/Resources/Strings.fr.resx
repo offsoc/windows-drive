@@ -343,7 +343,7 @@
     <value>(10 caractères minimum)</value>
   </data>
   <data name="BugReport_Text_Description_Watermark_ExactSteps">
-    <value>Pouvez-vous nous décrire précisément les étapes que vous avez suivies ?</value>
+    <value>Quel sont précisément les étapes que vous avez suivies ?</value>
   </data>
   <data name="BugReport_Text_Description_Watermark_WhatWentWrong">
     <value>Quel était le problème ?</value>
@@ -786,10 +786,10 @@ Désactivez et réactivez sa synchronisation pour le restaurer et effacer cette 
     <value>Ajouter des dossiers</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} dossiers ne peuvent pas être synchronisés car ils sont inclus un dossier déjà synchronisé avec Proton Drive.</value>
+    <value>{0} dossiers ne peuvent pas être synchronisés car ils sont inclus dans un dossier déjà synchronisé avec Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} dossiers ne peuvent pas être synchronisés car ils contiennent un sous-dossier déjà synchronisé avec Proton Drive.</value>
+    <value>{0} dossiers ne peuvent pas être synchronisé car ils ont un sous-dossier déjà synchronisé avec Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>{0} dossiers ne sont pas accessibles.</value>
@@ -798,7 +798,7 @@ Désactivez et réactivez sa synchronisation pour le restaurer et effacer cette 
     <value>{0} dossiers sont introuvables ou ne peuvent être ouverts.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} dossiers ne peuvent pas être synchronisés car ils se trouvent sur un drive non pris en charge.</value>
+    <value>{0} dossiers ne peuvent pas être synchronisé car ils se trouvent sur un lecteur non pris en charge</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} dossiers ne peuvent pas être synchronisés car les dossiers réseau ne sont pas pris en charge.</value>
@@ -876,7 +876,7 @@ désactiver l'optimisation du stockage à tout moment.</value>
     <value>Retirer le dossier ?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Les fichiers du dossier « {0} » seront désormais toujours disponibles sur l'appareil. Il peut falloir quelques minutes avant que tous les fichiers ne soient téléchargés (vous pouvez vérifier l'état dans l'explorateur de fichiers).</value>
+    <value>Les fichiers dans le dossier "{0}" seront désormais toujours disponibles sur votre appareil. Cela peut prendre quelques minutes avant que tous les fichiers ne soient téléchargés (vous pouvez vérifier l’état dans l’explorateur de fichiers).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -927,22 +927,43 @@ désactiver l'optimisation du stockage à tout moment.</value>
     <value>2.</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Title">
-    <value>Gestion de l'espace de stockage</value>
+    <value>Gestion du stockage</value>
   </data>
   <data name="Main_MyComputer_Title">
     <value>Mon ordinateur</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>L'importation n'a pas abouti. Essayez de supprimer le dossier et de le réimporter. Si le problème persiste, veuillez contacter le support</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>L'importation n'a pas abouti. Veuillez réessayer.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Importation : {0} sur {1} éléments</value>
+    <value>Importation de {0} sur {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importation en cours... {0} sur {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>éléments</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Ouvrir le dossier</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>retirer</value>
+    <value>_Supprimer</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Réessayez</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Aucune photo/vidéo</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>En attente d'importation...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Guide étape par étape pour exporter vos photos depuis Google Photos</value>
@@ -982,6 +1003,9 @@ désactiver l'optimisation du stockage à tout moment.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Photos</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>L'envoi des photos est temporairement indisponible</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Modifier</value>
@@ -1147,6 +1171,9 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Photos</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Importation de photos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Élément de menu : Photos</value>
   </data>
@@ -1265,8 +1292,14 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>Le dossier de synchronisation n'est pas valide. Veuillez créer un nouveau dossier de synchronisation.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>L'enregistrement du dossier de synchronisation a été annulé de façon inattendue. Configurez un nouveau dossier de synchronisation.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>L'importation de la photo n'a pas abouti.</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Photos indisponible</value>
@@ -1363,6 +1396,27 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obtenir plus d'espace de stockage</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>L'importation n'a pas abouti.</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>L'importation a été interrompue</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>L'Importation a réussi</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Nouvelles fonctionnalités</value>

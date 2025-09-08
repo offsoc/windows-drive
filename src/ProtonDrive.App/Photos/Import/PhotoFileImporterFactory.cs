@@ -4,8 +4,8 @@ namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class PhotoFileImporterFactory
 {
-    public IPhotoFileImporter Create(IPhotoFileSystemClient<long> localFileSystemClient, IFileSystemClient<string> remoteFileSystemClient)
+    public IPhotoFileUploader Create(IPhotoFileSystemClient<long> localFileSystemClient, IFileSystemClient<string> remoteFileSystemClient)
     {
-        return new PhotoFileImporter(localFileSystemClient, remoteFileSystemClient);
+        return new PhotoFileUploader(localFileSystemClient, remoteFileSystemClient);
     }
 }

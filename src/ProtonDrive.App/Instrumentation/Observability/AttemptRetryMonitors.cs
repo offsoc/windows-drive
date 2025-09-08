@@ -10,11 +10,12 @@ internal sealed class AttemptRetryMonitors
 
     private static ReadOnlyDictionary<AttemptRetryShareType, AttemptRetryMonitor<long>> CreateMonitor()
     {
-        var attemptRetryMonitors = new Dictionary<AttemptRetryShareType, AttemptRetryMonitor<long>>()
+        var attemptRetryMonitors = new Dictionary<AttemptRetryShareType, AttemptRetryMonitor<long>>
         {
             { AttemptRetryShareType.Main, new AttemptRetryMonitor<long>() },
             { AttemptRetryShareType.Device, new AttemptRetryMonitor<long>() },
             { AttemptRetryShareType.Standard, new AttemptRetryMonitor<long>() },
+            { AttemptRetryShareType.Photo, new AttemptRetryMonitor<long>() },
         };
 
         return attemptRetryMonitors.AsReadOnly();

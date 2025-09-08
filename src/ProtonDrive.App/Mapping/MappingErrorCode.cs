@@ -29,4 +29,5 @@ public enum MappingErrorCode
     SharingDisabled,
     PhotosNotReady,
     PhotosDisabled,
+    PhotoImportFailed,
 }

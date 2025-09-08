@@ -287,6 +287,7 @@ public static class AppServices
 
                 .AddSingleton<PhotoFolderMappingValidationStep>()
                 .AddSingleton<PhotoFolderMappingSetupStep>()
+                .AddSingleton<PhotoFolderMappingSetupFinalizationStep>()
 
                 .AddSingleton<ForeignDeviceMappingFolderValidationStep>()
                 .AddSingleton<ForeignDeviceMappingFoldersSetupStep>()
@@ -450,6 +451,7 @@ public static class AppServices
                 .AddSingleton<UploadSuccessMeter>()
                 .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<UploadSuccessMeter>())
                 .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<UploadSuccessMeter>())
+                .AddSingleton<IPhotoImportActivityAware>(provider => provider.GetRequiredService<UploadSuccessMeter>())
 
                 .AddSingleton<DownloadSuccessMeter>()
                 .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<DownloadSuccessMeter>())
@@ -467,6 +469,7 @@ public static class AppServices
                 .AddSingleton<MappingSetupStatistics>()
                 .AddSingleton<IMappingStateAware>(provider => provider.GetRequiredService<MappingSetupStatistics>())
                 .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<MappingSetupStatistics>())
+                .AddSingleton<IPhotoImportFoldersAware>(provider => provider.GetRequiredService<MappingSetupStatistics>())
 
                 .AddSingleton<SyncStatistics>()
                 .AddSingleton<ISyncStateAware>(provider => provider.GetRequiredService<SyncStatistics>())
@@ -501,6 +504,7 @@ public static class AppServices
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncStateAware>>(provider.GetRequiredService<IEnumerable<ISyncStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncStatisticsAware>>(provider.GetRequiredService<IEnumerable<ISyncStatisticsAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncActivityAware>>(provider.GetRequiredService<IEnumerable<ISyncActivityAware>>))
+                .AddSingleton(provider => new Lazy<IEnumerable<IPhotoImportActivityAware>>(provider.GetRequiredService<IEnumerable<IPhotoImportActivityAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IFeatureFlagsAware>>(provider.GetRequiredService<IEnumerable<IFeatureFlagsAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IOfflineStateAware>>(provider.GetRequiredService<IEnumerable<IOfflineStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IIpcMessageHandler>>(provider.GetRequiredService<IEnumerable<IIpcMessageHandler>>))

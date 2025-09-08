@@ -18,20 +18,27 @@ internal sealed class PhotoAlbumService : IPhotoAlbumService
 
     public async ValueTask<string> CreateAlbumAsync(string albumName, string parentLinkId, CancellationToken cancellationToken)
     {
-        var albumInfo = NodeInfo<string>.Directory()
-            .WithName(albumName)
-            .WithParentId(parentLinkId);
-
-        var album = await _remoteFileSystemClient.CreateDirectory(albumInfo, cancellationToken).ConfigureAwait(false);
-
-        if (string.IsNullOrEmpty(album.Id))
+        try
         {
-            throw new FileSystemClientException("Album creation failed: missing ID", FileSystemErrorCode.Unknown);
+            var albumInfo = NodeInfo<string>.Directory()
+                .WithName(albumName)
+                .WithParentId(parentLinkId);
+
+            var album = await _remoteFileSystemClient.CreateDirectory(albumInfo, cancellationToken).ConfigureAwait(false);
+
+            if (string.IsNullOrEmpty(album.Id))
+            {
+                throw new FileSystemClientException("Album creation failed: missing ID", FileSystemErrorCode.Unknown);
+            }
+
+            _logger.LogInformation("Created album with ID {ID}", album.Id);
+
+            return album.Id;
         }
-
-        _logger.LogInformation("Created album with ID {ID}", album.Id);
-
-        return album.Id;
+        catch (FileSystemClientException exception) when (exception.ErrorCode is FileSystemErrorCode.TooManyChildren)
+        {
+            throw new PhotoAlbumCreationException("Album creation failed: limit reached", exception, PhotoImportErrorCode.MaximumNumberOfAlbumsReached);
+        }
     }
 
     public async ValueTask AddToAlbumAsync(string albumLinkId, NodeInfo<string> file, CancellationToken cancellationToken)

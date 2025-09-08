@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace ProtonDrive.App.Photos.Import;
 
@@ -32,5 +33,15 @@ internal sealed class ImportProgress
     public void RaiseAlbumCreated(PhotoImportFolderCurrentPosition photoImportFolderCurrentPosition)
     {
         _callbacks.OnAlbumCreated?.Invoke(photoImportFolderCurrentPosition);
+    }
+
+    public void RaiseFileUploaded(string filePath)
+    {
+        _callbacks.OnPhotoFileActivityChanged?.Invoke(filePath, null);
+    }
+
+    public void RaiseFileUploadFailed(string filePath, Exception exception)
+    {
+        _callbacks.OnPhotoFileActivityChanged?.Invoke(filePath, exception);
     }
 }

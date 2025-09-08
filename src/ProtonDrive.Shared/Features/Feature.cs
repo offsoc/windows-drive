@@ -10,4 +10,5 @@ public enum Feature
     DriveWindowsRemoteNodeRenamingDisabled,
     DriveWindowsStorageOptimizationNewFeatureBadge,
     DriveWindowsStorageOptimizationDisabled,
+    DriveWindowsPhotoImport,
 }

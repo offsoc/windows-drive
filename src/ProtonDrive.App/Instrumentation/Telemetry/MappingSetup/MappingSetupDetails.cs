@@ -6,7 +6,13 @@ namespace ProtonDrive.App.Instrumentation.Telemetry.MappingSetup;
 
 public sealed record MappingSetupDetails
 {
-    public MappingSetupDetails(MappingType type, LinkType linkType, SyncMethod syncMethod, MappingStatus status, MappingSetupStatus mappingSetupStatus, bool isReadOnly)
+    public MappingSetupDetails(
+        MappingType type,
+        LinkType linkType,
+        SyncMethod syncMethod,
+        MappingStatus status,
+        MappingSetupStatus mappingSetupStatus,
+        bool isReadOnly)
     {
         Type = type;
         LinkType = linkType;
@@ -15,6 +21,7 @@ public sealed record MappingSetupDetails
         SetupStatus = mappingSetupStatus;
         SyncType = type switch
         {
+            MappingType.PhotoImport => MappingSyncType.None,
             MappingType.SharedWithMeItem when isReadOnly => MappingSyncType.OneWayToLocal,
             _ => MappingSyncType.TwoWay,
         };

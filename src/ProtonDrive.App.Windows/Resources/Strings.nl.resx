@@ -786,10 +786,10 @@ Zet de synchronisatie uit en weer aan om deze te herstellen en deze fout te verw
     <value>Mappen toevoegen</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} map(pen) kan/kunnen niet worden gesynchroniseerd omdat deze zich in een map bevindt/bevinden die al met Proton Drive is gesynchroniseerd.</value>
+    <value>{0} map(pen) kan/kunnen niet worden gesynchroniseerd omdat deze zich in een map bevindt/bevinden die al met Proton Drive is gesynchroniseerd</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} map(pen) kan/kunnen niet worden gesynchroniseerd omdat er een submap in zit die al met Proton Drive is gesynchroniseerd.</value>
+    <value>{0} map(pen) kan/kunnen niet worden gesynchroniseerd omdat er een submap in zit die al met Proton Drive is gesynchroniseerd</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>{0} mappen zijn niet toegankelijk</value>
@@ -798,7 +798,7 @@ Zet de synchronisatie uit en weer aan om deze te herstellen en deze fout te verw
     <value>{0} mappen kunnen niet gevonden of geopend worden</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} map(pen) kan/kunnen niet gesynchroniseerd worden omdat deze zich op een niet-ondersteunde Drive bevindt.</value>
+    <value>{0} map(pen) kan/kunnen niet gesynchroniseerd worden omdat deze zich op een niet ondersteunde drive bevindt/bevinden.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} map(pen) kan/kunnen niet worden gesynchroniseerd omdat netwerkmappen niet worden ondersteund.</value>
@@ -875,7 +875,7 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
     <value>Map verwijderen?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Bestanden in "{0}" folder zullen nu altijd beschikbaar zijn op dit apparaat. Het kan een paar minuten duren voordat alle bestanden klaar zijn met downloaden (u kunt de status controleren in de Verkenner).</value>
+    <value>Bestanden in "{0}" map zullen nu altijd beschikbaar zijn op uw apparaat. Het kan een paar minuten duren voordat alle bestanden klaar zijn met downloaden (u kunt de status controleren in de Verkenner).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -931,17 +931,38 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
   <data name="Main_MyComputer_Title">
     <value>Mijn computer</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Importeren mislukt. Probeer de map te verwijderen en opnieuw te importeren. Als het probleem aanhoudt, neem dan contact op met support.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importeren mislukt. Probeer het opnieuw.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Geïmporteerd {0} van {1} items</value>
+    <value>{0} van {1} geïmporteerd</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importeren... {0} van {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>item(s)</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Map openen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>verwijderen</value>
+    <value>_Verwijderen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Opnieuw proberen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Geen foto's/video's gevonden</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Wachten op importeren...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Stapsgewijze handleiding hoe u uw Google Foto's exporteert</value>
@@ -981,6 +1002,9 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Foto's</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>Het uploaden van foto's is tijdelijk niet beschikbaar</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Wijzigen</value>
@@ -1146,6 +1170,9 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Foto's</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Foto's importeren</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Menu-item: Foto's</value>
   </data>
@@ -1264,8 +1291,14 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>Sync folder is ongeldig. Stel een nieuwe sync folder in.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>De gesynchroniseerde map is onverwachts niet geregistreerd. Stel een nieuwe gesynchroniseerde map in.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Foto importeren mislukt</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Foto's niet beschikbaar</value>
@@ -1362,6 +1395,27 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Krijg meer opslag</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Importeren mislukt</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>Importeren is onderbroken</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Importeren geslaagd</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Nieuwe Features</value>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,21 +11,26 @@ using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Shared.Extensions;
+using ProtonDrive.Shared.IO;
 using ProtonDrive.Shared.Logging;
-using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Threading;
+using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Shared.SyncActivity;
+using ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class PhotoImportService : IStartableService, IStoppableService, IAccountSwitchingAware, IMappingsSetupStateAware
 {
     private readonly Lazy<IEnumerable<IPhotoImportFoldersAware>> _photoImportFoldersAware;
-    private readonly IRepository<PhotoImportSettings> _settingsRepository;
+    private readonly Lazy<IEnumerable<IPhotoImportActivityAware>> _photoImportActivityAware;
+    private readonly IPhotoFolderService _photoFolderService;
     private readonly IPhotoImportEngineFactory _photoImportEngineFactory;
     private readonly ILogger<PhotoImportService> _logger;
 
     private readonly CoalescingAction _photoImport;
     private readonly SemaphoreSlim _currentMappingSemaphore = new(1);
+    private readonly StringIdMapper _stringIdMapper = new();
 
     private volatile bool _stopping;
     private PhotoImportSettings _settings = new([]);
@@ -33,12 +39,14 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
 
     public PhotoImportService(
         Lazy<IEnumerable<IPhotoImportFoldersAware>> photoImportFoldersAware,
-        IRepository<PhotoImportSettings> importRepository,
+        Lazy<IEnumerable<IPhotoImportActivityAware>> photoImportActivityAware,
+        IPhotoFolderService photoFolderService,
         IPhotoImportEngineFactory photoImportEngineFactory,
         ILogger<PhotoImportService> logger)
     {
         _photoImportFoldersAware = photoImportFoldersAware;
-        _settingsRepository = importRepository;
+        _photoImportActivityAware = photoImportActivityAware;
+        _photoFolderService = photoFolderService;
         _photoImportEngineFactory = photoImportEngineFactory;
         _logger = logger;
 
@@ -237,6 +245,11 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
         void HandleFailure(Exception exception)
         {
             _logger.LogWarning("Photo import failed: {ErrorMessage}", exception.CombinedMessage());
+
+            photoImportFolder.ErrorCode = exception is PhotoImportException photoImportException
+                ? photoImportException.ErrorCode
+                : PhotoImportErrorCode.Unknown;
+
             OnFailed(photoImportFolder);
         }
     }
@@ -247,6 +260,7 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
         {
             OnProgressChanged = (numberOfImportedFiles, numberOfFilesToImport) => OnProgressChanged(photoImportFolder, numberOfImportedFiles, numberOfFilesToImport),
             OnAlbumCreated = folderCurrentPosition => OnAlbumCreate(photoImportFolder, folderCurrentPosition),
+            OnPhotoFileActivityChanged = OnPhotoFileActivityChanged,
         };
     }
 
@@ -329,7 +343,7 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
             OnPhotoImportFolderRemoved(folder);
         }
 
-        _settings = _settingsRepository.Get() ?? new PhotoImportSettings([]);
+        _settings = _photoFolderService.GetSettings();
 
         foreach (var folder in _settings.Folders)
         {
@@ -339,6 +353,51 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
 
     private void SaveSettings()
     {
-        _settingsRepository.Set(_settings);
+        _photoFolderService.SetSettings(_settings);
+    }
+
+    private void OnPhotoFileActivityChanged(string filePath, Exception? exception = null)
+    {
+        var item = CreateActivityItem(filePath, exception);
+
+        foreach (var listener in _photoImportActivityAware.Value)
+        {
+            listener.OnPhotoImportActivityChanged(item);
+        }
+    }
+
+    private SyncActivityItem<long> CreateActivityItem(string filePath, Exception? exception)
+    {
+        return new SyncActivityItem<long>
+        {
+            Id = _stringIdMapper.GetId(filePath),
+            NodeType = NodeType.File,
+            Progress = Progress.Completed,
+            Status = exception is null ? SyncActivityItemStatus.Succeeded : SyncActivityItemStatus.Failed,
+            ActivityType = SyncActivityType.Upload,
+            Stage = SyncActivityStage.Execution,
+            ErrorCode = GetErrorCodeFromException(exception),
+        };
+    }
+
+    private static FileSystemErrorCode GetErrorCodeFromException(Exception? exception)
+    {
+        return exception switch
+        {
+            null => FileSystemErrorCode.Unknown,
+            IFileSystemErrorCodeProvider fileSystemClientException => fileSystemClientException.ErrorCode,
+            _ => exception.IsFileAccessException() ? FileSystemErrorCode.UnauthorizedAccess : FileSystemErrorCode.Unknown,
+        };
+    }
+
+    private sealed class StringIdMapper
+    {
+        private readonly ConcurrentDictionary<string, long> _map = new();
+        private long _nextId;
+
+        public long GetId(string value)
+        {
+            return _map.GetOrAdd(value, _ => Interlocked.Increment(ref _nextId));
+        }
     }
 }

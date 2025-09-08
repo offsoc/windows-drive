@@ -111,10 +111,13 @@
 
                 <Button
                     Grid.Row="2"
-                    Content="{loc:Resource Main_Sidebar_Storage_Button_GetMoreStorage}"
                     Command="{Binding GetMoreStorageCommand}"
                     Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={x:Static converters:BooleanToVisibilityConverter.FalseIsCollapsed}}"
-                    Margin="0,10,0,0" />
+                    Margin="0,10,0,0">
+                    <TextBlock
+                        Text="{loc:Resource Main_Sidebar_Storage_Button_GetMoreStorage}"
+                        TextTrimming="CharacterEllipsis" />
+                </Button>
 
                 <Button
                     Grid.Row="3"

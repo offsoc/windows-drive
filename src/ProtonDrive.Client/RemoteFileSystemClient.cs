@@ -841,15 +841,28 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
     private async Task AddToAlbumAsync(string albumLinkId, PhotoToAddListParameters parameters, CancellationToken cancellationToken)
     {
+        var photoLinkId = parameters.Photos.First().LinkId;
+
         try
         {
-            _logger.LogDebug("Adding photo file with ID {FileID} to album {AlbumLinkID}", parameters.Photos.First().LinkId, albumLinkId);
+            _logger.LogDebug("Adding photo file with ID {FileID} to album {AlbumLinkID}", photoLinkId, albumLinkId);
 
-            await _photoApiClient.AddPhotosToAlbumAsync(_volumeId, albumLinkId, parameters, cancellationToken)
+            var response = await _photoApiClient.AddPhotosToAlbumAsync(_volumeId, albumLinkId, parameters, cancellationToken)
                 .ThrowOnFailure()
                 .ConfigureAwait(false);
 
-            _logger.LogDebug("Photo file with ID {FileID} added to album {AlbumLinkID}", parameters.Photos.First().LinkId, albumLinkId);
+            var result = response.AddedPhotoResponses.First();
+
+            if (!result.Response.Succeeded)
+            {
+                throw new ApiException(result.Response.Code, result.Response.Error ?? "API request failed");
+            }
+
+            _logger.LogDebug("Photo file with ID {FileID} added to album {AlbumLinkID}", photoLinkId, albumLinkId);
+        }
+        catch (ApiException ex) when (ex.ResponseCode is ResponseCode.AlreadyExists)
+        {
+            _logger.LogInformation("Photo file with ID {FileID} was already added to album {AlbumLinkID}", photoLinkId, albumLinkId);
         }
         catch (ApiException ex) when (ex.ResponseCode is ResponseCode.DoesNotExist or ResponseCode.InvalidRequirements or ResponseCode.TooManyChildren
                                       && ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))

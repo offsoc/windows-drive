@@ -13,7 +13,7 @@ internal sealed class PhotoImportPipeline
 {
     private readonly PhotoImportPipelineParameters _parameters;
     private readonly IPhotoFileSystemClient<long> _localFileSystemClient;
-    private readonly IPhotoFileImporter _photoFileImporter;
+    private readonly IPhotoFileUploader _photoFileUploader;
     private readonly IPhotoAlbumService _photoAlbumService;
     private readonly IPhotoDuplicateService _duplicateService;
     private readonly IPhotoAlbumNameProvider _photoAlbumNameProvider;
@@ -23,7 +23,7 @@ internal sealed class PhotoImportPipeline
     public PhotoImportPipeline(
         PhotoImportPipelineParameters parameters,
         IPhotoFileSystemClient<long> localFileSystemClient,
-        IPhotoFileImporter photoFileImporter,
+        IPhotoFileUploader photoFileUploader,
         IPhotoAlbumService photoAlbumService,
         IPhotoDuplicateService duplicateService,
         IPhotoAlbumNameProvider photoAlbumNameProvider,
@@ -32,7 +32,7 @@ internal sealed class PhotoImportPipeline
     {
         _parameters = parameters;
         _localFileSystemClient = localFileSystemClient;
-        _photoFileImporter = photoFileImporter;
+        _photoFileUploader = photoFileUploader;
         _photoAlbumService = photoAlbumService;
         _duplicateService = duplicateService;
         _photoAlbumNameProvider = photoAlbumNameProvider;
@@ -60,7 +60,7 @@ internal sealed class PhotoImportPipeline
                 var photoAlbumImporter = new PhotoAlbumImporter(
                     _parameters,
                     _localFileSystemClient,
-                    _photoFileImporter,
+                    _photoFileUploader,
                     _photoAlbumService,
                     _duplicateService,
                     _photoAlbumNameProvider,

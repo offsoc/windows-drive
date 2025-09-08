@@ -306,14 +306,9 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 actualInfo.InSyncPolicy == rootInfo.InSyncPolicy &&
                 actualInfo.HardlinkPolicy == rootInfo.HardlinkPolicy)
             {
-                if (!HasSyncRootFlag(rootInfo.Path.Path))
+                if (VerifySyncRootFlag(rootInfo.Path.Path) is var verdict and not OnDemandSyncRootVerificationVerdict.Valid)
                 {
-                    _logger.LogWarning("On-demand sync root \"{RootId}\" is missing sync root flag", rootInfo.Id);
-
-                    // Report to Sentry as this helps us detect potential data corruption issues early.
-                    // Later, we may replace this with a more specific recovery or mitigation strategy.
-                    _errorReporting.CaptureError("On-demand sync root is missing sync root flag");
-                    return (OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag, ConflictingRootInfo: null);
+                    return (verdict, ConflictingRootInfo: null);
                 }
 
                 _logger.LogInformation("On-demand sync root \"{RootId}\" is valid", rootInfo.Id);
@@ -326,14 +321,9 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 return (OnDemandSyncRootVerificationVerdict.ConflictingRootExists, ConflictingRootInfo: actualInfo);
             }
 
-            if (!HasSyncRootFlag(rootInfo.Path.Path))
+            if (VerifySyncRootFlag(rootInfo.Path.Path) is var verdict2 and not OnDemandSyncRootVerificationVerdict.Valid)
             {
-                _logger.LogWarning("On-demand sync root \"{RootId}\" is missing sync root flag", rootInfo.Id);
-
-                // Report to Sentry as this helps us detect potential data corruption issues early.
-                // Later, we may replace this with a more specific recovery or mitigation strategy.
-                _errorReporting.CaptureError("On-demand sync root is missing sync root flag");
-                return (OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag, ConflictingRootInfo: null);
+                return (verdict2, ConflictingRootInfo: null);
             }
 
             _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", rootInfo.Id);
@@ -662,17 +652,23 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         return true;
     }
 
-    private bool HasSyncRootFlag(string path)
+    private OnDemandSyncRootVerificationVerdict VerifySyncRootFlag(string path)
     {
         var placeholderState = GetPlaceholderState(path);
+
+        if (placeholderState is PlaceholderState.Invalid)
+        {
+            return OnDemandSyncRootVerificationVerdict.VerificationFailed;
+        }
 
         if (!placeholderState.HasFlag(PlaceholderState.SyncRoot))
         {
             _logger.LogWarning("Root folder placeholder state is {PlaceholderState}", placeholderState);
-            return false;
+            _errorReporting.CaptureError("On-demand sync folder is missing sync root flag");
+            return OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag;
         }
 
-        return true;
+        return OnDemandSyncRootVerificationVerdict.Valid;
     }
 
     private PlaceholderState GetPlaceholderState(string path)

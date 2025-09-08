@@ -24,6 +24,18 @@ public sealed class LanguageService : ILanguageService, ILanguageProvider
         "pt-BR",
         "tr",
         "ru",
+        "be-BY",
+        "cs-CZ",
+        "ca-ES",
+        "el-GR",
+        "hu",
+        "id",
+        "nb-NO",
+        "ro",
+        "sk",
+        "sv-SE",
+        "zh-CN",
+        "zh-TW",
     ];
 
     internal static readonly Dictionary<string, string> RegionalLanguageMapping = new()

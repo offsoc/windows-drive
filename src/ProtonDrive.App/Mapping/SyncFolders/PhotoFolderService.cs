@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.Logging;
+using ProtonDrive.Shared.Repository;
 
 namespace ProtonDrive.App.Mapping.SyncFolders;
 
@@ -13,15 +15,18 @@ internal sealed class PhotoFolderService : IPhotoFolderService
 {
     private readonly ISyncFolderService _syncFolderService;
     private readonly IMappingRegistry _mappingRegistry;
+    private readonly IRepository<PhotoImportSettings> _settingsRepository;
     private readonly ILogger<PhotoFolderService> _logger;
 
     public PhotoFolderService(
         ISyncFolderService syncFolderService,
         IMappingRegistry mappingRegistry,
+        IRepository<PhotoImportSettings> settingsRepository,
         ILogger<PhotoFolderService> logger)
     {
         _syncFolderService = syncFolderService;
         _mappingRegistry = mappingRegistry;
+        _settingsRepository = settingsRepository;
         _logger = logger;
     }
 
@@ -33,6 +38,42 @@ internal sealed class PhotoFolderService : IPhotoFolderService
     public Task AddImportFolderAsync(string path, CancellationToken cancellationToken)
     {
         return AddFolderAsync(path, SyncFolderType.PhotoImport, cancellationToken);
+    }
+
+    public async Task ResetImportFolderStatusAsync(int mappingId, CancellationToken cancellationToken)
+    {
+        using var mappings = await _mappingRegistry.GetMappingsAsync(cancellationToken).ConfigureAwait(false);
+
+        var mapping = mappings.GetActive().FirstOrDefault(x => x.Id == mappingId);
+
+        if (mapping is null)
+        {
+            _logger.LogWarning("Ignored Photo import folder status reset: ID not found");
+            return;
+        }
+
+        if (mapping.Type is not MappingType.PhotoImport)
+        {
+            _logger.LogWarning("Ignored Photo import folder status reset: invalid folder type {FolderType}", mapping.Type);
+            return;
+        }
+
+        var photoImportSettings = GetSettings();
+        var photoImportFolderToReset = photoImportSettings.Folders.FirstOrDefault(x => x.MappingId == mappingId);
+
+        if (photoImportFolderToReset is null)
+        {
+            _logger.LogWarning("Ignored Photo import folder status reset: could not find folder for mapping ID {MappingId}", mappingId);
+            return;
+        }
+
+        var pathToLog = _logger.GetSensitiveValueForLogging(photoImportFolderToReset.Path);
+        photoImportFolderToReset.Status = PhotoImportFolderStatus.NotStarted;
+        SetSettings(photoImportSettings);
+        _logger.LogInformation("Status of photo import folder \"{Path}\" reset to {Status}", pathToLog, PhotoImportFolderStatus.NotStarted);
+
+        mapping.Status = MappingStatus.New;
+        mappings.Update(mapping);
     }
 
     public Task AddBackupFolderAsync(string path, CancellationToken cancellationToken)
@@ -62,6 +103,16 @@ internal sealed class PhotoFolderService : IPhotoFolderService
         }
 
         mappings.Delete(mapping);
+    }
+
+    public PhotoImportSettings GetSettings()
+    {
+        return _settingsRepository.Get() ?? new PhotoImportSettings([]);
+    }
+
+    public void SetSettings(PhotoImportSettings settings)
+    {
+        _settingsRepository.Set(settings);
     }
 
     private static RemoteToLocalMapping CreatePhotoFolderMapping(string path, SyncFolderType folderType)

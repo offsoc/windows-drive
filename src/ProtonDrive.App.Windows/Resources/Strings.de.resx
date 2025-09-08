@@ -786,10 +786,10 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>Ordner hinzufügen</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} Ordner können nicht synchronisiert werden, da sie in einem bereits mit Proton Drive synchronisierten Ordner enthalten sind</value>
+    <value>{0} Ordner konnte(n) nicht synchronisiert werden, da sie in einem bereits mit Proton Drive synchronisierten Ordner enthalten sind</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} Ordner können nicht synchronisiert werden, da ein Unterordner bereits mit Proton Drive synchronisiert wurde</value>
+    <value>{0} Ordner konnte(n) nicht synchronisiert werden, da diese einen Unterordner enthalten, der bereits mit Proton Drive synchronisiert wurde</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>Auf {0} Ordner kann nicht zugegriffen werden</value>
@@ -798,7 +798,7 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>{0} Ordner können nicht gefunden oder nicht geöffnet werden</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} Ordner können nicht synchronisiert werden, da sie sich auf einem nicht unterstützten Laufwerk befinden</value>
+    <value>{0} Ordner konnte(n) nicht synchronisiert werden, da sie sich auf einem nicht unterstützten Laufwerk befinden</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} Ordner können nicht synchronisiert werden, da Netzwerkordner nicht unterstützt werden</value>
@@ -873,7 +873,7 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>Ordner entfernen?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Dateien im „{0}“ Ordner werden ab jetzt immer auf dem Gerät verfügbar sein. Es kann einige Minuten dauern, bevor alle Dateien heruntergeladen sind (du kannst den Status im Datei-Explorer überprüfen).</value>
+    <value>Die Dateien im Ordner „{0}“ sind jetzt immer auf deinem Gerät verfügbar. Es kann ein paar Minuten dauern, bis alle Dateien heruntergeladen sind ( Der Status kann im Datei-Explorer überprüft werden).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -929,17 +929,38 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
   <data name="Main_MyComputer_Title">
     <value>Mein Computer</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Import fehlgeschlagen. Versuche, den Ordner zu entfernen und ihn erneut zu importieren. Wenn das Problem weiterhin besteht, kontaktiere bitte den Support.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import fehlgeschlagen. Versuche es erneut.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Imported {0} of {1} items</value>
+    <value>{0} von {1} importiert</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importieren... {0} von {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>Eintrag/Einträge</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Ordner öffnen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>entfernen</value>
+    <value>_Entfernen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Wiederholen</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Keine Fotos/Videos gefunden</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Warten auf Import...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Schritt-für-Schritt-Anleitung, wie du deine Google Fotos exportierst</value>
@@ -979,6 +1000,9 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
   </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>Fotos hochladen ist vorübergehend nicht verfügbar</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Ändern</value>
@@ -1144,6 +1168,9 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Fotos</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Foto-Import</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Menüpunkt: Fotos</value>
   </data>
@@ -1262,8 +1289,14 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>Synchronisationsordner ist ungültig. Richte einen neuen Synchronisationsordner ein.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Der Synchronisationsordner wurde nicht erwartungsgemäß registriert. Richte einen neuen Sync-Ordner ein.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Fotoimport fehlgeschlagen</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton-Fotos nicht verfügbar</value>
@@ -1360,6 +1393,27 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Mehr Speicherplatz erhalten</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Import fehlgeschlagen</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>Import wurde unterbrochen</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Erfolgreich importiert</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Neue Funktionen</value>

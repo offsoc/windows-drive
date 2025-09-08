@@ -16,4 +16,9 @@ internal enum AttemptRetryShareType
     /// Normal share pointing to any node in the three structure. It is used for sharing between users.
     /// </summary>
     Standard,
+
+    /// <summary>
+    /// The share pointing to root node of the "Photo" volume.
+    /// </summary>
+    Photo,
 }

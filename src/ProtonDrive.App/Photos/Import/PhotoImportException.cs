@@ -3,7 +3,7 @@ using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.Photos.Import;
 
-internal sealed class PhotoImportException : Exception
+internal class PhotoImportException : Exception
 {
     public PhotoImportException()
     {
@@ -19,9 +19,19 @@ internal sealed class PhotoImportException : Exception
     {
         if (exception is IFileSystemErrorCodeProvider errorCodeProvider)
         {
-            ErrorCode = errorCodeProvider.ErrorCode;
+            ErrorCode = GetPhotoImportErrorCode(errorCodeProvider.ErrorCode);
         }
     }
 
-    public FileSystemErrorCode? ErrorCode { get; }
+    public PhotoImportErrorCode ErrorCode { get; protected set; }
+
+    private static PhotoImportErrorCode GetPhotoImportErrorCode(FileSystemErrorCode errorCode)
+    {
+        return errorCode switch
+        {
+            FileSystemErrorCode.ObjectNotFound => PhotoImportErrorCode.AlbumDoesNotExist,
+            FileSystemErrorCode.TooManyChildren => PhotoImportErrorCode.MaximumNumberOfPhotosPerAlbumReached,
+            _ => PhotoImportErrorCode.Unknown,
+        };
+    }
 }

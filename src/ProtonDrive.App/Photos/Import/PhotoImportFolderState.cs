@@ -19,4 +19,6 @@ public sealed class PhotoImportFolderState
     public int NumberOfImportedFiles { get; set; }
 
     public PhotoImportFolderCurrentPosition? CurrentPosition { get; set; }
+
+    public PhotoImportErrorCode? ErrorCode { get; set; }
 }

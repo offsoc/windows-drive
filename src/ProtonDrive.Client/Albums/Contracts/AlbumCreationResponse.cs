@@ -2,5 +2,11 @@
 
 public sealed record AlbumCreationResponse : ApiResponse
 {
-    public required AlbumShortDto Album { get; init; }
+    private readonly AlbumShortDto? _album;
+
+    public AlbumShortDto Album
+    {
+        get => _album ?? throw new ApiException("Album is not set");
+        init => _album = value;
+    }
 }

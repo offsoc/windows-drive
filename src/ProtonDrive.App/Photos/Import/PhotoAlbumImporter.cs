@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ internal sealed class PhotoAlbumImporter
 {
     private readonly PhotoImportPipelineParameters _parameters;
     private readonly IPhotoFileSystemClient<long> _localFileSystemClient;
-    private readonly IPhotoFileImporter _photoFileImporter;
+    private readonly IPhotoFileUploader _photoFileUploader;
     private readonly IPhotoAlbumService _photoAlbumService;
     private readonly IPhotoDuplicateService _duplicateService;
     private readonly IPhotoAlbumNameProvider _photoAlbumNameProvider;
@@ -31,7 +32,7 @@ internal sealed class PhotoAlbumImporter
     public PhotoAlbumImporter(
         PhotoImportPipelineParameters parameters,
         IPhotoFileSystemClient<long> localFileSystemClient,
-        IPhotoFileImporter photoFileImporter,
+        IPhotoFileUploader photoFileUploader,
         IPhotoAlbumService photoAlbumService,
         IPhotoDuplicateService duplicateService,
         IPhotoAlbumNameProvider photoAlbumNameProvider,
@@ -40,7 +41,7 @@ internal sealed class PhotoAlbumImporter
     {
         _parameters = parameters;
         _localFileSystemClient = localFileSystemClient;
-        _photoFileImporter = photoFileImporter;
+        _photoFileUploader = photoFileUploader;
         _photoAlbumService = photoAlbumService;
         _photoAlbumNameProvider = photoAlbumNameProvider;
         _duplicateService = duplicateService;
@@ -118,7 +119,7 @@ internal sealed class PhotoAlbumImporter
 
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-                var importTask = ImportFileAsync(filePath, cancellationToken);
+                var importTask = ImportAsync(filePath, cancellationToken);
                 importTasks.Add(importTask);
             }
 
@@ -147,23 +148,17 @@ internal sealed class PhotoAlbumImporter
         _progress.RaiseAlbumCreated(new PhotoImportFolderCurrentPosition { AlbumLinkId = _albumLinkId, RelativePath = albumRelativePath });
     }
 
-    private async Task ImportFileAsync(string filePath, CancellationToken cancellationToken)
+    private async Task ImportAsync(string filePath, CancellationToken cancellationToken)
     {
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filePathToLog = _logger.GetSensitiveValueForLogging(filePath);
-
-            _logger.LogInformation("Importing photo \"{Path}\"", filePathToLog);
-
-            var importedFile = await _photoFileImporter.ImportFileAsync(filePath, _parameters.ParentLinkId, cancellationToken).ConfigureAwait(false);
-
-            _logger.LogInformation("Imported photo \"{Path}\"", filePathToLog);
+            var uploadedFile = await UploadFileAsync(filePath, cancellationToken).ConfigureAwait(false);
 
             var albumLinkId = _albumLinkId ?? throw new PhotoImportException("Cannot add file to album: missing album link ID");
 
-            await _photoAlbumService.AddToAlbumAsync(albumLinkId, importedFile, cancellationToken).ConfigureAwait(false);
+            await _photoAlbumService.AddToAlbumAsync(albumLinkId, uploadedFile, cancellationToken).ConfigureAwait(false);
 
             _progress.RaiseFileImported();
         }
@@ -173,11 +168,37 @@ internal sealed class PhotoAlbumImporter
         }
     }
 
+    private async Task<NodeInfo<string>> UploadFileAsync(string filePath, CancellationToken cancellationToken)
+    {
+        var filePathToLog = _logger.GetSensitiveValueForLogging(filePath);
+
+        try
+        {
+            _logger.LogInformation("Importing file \"{Path}\"", filePathToLog);
+
+            var importedFile = await _photoFileUploader.UploadFileAsync(filePath, _parameters.ParentLinkId, cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation("Imported file \"{Path}\"", filePathToLog);
+
+            _progress.RaiseFileUploaded(filePath);
+
+            return importedFile;
+        }
+        catch (Exception exception) when (IsExpectedException(exception))
+        {
+            _logger.LogWarning("Failed to import file \"{Path}\": {Message}", filePathToLog, exception.Message);
+
+            _progress.RaiseFileUploadFailed(filePath, exception);
+
+            throw;
+        }
+    }
+
     private async IAsyncEnumerable<string> GetFilePathsExcludingDuplicatesAsync(
         IReadOnlyList<NodeInfo<long>> nodes,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var duplicatesByFileName = await _duplicateService.GetDuplicatesByFilenameAsync(
+        var nameCollisions = await _duplicateService.GetNameCollisionsAsync(
             _parameters.VolumeId,
             _parameters.ShareId,
             _parameters.ParentLinkId,
@@ -186,73 +207,94 @@ internal sealed class PhotoAlbumImporter
 
         foreach (var node in nodes)
         {
-            if (await FileIsAlreadyImported((node.Path, node.Name)).ConfigureAwait(false))
+            var (duplicate, sha1Digest) = await FindPhotoDuplicate(node.Path, node.Name, nameCollisions, cancellationToken).ConfigureAwait(false);
+
+            if (duplicate is not null)
             {
-                // TODO: Consider adding the photo file to the album here.
-                // This operation is idempotent, so re-adding an already linked photo is safe.
-                _progress.RaiseFileImported();
+                if (_albumLinkId is not null && sha1Digest is not null)
+                {
+                    var file = NodeInfo<string>.File()
+                        .WithId(duplicate.LinkId)
+                        .WithName(node.Name)
+                        .WithSha1Digest(sha1Digest);
+
+                    await _photoAlbumService.AddToAlbumAsync(_albumLinkId, file, cancellationToken).ConfigureAwait(false);
+                    _progress.RaiseFileImported();
+                }
+
                 continue;
             }
 
             yield return node.Path;
         }
+    }
 
-        yield break;
-
-        async Task<bool> FileIsAlreadyImported((string FilePath, string FileName) node)
+    private async Task<(PhotoNameCollision? Duplicate, string? Sha1Digest)> FindPhotoDuplicate(
+        string filePath,
+        string fileName,
+        ILookup<string, PhotoNameCollision> nameCollisions,
+        CancellationToken cancellationToken)
+    {
+        try
         {
-            try
+            if (!nameCollisions.Contains(fileName))
             {
-                if (!duplicatesByFileName.Contains(node.FileName))
+                return (Duplicate: null, Sha1Digest: null);
+            }
+
+            // A file with the same name can be uploaded multiple times if its content differs.
+            // Therefore, when checking for duplicates, we must evaluate all matching filenames.
+            foreach (var collision in nameCollisions[fileName])
+            {
+                var filePathToLog = _logger.GetSensitiveValueForLogging(filePath);
+
+                if (!collision.TryGetContentHashIfNotDraft(out var collisionContentHash, out var draftCreatedByAnotherClient))
                 {
-                    return false;
+                    if (draftCreatedByAnotherClient.Value)
+                    {
+                        _logger.LogInformation(
+                            "Importing photo \"{Path}\" skipped, draft with same name from another client exists, assuming duplicate",
+                            filePathToLog);
+
+                        return (collision, Sha1Digest: null);
+                    }
+
+                    // The draft will be resumed or overwritten.
+                    continue;
                 }
 
-                // A file with the same name can be uploaded multiple times if its content differs.
-                // Therefore, when checking for duplicates, we must evaluate all matching filenames.
-                foreach (var duplicateHashResult in duplicatesByFileName[node.FileName])
+                var source = await _localFileSystemClient.OpenFileForReading(NodeInfo<long>.File().WithPath(filePath), cancellationToken)
+                    .ConfigureAwait(false);
+
+                await using (source.ConfigureAwait(false))
                 {
-                    if (duplicateHashResult.DraftCreatedByAnotherClient)
-                    {
-                        var filePathToLog = _logger.GetSensitiveValueForLogging(node.FilePath);
-                        _logger.LogInformation("Importing photo \"{Path}\" skipped, draft from another client exists", filePathToLog);
-                        return true;
-                    }
+                    var contentStream = source.GetContentStream();
 
-                    if (duplicateHashResult.ContentHash is null)
+                    await using (contentStream.ConfigureAwait(false))
                     {
-                        continue;
-                    }
-
-                    var source = await _localFileSystemClient.OpenFileForReading(NodeInfo<long>.File().WithPath(node.FilePath), cancellationToken)
-                        .ConfigureAwait(false);
-
-                    await using (source.ConfigureAwait(false))
-                    {
-                        var contentHash = await _duplicateService.GetContentHash(
-                                source.GetContentStream(),
+                        var (contentHash, sha1Digest) = await _duplicateService.GetContentHashAndSha1DigestAsync(
+                                contentStream,
                                 _parameters.ShareId,
                                 _parameters.ParentLinkId,
                                 cancellationToken)
                             .ConfigureAwait(false);
 
-                        if (duplicateHashResult.ContentHash.Equals(contentHash))
+                        if (contentHash.Equals(collisionContentHash, StringComparison.Ordinal))
                         {
-                            var filePathToLog = _logger.GetSensitiveValueForLogging(node.FilePath);
                             _logger.LogInformation("Importing photo \"{Path}\" skipped, duplicate detected", filePathToLog);
-                            return true;
+                            return (collision, sha1Digest);
                         }
                     }
                 }
+            }
 
-                return false;
-            }
-            catch (Exception exception) when (IsExpectedException(exception))
-            {
-                throw new PhotoImportException(
-                    $"Eligibility cannot be evaluated for file with path \"{_logger.GetSensitiveValueForLogging(node.FilePath)}\"",
-                    exception);
-            }
+            return (Duplicate: null, Sha1Digest: null);
+        }
+        catch (Exception exception) when (IsExpectedException(exception))
+        {
+            throw new PhotoImportException(
+                $"Eligibility cannot be evaluated for file with path \"{_logger.GetSensitiveValueForLogging(filePath)}\"",
+                exception);
         }
     }
 }

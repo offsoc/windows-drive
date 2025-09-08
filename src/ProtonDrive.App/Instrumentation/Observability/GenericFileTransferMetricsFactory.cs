@@ -89,6 +89,7 @@ internal sealed class GenericFileTransferMetricsFactory
             AttemptRetryShareType.Main => "main",
             AttemptRetryShareType.Standard => "shared",
             AttemptRetryShareType.Device => "device",
+            AttemptRetryShareType.Photo => "photo",
             _ => throw new ArgumentOutOfRangeException(nameof(shareType), shareType, null),
         };
 

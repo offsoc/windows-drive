@@ -798,7 +798,7 @@ Disattiva e riattiva la sincronizzazione per ripristinarla ed eliminare questo e
     <value>Impossibile trovare o aprire {0} cartella(e)</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>Impossibile sincronizzare {0} cartella(e) perché si trova su un drive non supportato</value>
+    <value>Impossibile sincronizzare {0} cartella(e) perché si trovano su un drive non supportato</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>Impossibile sincronizzare {0} cartella(e) perché le cartelle di rete non sono supportate</value>
@@ -876,7 +876,7 @@ disattivare l'ottimizzazione della memoria in qualsiasi momento.</value>
     <value>Rimuovi cartella?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>I file nella cartella "{0}" saranno sempre disponibili sul dispositivo. Potrebbero volerci alcuni minuti prima che tutti i file vengano scaricati completamente (puoi controllare lo stato in Esplora file).</value>
+    <value>I file nella cartella "{0}" saranno sempre disponibili sul tuo dispositivo. Potrebbero volerci alcuni minuti prima che tutti i file vengano scaricati completamente (puoi controllare lo stato in Esplora file).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -930,19 +930,40 @@ disattivare l'ottimizzazione della memoria in qualsiasi momento.</value>
     <value>Gestione dell'archiviazione</value>
   </data>
   <data name="Main_MyComputer_Title">
-    <value>Il mio Computer</value>
+    <value>Il mio computer</value>
+  </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Importazione non riuscita. Prova a rimuovere la cartella e a importarla di nuovo. Se il problema persiste, contatta l'assistenza.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importazione non riuscita. Riprova.</value>
   </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Importazione: {0} di {1} elementi</value>
+    <value>Importato {0} di {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importazione... {0} di {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>elementi</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Apri cartella</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>rimuovere</value>
+    <value>_Rimuovi</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Riprova</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Senza foto/video</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Importazione in attesa...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Guida passo passo su come esportare le tue foto da Google Foto</value>
@@ -982,6 +1003,9 @@ disattivare l'ottimizzazione della memoria in qualsiasi momento.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Foto</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>Il caricamento delle foto è temporaneamente non disponibile</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Cambia</value>
@@ -1147,6 +1171,9 @@ I contenuti dei file verranno scaricati sono se necessari.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Foto</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Importazione foto</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Voce del menu: Foto</value>
   </data>
@@ -1265,8 +1292,14 @@ I contenuti dei file verranno scaricati sono se necessari.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>La cartella di sincronizzazione non è valida. Configura una nuova cartella di sincronizzazione.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>La cartella di sincronizzazione è stata inaspettatamente annullata. Configura una nuova cartella di sincronizzazione.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Importazione foto non riuscita</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Foto non disponibile</value>
@@ -1363,6 +1396,27 @@ I contenuti dei file verranno scaricati sono se necessari.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Ottieni più spazio di archiviazione</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Importazione non riuscita</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>L'importazione è stata interrotta</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Importazione riuscita</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Nuove funzioni</value>

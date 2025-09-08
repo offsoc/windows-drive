@@ -7,7 +7,6 @@ using ProtonDrive.App.Features;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Volumes;
-using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Threading;
@@ -16,7 +15,6 @@ namespace ProtonDrive.App.Photos;
 
 internal sealed class PhotosFeatureService : IStartableService, IStoppableService, IMainVolumeStateAware, IPhotoVolumeStateAware, IPhotosOnboardingStateAware, IFeatureFlagsAware
 {
-    private readonly FeatureFlags _featureFlags;
     private readonly Lazy<IEnumerable<IPhotosFeatureStateAware>> _photosFeatureStateAware;
     private readonly ILogger<PhotosFeatureService> _logger;
 
@@ -26,15 +24,12 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
     private VolumeState _mainVolumeState = VolumeState.Idle;
     private VolumeState _photoVolumeState = VolumeState.Idle;
     private OnboardingStatus _onboardingStatus = OnboardingStatus.NotStarted;
-    private bool _isFeatureReadOnly;
+    private bool _featureIsReadOnly;
+    private bool _importFeatureIsRemotelyEnabled;
     private bool _isStopping;
 
-    public PhotosFeatureService(
-        FeatureFlags featureFlags,
-        Lazy<IEnumerable<IPhotosFeatureStateAware>> photosFeatureStateAware,
-        ILogger<PhotosFeatureService> logger)
+    public PhotosFeatureService(Lazy<IEnumerable<IPhotosFeatureStateAware>> photosFeatureStateAware, ILogger<PhotosFeatureService> logger)
     {
-        _featureFlags = featureFlags;
         _photosFeatureStateAware = photosFeatureStateAware;
         _logger = logger;
 
@@ -80,7 +75,8 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
 
     void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
     {
-        _isFeatureReadOnly = features.IsEnabled(Feature.DrivePhotosUploadDisabled) || features.IsEnabled(Feature.DriveAlbumsDisabled);
+        _importFeatureIsRemotelyEnabled = features.IsEnabled(Feature.DriveWindowsPhotoImport);
+        _featureIsReadOnly = features.IsEnabled(Feature.DrivePhotosUploadDisabled) || features.IsEnabled(Feature.DriveAlbumsDisabled);
         ScheduleExternalStateChangeHandling();
     }
 
@@ -107,13 +103,13 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
             return;
         }
 
-        if (!_featureFlags.PhotosFeatureEnabled)
+        if (!_importFeatureIsRemotelyEnabled)
         {
             SetState(PhotosFeatureStatus.Hidden);
             return;
         }
 
-        if (_isFeatureReadOnly)
+        if (_featureIsReadOnly)
         {
             SetState(PhotosFeatureStatus.ReadOnly);
             return;

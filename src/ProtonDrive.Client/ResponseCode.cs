@@ -64,10 +64,12 @@ public enum ResponseCode
     InsufficientDeviceQuota = 200101,
 
     /// <summary>
-    /// Max allowed number of folder children is reached. Adding new children is not allowed.
+    /// The maximum allowed number of folder children has been reached.
+    /// Adding new children (including albums) is not permitted.
     /// </summary>
     /// <remarks>
-    /// Trashed or permanently deleted, but not yet garbage collected, children are included.
+    /// This error also applies when the maximum number of albums allowed under the Photo volume has been reached.
+    /// Note that trashed or permanently deleted children that have not yet been garbage collected are still counted toward this limit.
     /// </remarks>
     TooManyChildren = 200300,
 

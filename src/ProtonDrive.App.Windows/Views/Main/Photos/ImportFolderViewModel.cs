@@ -17,6 +17,7 @@ internal sealed class ImportFolderViewModel : ObservableObject, IMappingStatusVi
     private string? _errorMessage;
     private bool _importIsCompleted;
     private bool _noPhotosFound;
+    private PhotoImportErrorCode? _importErrorCode;
 
     public ImportFolderViewModel(string name, SyncFolder syncFolder)
     {
@@ -51,6 +52,12 @@ internal sealed class ImportFolderViewModel : ObservableObject, IMappingStatusVi
     {
         get => _errorCode;
         private set => SetProperty(ref _errorCode, value);
+    }
+
+    public PhotoImportErrorCode? ImportErrorCode
+    {
+        get => _importErrorCode;
+        private set => SetProperty(ref _importErrorCode, value);
     }
 
     public MappingErrorRenderingMode RenderingMode => MappingErrorRenderingMode.IconAndText;
@@ -121,5 +128,7 @@ internal sealed class ImportFolderViewModel : ObservableObject, IMappingStatusVi
                 ? PhotoImportFolderStatus.SetupFailed
                 : (ImportFolder?.Status ?? PhotoImportFolderStatus.NotStarted);
         }
+
+        ImportErrorCode = ImportStatus is PhotoImportFolderStatus.Failed ? ImportFolder?.ErrorCode ?? PhotoImportErrorCode.Unknown : null;
     }
 }

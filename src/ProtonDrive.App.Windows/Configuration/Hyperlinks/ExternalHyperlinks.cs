@@ -37,7 +37,9 @@ internal sealed class ExternalHyperlinks : IExternalHyperlinks
 
     public IExternalHyperlink ManageSessions => GetHyperlink(_urlConfig.ManageSessions);
 
-    public IExternalHyperlink ImportPhotosSupport => GetHyperlink(_urlConfig.ImportPhotosSupport);
+    public IExternalHyperlink HowToImportPhotosFromGoogle => GetHyperlink(_urlConfig.HowToImportPhotosFromGoogle);
+
+    public IExternalHyperlink HowPhotoImportWorks => GetHyperlink(_urlConfig.HowPhotoImportWorks);
 
     private IExternalHyperlink GetHyperlink(string url) => new ExternalHyperlink(_urlOpener, url);
 }

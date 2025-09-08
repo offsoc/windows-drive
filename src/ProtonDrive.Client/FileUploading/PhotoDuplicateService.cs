@@ -28,21 +28,26 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
         _clientInstanceIdentityProvider = clientInstanceIdentityProvider;
     }
 
-    public async Task<string> GetContentHash(Stream source, string shareId, string parentLinkId, CancellationToken cancellationToken)
+    public async Task<(string ContentHash, string Sha1Digest)> GetContentHashAndSha1DigestAsync(
+        Stream source,
+        string shareId,
+        string parentLinkId,
+        CancellationToken cancellationToken)
     {
         var hash = await SHA1.HashDataAsync(source, cancellationToken).ConfigureAwait(false);
         var sha1Digest = Convert.ToHexStringLower(hash);
-        return await _photoHashProvider.GetContentHashAsync(shareId, parentLinkId, sha1Digest, cancellationToken).ConfigureAwait(false);
+        var contentHash = await _photoHashProvider.GetContentHashAsync(shareId, parentLinkId, sha1Digest, cancellationToken).ConfigureAwait(false);
+        return (contentHash, sha1Digest);
     }
 
-    public async Task<ILookup<string, PhotoDuplicate>> GetDuplicatesByFilenameAsync(
+    public async Task<ILookup<string, PhotoNameCollision>> GetNameCollisionsAsync(
         string volumeId,
         string shareId,
         string parentLinkId,
         IEnumerable<string> fileNames,
         CancellationToken cancellationToken)
     {
-        ConcurrentDictionary<string, string> nameHashes = [];
+        ConcurrentDictionary<string, string> nameHashesByHash = [];
 
         await Parallel.ForEachAsync(
                 fileNames,
@@ -50,18 +55,20 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
                 async (fileName, ct) =>
                 {
                     var nameHash = await _photoHashProvider.GetNameHashAsync(shareId, parentLinkId, fileName, ct).ConfigureAwait(false);
-                    nameHashes.TryAdd(nameHash, fileName);
+                    nameHashesByHash.TryAdd(nameHash, fileName);
                 })
             .ConfigureAwait(false);
 
+        var nameHashes = nameHashesByHash.Keys.ToList();
+
         var photoDuplicationResponse = await _photoApiClient.GetDuplicatesAsync(
             volumeId,
-            new PhotoDuplicationParameters { NameHashes = nameHashes.Keys.ToList() },
+            new PhotoDuplicationParameters { NameHashes = nameHashes },
             cancellationToken).ThrowOnFailure().ConfigureAwait(false);
 
         var clientId = _clientInstanceIdentityProvider.GetClientInstanceId();
 
-        var duplicatesByFileName = new List<PhotoDuplicate>(photoDuplicationResponse.PhotoDuplicates.Count);
+        var duplicatesByFileName = new List<PhotoNameCollision>(photoDuplicationResponse.PhotoDuplicates.Count);
 
         foreach (var duplicateHash in photoDuplicationResponse.PhotoDuplicates)
         {
@@ -70,13 +77,14 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
                 && !string.Equals(clientId, duplicateHash.ClientId);
 
             if (duplicateHash.NameHash is null
-                || !nameHashes.TryGetValue(duplicateHash.NameHash, out var fileName)
+                || !nameHashesByHash.TryGetValue(duplicateHash.NameHash, out var fileName)
                 || (duplicateHash.ContentHash is null && !draftCreatedByAnotherClient))
             {
                 continue;
             }
 
-            duplicatesByFileName.Add(new PhotoDuplicate(fileName, duplicateHash.NameHash, duplicateHash.ContentHash, draftCreatedByAnotherClient));
+            duplicatesByFileName.Add(
+                new PhotoNameCollision(duplicateHash.LinkId, fileName, duplicateHash.NameHash, duplicateHash.ContentHash, draftCreatedByAnotherClient));
         }
 
         // A file with the same name can be uploaded multiple times if its content differs.

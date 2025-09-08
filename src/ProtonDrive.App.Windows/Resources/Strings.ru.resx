@@ -786,10 +786,10 @@
     <value>Добавить папки</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} папка(ок) не могут быть синхронизированы так как она уже синхронизирована в Proton Drive</value>
+    <value>{0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} папка (папки, папок) не может быть синхронизирована (синхронизированы), так как содержит (содержат) подпапку, уже синхронизированную с Proton Drive.</value>
+    <value>{0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>Невозможно получить доступ к {0} папке/папкам</value>
@@ -798,7 +798,7 @@
     <value>Не удается найти или открыть {0} папку (папки, папок).</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} папка (папки, папок) не может (могут) быть синхронизирована (синхронизированы), поскольку находится (находятся) на неподдерживаемом диске</value>
+    <value>{0} folder(s) cannot be synced because they are located on a non-supported drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} папка (папки, папок) не может (могут) быть синхронизирована (синхронизированы), так как сетевые папки не поддерживаются.</value>
@@ -876,7 +876,7 @@
     <value>Удалить папку?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Теперь файлы из папки «{0}» будут всегда доступны на устройстве. Загрузка всех файлов может занять несколько минут ( состояние можно проверить в Проводнике).</value>
+    <value>Files within "{0}" folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -930,19 +930,40 @@
     <value>Управление хранением</value>
   </data>
   <data name="Main_MyComputer_Title">
-    <value>Мой компьютер</value>
+    <value>My computer</value>
+  </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Import failed. Try removing the folder and importing it again. If the issue persists, please contact support.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import failed. Try again.</value>
   </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Imported {0} of {1} items</value>
+    <value>Imported {0} of {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importing... {0} of {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>item(s)</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Открыть папку</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>remove</value>
+    <value>_Удалить</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Retry</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>No photos/videos found</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Waiting to import...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Step-by-step guide of how to export your Google Photos</value>
@@ -982,6 +1003,9 @@
   </data>
   <data name="Main_Photos_Title">
     <value>Фото</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>Uploading photos is temporarily unavailable</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Изменить</value>
@@ -1147,6 +1171,9 @@
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Фото</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Photos import</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Элемент меню: Фото</value>
   </data>
@@ -1265,8 +1292,14 @@
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>Sync folder is invalid. Set up a new sync folder.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Папка синхронизации была неожиданно отменена. Настройте новую папку для синхронизации.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Photo import failed</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Photos unavailable</value>
@@ -1363,6 +1396,27 @@
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Получите больше места в хранилище</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Импорт не удался</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>Import was interrupted</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Import succeeded</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Новые функции</value>

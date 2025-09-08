@@ -5,18 +5,18 @@ using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.Photos.Import;
 
-internal sealed class PhotoFileImporter : IPhotoFileImporter
+internal sealed class PhotoFileUploader : IPhotoFileUploader
 {
     private readonly IPhotoFileSystemClient<long> _localFileSystemClient;
     private readonly IFileSystemClient<string> _remoteFileSystemClient;
 
-    public PhotoFileImporter(IPhotoFileSystemClient<long> localFileSystemClient, IFileSystemClient<string> remoteFileSystemClient)
+    public PhotoFileUploader(IPhotoFileSystemClient<long> localFileSystemClient, IFileSystemClient<string> remoteFileSystemClient)
     {
         _localFileSystemClient = localFileSystemClient;
         _remoteFileSystemClient = remoteFileSystemClient;
     }
 
-    public async Task<NodeInfo<string>> ImportFileAsync(string filePath, string parentLinkId, CancellationToken cancellationToken)
+    public async Task<NodeInfo<string>> UploadFileAsync(string filePath, string parentLinkId, CancellationToken cancellationToken)
     {
         var nodeInfo = NodeInfo<long>.File().WithPath(filePath);
         var sourceRevision = await _localFileSystemClient.OpenFileForReading(nodeInfo, cancellationToken).ConfigureAwait(false);

@@ -105,9 +105,9 @@
 
                 <TextBlock
                     Grid.Column="1"
-                    Text="{loc:Resource Main_Sidebar_NavigationMenu_Item_Photos}"
+                    Text="{loc:Resource Main_Sidebar_NavigationMenu_Item_PhotosImport}"
                     TextTrimming="CharacterEllipsis"
-                    ToolTip="{loc:Resource Main_Sidebar_NavigationMenu_Item_Photos}"
+                    ToolTip="{loc:Resource Main_Sidebar_NavigationMenu_Item_PhotosImport}"
                     VerticalAlignment="Center"
                     Margin="10,0,0,0">
                     <b:Interaction.Behaviors>

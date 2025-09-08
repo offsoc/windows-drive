@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ProtonDrive.App.Mapping;
+using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -9,9 +10,10 @@ using ProtonDrive.Sync.Shared.SyncActivity;
 
 namespace ProtonDrive.App.Instrumentation.Observability;
 
-internal abstract class SuccessMeterBase : ISyncActivityAware, IMappingsAware
+internal abstract class SuccessMeterBase : ISyncActivityAware, IMappingsAware, IPhotoImportActivityAware
 {
     private readonly IReadOnlyDictionary<AttemptRetryShareType, AttemptRetryMonitor<long>> _attemptRetryMonitor;
+
     private IReadOnlyDictionary<int, MappingType> _mappingTypeById = new Dictionary<int, MappingType>();
 
     protected SuccessMeterBase(IReadOnlyDictionary<AttemptRetryShareType, AttemptRetryMonitor<long>> attemptRetryMonitor)
@@ -50,6 +52,25 @@ internal abstract class SuccessMeterBase : ISyncActivityAware, IMappingsAware
             .AsReadOnly();
     }
 
+    void IPhotoImportActivityAware.OnPhotoImportActivityChanged(SyncActivityItem<long> item)
+    {
+        if (!CanProcessItem(item))
+        {
+            return;
+        }
+
+        switch (item.Status)
+        {
+            case SyncActivityItemStatus.Succeeded:
+                _attemptRetryMonitor[AttemptRetryShareType.Photo].IncrementSuccess(item.Id);
+                break;
+
+            case SyncActivityItemStatus.Failed or SyncActivityItemStatus.Warning when !FailureShouldBeIgnored(item.ErrorCode):
+                _attemptRetryMonitor[AttemptRetryShareType.Photo].IncrementFailure(item.Id);
+                break;
+        }
+    }
+
     private static bool FailureShouldBeIgnored(FileSystemErrorCode errorCode)
     {
         return errorCode is FileSystemErrorCode.Cancelled
@@ -66,7 +87,8 @@ internal abstract class SuccessMeterBase : ISyncActivityAware, IMappingsAware
             MappingType.ForeignDevice => AttemptRetryShareType.Device,
             MappingType.HostDeviceFolder => AttemptRetryShareType.Device,
             MappingType.SharedWithMeItem => AttemptRetryShareType.Standard,
-            _ => throw new ArgumentOutOfRangeException(nameof(mappingType), mappingType, default),
+            MappingType.PhotoImport => AttemptRetryShareType.Photo,
+            _ => throw new ArgumentOutOfRangeException(nameof(mappingType), mappingType, message: null),
         };
     }
 

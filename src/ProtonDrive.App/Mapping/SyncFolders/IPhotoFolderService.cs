@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using ProtonDrive.App.Photos.Import;
 
 namespace ProtonDrive.App.Mapping.SyncFolders;
 
@@ -35,6 +36,14 @@ public interface IPhotoFolderService
     Task AddImportFolderAsync(string path, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Reset the mapping and the photo import folder status to trigger a new import attempt.
+    /// </summary>
+    /// <param name="mappingId">Mapping ID related to the photo folder to retry to import</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous adding mapping operation.</returns>
+    Task ResetImportFolderStatusAsync(int mappingId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Adds a mapping for the specified local folder to enable Photo backup from it.
     /// </summary>
     /// <remarks>
@@ -58,4 +67,16 @@ public interface IPhotoFolderService
     /// It's optional to await it as the method doesn't raise expected exceptions.
     /// </returns>
     Task RemoveFolderAsync(SyncFolder folder, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Provides the settings of all photo import folders.
+    /// </summary>
+    /// <returns>The settings of all photo import folders.</returns>
+    PhotoImportSettings GetSettings();
+
+    /// <summary>
+    /// Update the settings of all photo import folders.
+    /// </summary>
+    /// <param name="settings">The new settings of all photo import folders.</param>
+    void SetSettings(PhotoImportSettings settings);
 }

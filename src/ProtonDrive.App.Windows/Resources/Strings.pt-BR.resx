@@ -121,7 +121,7 @@
     <value></value>
   </data>
   <data name="AccountDisplayStatus_Value_SessionError">
-    <value>Erro ao fazer o início de sessão</value>
+    <value>Erro ao iniciar de sessão</value>
   </data>
   <data name="AccountDisplayStatus_Value_SettingUp">
     <value>Configurando...</value>
@@ -266,7 +266,7 @@
     <comment>Indicates the file has been uploaded to Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="AppDisplayStatus_Value_AccountError">
-    <value>Falha ao configurar uma conta</value>
+    <value>Erro ao configurar uma conta</value>
   </data>
   <data name="AppDisplayStatus_Value_FinishingUp">
     <value>Concluindo...</value>
@@ -278,7 +278,7 @@
     <value>Configurando...</value>
   </data>
   <data name="AppDisplayStatus_Value_SignInError">
-    <value>Falha ao fazer o início de sessão</value>
+    <value>Erro ao fazer o início de sessão</value>
   </data>
   <data name="AppDisplayStatus_Value_SignedOut">
     <value>Sessão encerrada</value>
@@ -290,7 +290,7 @@
     <value>Encerrando a sessão...</value>
   </data>
   <data name="AppDisplayStatus_Value_SyncFolderError">
-    <value>Falha ao configurar pastas de sincronização</value>
+    <value>Erro ao configurar pastas de sincronização</value>
   </data>
   <data name="AppDisplayStatus_Value_SynchronizationError">
     <value>Falha na sincronização</value>
@@ -789,7 +789,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>{0} pastas não podem ser sincronizadas porque estão incluídas em uma pasta já sincronizada com o Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} pastas não podem ser sincronizadas porque tem uma subpasta já sincronizada com o Proton Drive</value>
+    <value>{0} pastas não podem ser sincronizadas porque têm uma subpasta já sincronizada com o Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>{0} pastas não podem ser acessadas</value>
@@ -798,7 +798,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>{0} pastas não podem ser encontradas ou não podem ser abertas</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} pasta(s) não podem ser sincronizadas porque estão localizadas em uma unidade não suportada</value>
+    <value>{0} pastas não podem ser sincronizadas porque estão localizadas em uma unidade não suportada</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} pastas não podem ser sincronizadas porque são pastas de rede</value>
@@ -826,7 +826,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Nome</value>
   </data>
   <data name="Main_MyComputer_Folders_Column_StorageOptimization">
-    <value>Otimizar o armazenamento</value>
+    <value>Otimizar armazenamento</value>
   </data>
   <data name="Main_MyComputer_Folders_Column_StorageOptimization_Info_Tooltip">
     <value>Otimize o armazenamento ativando a sincronização sob demanda.
@@ -876,7 +876,7 @@ desative a otimização de armazenamento a qualquer momento.</value>
     <value>Remover pasta?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Os arquivos da pasta "{0}" agora estarão sempre disponíveis no dispositivo. Pode levar alguns minutos até que o download de todos os arquivos seja concluído. (você pode verificar o status no Wxplorador de Arquivos)</value>
+    <value>Os arquivos da pasta "{0}" agora estarão sempre disponíveis no seu dispositivo. Pode levar alguns minutos até que o downloading de todos os arquivos seja concluído (você pode verificar o status no Explorador de Arquivos).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -932,17 +932,38 @@ desative a otimização de armazenamento a qualquer momento.</value>
   <data name="Main_MyComputer_Title">
     <value>Meu computador</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Falha na importação. Tente remover a pasta e importá-la novamente. Se o problema persistir, por favor, entre em contato com o suporte.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Falha na importação. Tente novamente.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Importação: {0} of {1} itens</value>
+    <value>Importação: {0} de {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importando... {0} de {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>itens</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Abrir pasta</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>remover</value>
+    <value>_Remover</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Tentar novamente</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Sem foto/vídeo</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Aguardando para importar...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Guia passo a passo de como exportar suas fotos do Google Fotos</value>
@@ -957,7 +978,7 @@ desative a otimização de armazenamento a qualquer momento.</value>
     <value>2. Importa a pasta do Google Fotos</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
-    <value>Selecionar a pasta</value>
+    <value>Selecionar pasta</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Title">
     <value>Importar do Google Fotos</value>
@@ -982,6 +1003,9 @@ desative a otimização de armazenamento a qualquer momento.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>O envio de fotos está temporariamente indisponível</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Alterar</value>
@@ -1072,7 +1096,7 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
     <value>Dispensar a integração de "Compartilhado comigo"</value>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Button_GetStarted">
-    <value>Comece</value>
+    <value>_Começar</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Description">
@@ -1146,6 +1170,9 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Fotos</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Importar fotos</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Item de menu: Fotos</value>
@@ -1265,8 +1292,14 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>A pasta de sincronização está inválida. Configure uma nova pasta de sincronização.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>O registro da pasta de sincronização foi cancelado inesperadamente. Configure uma nova pasta de sincronização.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Erro na importação da foto</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Fotos não disponível</value>
@@ -1350,7 +1383,7 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
     <value>Calendar</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Label_Mail">
-    <value>Mail</value>
+    <value>Correio</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Label_PasswordManager">
     <value>Gerenciador de senhas</value>
@@ -1363,6 +1396,27 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obter mais armazenamento</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Erro na importação</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>A importação foi interrompida</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Importação realizada</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Novos recursos</value>
@@ -1551,7 +1605,7 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SystemTray_Menu_Item_PauseSync">
-    <value>_Pausar a sincronização</value>
+    <value>_Pausar sincronização</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SystemTray_Menu_Item_SignIn">

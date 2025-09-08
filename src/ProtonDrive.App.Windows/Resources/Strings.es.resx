@@ -786,10 +786,10 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
     <value>Añadir carpetas</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>No se pueden sincronizar {0} carpetas porque ya están incluidas en una carpeta sincronizada con Proton Drive.</value>
+    <value>No se pueden sincronizar {0} carpeta(s) porque ya están incluidas en una carpeta sincronizada con Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>No se pueden sincronizar {0} carpetas porque tienen una subcarpeta ya sincronizada con Proton Drive.</value>
+    <value>No se pueden sincronizar {0} carpeta(s) porque tienen una subcarpeta ya sincronizada con Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>No se puede acceder a {0} carpetas.</value>
@@ -798,7 +798,7 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
     <value>No se pueden encontrar {0} carpetas o no se pueden abrir.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>No se pueden sincronizar {0} carpetas porque se encuentran en una unidad no soportada.</value>
+    <value>No se pueden sincronizar {0} carpeta(s) porque se encuentran en una unidad no soportada.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>No se pueden sincronizar {0} carpetas porque las carpetas de red no están soportadas.</value>
@@ -876,7 +876,7 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
     <value>¿Eliminar la carpeta?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Los archivos en la carpeta «{0}» estarán siempre disponibles en el dispositivo. Puede tardar unos minutos en terminar de descargar todos los archivos (puedes ver el estado en el explorador de archivos).</value>
+    <value>Los archivos en la carpeta «{0}» estarán siempre disponibles en tu dispositivo. Puede tardar unos minutos en terminar de descargar todos los archivos (puedes ver el estado en el Explorador de archivos).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -932,17 +932,38 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
   <data name="Main_MyComputer_Title">
     <value>Mi ordenador</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed">
+    <value>Error al importar. Intenta eliminar la carpeta e importarla de nuevo. Si el problema persiste, contacta con el soporte.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>La importación falló. Inténtalo de nuevo.</value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Importación: {0} de {1} elementos</value>
+    <value>Importación: {0} de {1}</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat">
+    <value>Importando... {0} de {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
     <value>elementos</value>
   </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
+    <value>_Abrir la carpeta</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>eliminar</value>
+    <value>_Eliminar</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Retry">
+    <value>_Reintentar</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Sin fotos/vídeos</value>
+  </data>
+  <data name="Main_Photos_Folders_WaitingToImport">
+    <value>Esperando para importar...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Guía paso a paso sobre cómo exportar tus fotos desde Google Fotos</value>
@@ -982,6 +1003,9 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable">
+    <value>La carga de fotos no está disponible temporalmente</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Cambiar</value>
@@ -1147,6 +1171,9 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos">
     <value>Fotos</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
+    <value>Importar fotos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Elemento del menú: Fotos</value>
   </data>
@@ -1265,8 +1292,14 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
   <data name="MappingErrorCode_Value_None">
     <value></value>
   </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
+    <value>La carpeta de sincronización no es válida. Configura una nueva carpeta de sincronización.</value>
+  </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>El registro de la carpeta de sincronización se ha cancelado inesperadamente. Configura una nueva carpeta de sincronización.</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotoImportFailed">
+    <value>Error en la importación de fotos</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Fotos no disponible</value>
@@ -1363,6 +1396,27 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obtener más almacenamiento</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed">
+    <value>Error en la importación</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted">
+    <value>La importación fue interrumpida</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded">
+    <value>Importación realizada</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed">
+    <value></value>
   </data>
   <data name="ReleaseNoteType_Value_Feature">
     <value>Nuevas funciones</value>
