@@ -37,6 +37,7 @@ using ProtonDrive.App.Mapping.Teardown;
 using ProtonDrive.App.Notifications.Offers;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Photos;
+using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Reporting;
 using ProtonDrive.App.Sanitization;
 using ProtonDrive.App.Services;
@@ -141,6 +142,13 @@ public static class AppServices
 
                 .AddSingleton(
                     provider =>
+                        new ClearingOnAccountSwitchingRepositoryDecorator<PhotoImportSettings>(
+                            provider.GetRequiredService<IRepositoryFactory>()
+                                .GetCachingRepository<PhotoImportSettings>("PhotoImportSettings.json")))
+                .AddSingleton<IRepository<PhotoImportSettings>>(provider => provider.GetRequiredService<ClearingOnAccountSwitchingRepositoryDecorator<PhotoImportSettings>>())
+
+                .AddSingleton(
+                    provider =>
                         new ClearingOnAccountSwitchingRepositoryDecorator<DeviceSettings>(
                             provider.GetRequiredService<IRepositoryFactory>()
                                 .GetCachingRepository<DeviceSettings>("DeviceSettings.json")))
@@ -237,11 +245,16 @@ public static class AppServices
                 .AddSingleton<IMainVolumeStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
                 .AddSingleton<IPhotoVolumeStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
                 .AddSingleton<IPhotosOnboardingStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
+                .AddSingleton<IFeatureFlagsAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
 
                 .AddSingleton<SyncFolderService>()
                 .AddSingleton<ISyncFolderService>(provider => provider.GetRequiredService<SyncFolderService>())
                 .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<SyncFolderService>())
-                .AddSingleton<IMappingStateAware>(provider => provider.GetRequiredService<SyncFolderService>())
+
+                .AddSingleton<SyncFolderProvider>()
+                .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<SyncFolderProvider>())
+                .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<SyncFolderProvider>())
+                .AddSingleton<IMappingStateAware>(provider => provider.GetRequiredService<SyncFolderProvider>())
 
                 .AddSingleton<IPhotoFolderService, PhotoFolderService>()
 
@@ -349,6 +362,17 @@ public static class AppServices
                 .AddSingleton<IOnboardingService>(provider => provider.GetRequiredService<OnboardingService>())
                 .AddSingleton<IStartableService>(provider => provider.GetRequiredService<OnboardingService>())
                 .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<OnboardingService>())
+
+                .AddSingleton<IPhotoImportEngineFactory, PhotoImportEngineFactory>()
+                .AddSingleton<IPhotoAlbumNameProvider, PhotoAlbumNameProvider>()
+                .AddSingleton<PhotoFileImporterFactory>()
+                .AddSingleton<PhotoAlbumServiceFactory>()
+
+                .AddSingleton<PhotoImportService>()
+                .AddSingleton<IStartableService>(provider => provider.GetRequiredService<PhotoImportService>())
+                .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<PhotoImportService>())
+                .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<PhotoImportService>())
+                .AddSingleton<IMappingsSetupStateAware>(provider => provider.GetRequiredService<PhotoImportService>())
 
                 .AddSingleton<SyncService>()
                 .AddSingleton<ISyncService>(provider => provider.GetRequiredService<SyncService>())
@@ -473,6 +497,7 @@ public static class AppServices
                 .AddSingleton(provider => new Lazy<IEnumerable<IMappingsSetupStateAware>>(provider.GetRequiredService<IEnumerable<IMappingsSetupStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IAccountSwitchingHandler>>(provider.GetRequiredService<IEnumerable<IAccountSwitchingHandler>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncFoldersAware>>(provider.GetRequiredService<IEnumerable<ISyncFoldersAware>>))
+                .AddSingleton(provider => new Lazy<IEnumerable<IPhotoImportFoldersAware>>(provider.GetRequiredService<IEnumerable<IPhotoImportFoldersAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncStateAware>>(provider.GetRequiredService<IEnumerable<ISyncStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncStatisticsAware>>(provider.GetRequiredService<IEnumerable<ISyncStatisticsAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISyncActivityAware>>(provider.GetRequiredService<IEnumerable<ISyncActivityAware>>))

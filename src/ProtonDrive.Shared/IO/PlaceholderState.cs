@@ -19,7 +19,7 @@ public enum PlaceholderState
     Placeholder = 0x00000001,
 
     /// <summary>
-    /// The directory is both a placeholder directory as well as the sync root
+    /// The directory is both a placeholder directory and the sync root
     /// </summary>
     SyncRoot = 0x00000002,
 

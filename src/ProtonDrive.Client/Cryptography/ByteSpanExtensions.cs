@@ -10,6 +10,6 @@ internal static class ByteSpanExtensions
 
     public static string ToHexString(this ReadOnlySpan<byte> span)
     {
-        return Convert.ToHexString(span).ToLowerInvariant();
+        return Convert.ToHexStringLower(span);
     }
 }

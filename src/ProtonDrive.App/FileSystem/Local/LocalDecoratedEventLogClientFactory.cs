@@ -15,14 +15,14 @@ namespace ProtonDrive.App.FileSystem.Local;
 internal sealed class LocalDecoratedEventLogClientFactory
 {
     private readonly ILoggerFactory _loggerFactory;
-    private readonly Func<IRootableEventLogClient<long>> _undecoratedClientFactory;
+    private readonly ILocalEventLogClientFactory _undecoratedClientFactory;
     private readonly LocalRootMapForDeletionDetectionFactory _rootMapForDeletionDetectionFactory;
     private readonly IFileTransferAbortionStrategy<long> _fileTransferAbortionStrategy;
     private readonly IRootDeletionHandler _rootDeletionHandler;
 
     public LocalDecoratedEventLogClientFactory(
         ILoggerFactory loggerFactory,
-        Func<IRootableEventLogClient<long>> undecoratedClientFactory,
+        ILocalEventLogClientFactory undecoratedClientFactory,
         LocalRootMapForDeletionDetectionFactory rootMapForDeletionDetectionFactory,
         IFileTransferAbortionStrategy<long> fileTransferAbortionStrategy,
         IRootDeletionHandler rootDeletionHandler)
@@ -117,7 +117,7 @@ internal sealed class LocalDecoratedEventLogClientFactory
                 }
 
                 // We do not know ID of this folder. Currently, folder ID is not used by the event log client.
-                return new LocalRootDirectory(accountRootFolderPath, id: default);
+                return new LocalRootDirectory(accountRootFolderPath, id: 0);
 
             case MappingType.HostDeviceFolder:
                 return new LocalRootDirectory(mapping.Local);
@@ -159,6 +159,6 @@ internal sealed class LocalDecoratedEventLogClientFactory
 
     private IRootableEventLogClient<long> CreateUndecoratedClient()
     {
-        return _undecoratedClientFactory.Invoke();
+        return _undecoratedClientFactory.Create();
     }
 }

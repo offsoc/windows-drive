@@ -21,23 +21,20 @@ internal sealed class LocalDecoratedFileSystemClientFactory
 {
     private readonly ILocalVolumeInfoProvider _volumeInfoProvider;
     private readonly ILoggerFactory _loggerFactory;
-    private readonly Func<IFileSystemClient<long>> _undecoratedClassicClientFactory;
-    private readonly Func<IFileSystemClient<long>> _undecoratedOnDemandHydrationClientFactory;
+    private readonly ILocalFileSystemClientFactory _undecoratedClientFactory;
     private readonly IFileTransferAbortionStrategy<long> _fileTransferAbortionStrategy;
     private readonly ISyncFolderStructureProtector _folderStructureProtector;
 
     public LocalDecoratedFileSystemClientFactory(
         ILocalVolumeInfoProvider volumeInfoProvider,
         ILoggerFactory loggerFactory,
-        Func<IFileSystemClient<long>> undecoratedClassicClientFactory,
-        Func<IFileSystemClient<long>> undecoratedOnDemandHydrationClientFactory,
+        ILocalFileSystemClientFactory undecoratedClientFactory,
         IFileTransferAbortionStrategy<long> fileTransferAbortionStrategy,
         ISyncFolderStructureProtector folderStructureProtector)
     {
         _volumeInfoProvider = volumeInfoProvider;
         _loggerFactory = loggerFactory;
-        _undecoratedClassicClientFactory = undecoratedClassicClientFactory;
-        _undecoratedOnDemandHydrationClientFactory = undecoratedOnDemandHydrationClientFactory;
+        _undecoratedClientFactory = undecoratedClientFactory;
         _fileTransferAbortionStrategy = fileTransferAbortionStrategy;
         _folderStructureProtector = folderStructureProtector;
     }
@@ -335,11 +332,11 @@ internal sealed class LocalDecoratedFileSystemClientFactory
 
     private IFileSystemClient<long> CreateUndecoratedClassicClient()
     {
-        return _undecoratedClassicClientFactory.Invoke();
+        return _undecoratedClientFactory.CreateClassicClient();
     }
 
     private IFileSystemClient<long> CreateUndecoratedOnDemandHydrationClient()
     {
-        return _undecoratedOnDemandHydrationClientFactory.Invoke();
+        return _undecoratedClientFactory.CreateOnDemandHydrationClient();
     }
 }

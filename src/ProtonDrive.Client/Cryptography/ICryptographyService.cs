@@ -132,7 +132,9 @@ public interface ICryptographyService
 
     ReadOnlyMemory<byte> GenerateHashKey();
 
-    byte[] HashNodeName(byte[] key, string nodeName);
+    string HashNodeNameHex(byte[] hashKey, string nodeName);
+
+    string HashContentDigestHex(byte[] hashKey, string digest);
 
     byte[] HashBlockContent(Stream blockContentStream);
 

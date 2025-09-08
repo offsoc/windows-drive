@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ProtonDrive.Client.Albums.Contracts;
 
 namespace ProtonDrive.Client.Contracts;
 
@@ -44,6 +45,7 @@ public sealed record Link
 
     public FileProperties? FileProperties { get; init; }
     public FolderProperties? FolderProperties { get; init; }
+    public AlbumProperties? AlbumProperties { get; init; }
 
     public LinkSharingDetails? SharingDetails { get; init; }
 

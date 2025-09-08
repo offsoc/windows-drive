@@ -324,7 +324,7 @@ internal sealed class RemoteFileWriteStream : Stream
         const int maxNumberOfBytesOnRemote = 60 * 1024; // 60 KiB
         const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
 
-        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailGenerator.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var thumbnail))
+        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var thumbnail))
         {
             return false;
         }
@@ -346,7 +346,7 @@ internal sealed class RemoteFileWriteStream : Stream
         const int maxNumberOfBytesOnRemote = 1024 * 1024; // 1 MiB
         const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
 
-        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var hdPreview))
+        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var hdPreview))
         {
             return false;
         }

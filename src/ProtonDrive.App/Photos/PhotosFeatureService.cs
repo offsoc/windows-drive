@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.App.Features;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Volumes;
 using ProtonDrive.Shared.Configuration;
+using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Photos;
 
-internal sealed class PhotosFeatureService : IStartableService, IStoppableService, IMainVolumeStateAware, IPhotoVolumeStateAware, IPhotosOnboardingStateAware
+internal sealed class PhotosFeatureService : IStartableService, IStoppableService, IMainVolumeStateAware, IPhotoVolumeStateAware, IPhotosOnboardingStateAware, IFeatureFlagsAware
 {
     private readonly FeatureFlags _featureFlags;
     private readonly Lazy<IEnumerable<IPhotosFeatureStateAware>> _photosFeatureStateAware;
@@ -24,6 +26,7 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
     private VolumeState _mainVolumeState = VolumeState.Idle;
     private VolumeState _photoVolumeState = VolumeState.Idle;
     private OnboardingStatus _onboardingStatus = OnboardingStatus.NotStarted;
+    private bool _isFeatureReadOnly;
     private bool _isStopping;
 
     public PhotosFeatureService(
@@ -75,6 +78,12 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
         ScheduleExternalStateChangeHandling();
     }
 
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    {
+        _isFeatureReadOnly = features.IsEnabled(Feature.DrivePhotosUploadDisabled) || features.IsEnabled(Feature.DriveAlbumsDisabled);
+        ScheduleExternalStateChangeHandling();
+    }
+
     internal Task WaitForCompletionAsync()
     {
         // Wait for all scheduled tasks to complete
@@ -101,6 +110,12 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
         if (!_featureFlags.PhotosFeatureEnabled)
         {
             SetState(PhotosFeatureStatus.Hidden);
+            return;
+        }
+
+        if (_isFeatureReadOnly)
+        {
+            SetState(PhotosFeatureStatus.ReadOnly);
             return;
         }
 

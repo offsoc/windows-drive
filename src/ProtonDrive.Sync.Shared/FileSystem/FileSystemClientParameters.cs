@@ -3,6 +3,7 @@
 public readonly record struct FileSystemClientParameters(
     string VolumeId,
     string ShareId,
-    string? VirtualParentId = default,
-    string? LinkId = default,
-    string? LinkName = default);
+    string? VirtualParentId = null,
+    string? LinkId = null,
+    string? LinkName = null,
+    bool IsPhotoClient = false);

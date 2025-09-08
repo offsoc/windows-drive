@@ -17,6 +17,7 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
     private readonly HashingStream _contentStream;
     private readonly IReadOnlyCollection<UploadedBlock> _uploadedBlocks;
     private readonly int _blockSize;
+    private readonly DateTime _creationTimeUtc;
     private readonly IRevisionSealer _revisionSealer;
 
     public RemoteRevisionCreationProcess(
@@ -24,6 +25,7 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         Stream contentStream,
         IReadOnlyCollection<UploadedBlock> uploadedBlocks,
         int blockSize,
+        DateTime creationTimeUtc,
         IRevisionSealer revisionSealer)
     {
         Ensure.NotNull(fileInfo.Id, nameof(fileInfo), nameof(fileInfo.Id));
@@ -33,6 +35,7 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         _contentStream = new HashingStream(contentStream, HashAlgorithmName.SHA1);
         _uploadedBlocks = uploadedBlocks;
         _blockSize = blockSize;
+        _creationTimeUtc = creationTimeUtc;
 
         _revisionSealer = revisionSealer;
     }
@@ -52,9 +55,11 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         {
             ValidateUpload();
 
-            await _revisionSealer.SealRevisionAsync(_uploadedBlocks, GetSha1Digest(), cancellationToken).ConfigureAwait(false);
+            var sha1Digest = GetSha1Digest();
 
-            return FileInfo.Copy().WithSizeOnStorage(_uploadedBlocks.Sum(b => (long)b.Size));
+            await _revisionSealer.SealRevisionAsync(_uploadedBlocks, _creationTimeUtc, sha1Digest, cancellationToken).ConfigureAwait(false);
+
+            return FileInfo.Copy().WithSizeOnStorage(_uploadedBlocks.Sum(b => (long)b.Size)).WithSha1Digest(sha1Digest);
         }
         catch (Exception ex) when (ExceptionMapping.TryMapException(ex, FileInfo.Id, includeObjectId: false, out var mappedException))
         {

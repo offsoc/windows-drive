@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProtonDrive.App\ProtonDrive.App.csproj" />
+    <ProjectReference Include="..\ProtonDrive.Sync.Windows\ProtonDrive.Sync.Windows.csproj" />
   </ItemGroup>
 
   <ItemGroup>

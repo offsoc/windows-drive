@@ -57,11 +57,17 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
     {
         if (value.Status is VolumeStatus.Ready)
         {
-            _photoVolumeStateCheck.TryStart();
+            if (_photoVolumeStateCheck.TryStart())
+            {
+                _logger.LogDebug("Photo volume state check requested");
+            }
         }
         else
         {
-            _photoVolumeStateCheck.TryCancel();
+            if (_photoVolumeStateCheck.TryCancel())
+            {
+                _logger.LogDebug("Photo volume state check cancelled");
+            }
         }
     }
 
@@ -69,11 +75,17 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
     {
         if (value.Status is PhotosFeatureStatus.SettingUp)
         {
-            _photoVolumeSetup.TryStart();
+            if (_photoVolumeSetup.TryStart())
+            {
+                _logger.LogDebug("Photo volume setup requested");
+            }
         }
         else
         {
-            _photoVolumeSetup.TryCancel();
+            if (_photoVolumeSetup.TryCancel())
+            {
+                _logger.LogDebug("Photo volume setup cancelled");
+            }
         }
     }
 
@@ -151,8 +163,8 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
                     SetFailure(result.Value.ErrorMessage);
                 }
 
-                _photoVolumeStateCheck.TryComplete();
-                return;
+                // Photo volume setup should run only if photo volume check found no photo volume
+                _photoVolumeSetup.TryCancel();
             }
 
             _photoVolumeStateCheck.TryComplete();
@@ -160,6 +172,14 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
 
         if (_photoVolumeSetup.IsRequested)
         {
+            // To avoid race condition when photo volume setup is requested while
+            // photo volume check is running and subsequently succeeds.
+            if (_state.Status is VolumeStatus.Ready)
+            {
+                _photoVolumeSetup.TryComplete();
+                return;
+            }
+
             SetState(VolumeStatus.SettingUp);
 
             var (volume, errorMessage) = await CreatePhotoVolumeAsync(cancellationToken).ConfigureAwait(false);
@@ -174,7 +194,6 @@ internal sealed class PhotoVolumeService : IPhotoVolumeService, IStoppableServic
             }
 
             _photoVolumeSetup.TryComplete();
-            return;
         }
 
         if (_state.Status is VolumeStatus.SettingUp)

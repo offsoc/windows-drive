@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
         }
 
         public long Size => _decoratedInstance.Size;
-
+        public DateTime CreationTimeUtc => _decoratedInstance.CreationTimeUtc;
         public DateTime LastWriteTimeUtc => _decoratedInstance.LastWriteTimeUtc;
 
         private LooseCompoundAltIdentity<TAltId> Id { get; }
@@ -77,6 +78,11 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
         public Task<FileMetadata?> GetMetadataAsync()
         {
             return _decoratedInstance.GetMetadataAsync();
+        }
+
+        public Task<IReadOnlySet<PhotoTag>> GetPhotoTagsAsync(CancellationToken cancellationToken)
+        {
+            return _decoratedInstance.GetPhotoTagsAsync(cancellationToken);
         }
 
         public void Dispose()

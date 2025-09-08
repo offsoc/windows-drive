@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Frozen;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -9,119 +7,19 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.Shared.Media;
 using ProtonDrive.Sync.Shared.FileSystem;
 using Gdi32 = ProtonDrive.App.Windows.Interop.Gdi32;
 using Shell32 = ProtonDrive.App.Windows.Interop.Shell32;
 
 namespace ProtonDrive.App.Windows.Services;
 
-public class Win32ThumbnailGenerator : IThumbnailGenerator
+internal class Win32ThumbnailGenerator : IThumbnailGenerator
 {
-    private const int MinHdPreviewNumberOfPixelsOnLargestSide = 768;
+    private const int MinHdPreviewNumberOfPixelsOnLargestSide = IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide + 1;
 
     // Below 15 it will start becoming unrecognizable and maybe even so ugly that using an icon rather than a thumbnail is likely to be more acceptable.
     private static readonly ImmutableArray<int> QualityLevels = [80, 70, 60, 45, 30, 15, 10, 5];
-
-    private static readonly FrozenSet<string> SupportedNonImageExtensions = new HashSet<string>
-    {
-        // Videos
-        ".3gp",
-        ".3gpp",
-        ".3g2",
-        ".h261",
-        ".h263",
-        ".h264",
-        ".m4s",
-        ".jpgv",
-        ".jpm",
-        ".jpgm",
-        ".mj2",
-        ".mjp2",
-        ".ts",
-        ".mp4",
-        ".mp4v",
-        ".mpg4",
-        ".mpeg",
-        ".mpg",
-        ".mpe",
-        ".m1v",
-        ".m2v",
-        ".ogv",
-        ".qt",
-        ".mov",
-        ".uvh",
-        ".uvvh",
-        ".uvm",
-        ".uvvm",
-        ".uvp",
-        ".uvvp",
-        ".uvs",
-        ".uvvs",
-        ".uvv",
-        ".uvvv",
-        ".dvb",
-        ".fvt",
-        ".mxu",
-        ".m4u",
-        ".pyv",
-        ".uvu",
-        ".uvvu",
-        ".viv",
-        ".webm",
-        ".f4v",
-        ".fli",
-        ".flv",
-        ".m4v",
-        ".mkv",
-        ".mk3d",
-        ".mks",
-        ".mng",
-        ".asf",
-        ".asx",
-        ".vob",
-        ".wm",
-        ".wmv",
-        ".wmx",
-        ".wvx",
-        ".avi",
-        ".movie",
-        ".smv",
-    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-
-    private static readonly FrozenSet<string> SupportedImageExtensions = new HashSet<string>
-    {
-        ".apng",
-        ".bmp",
-        ".gif",
-        ".ico",
-        ".vdnMicrosoftIcon",
-        ".png",
-        ".svg",
-        ".jpg",
-        ".jpeg",
-        ".jpe",
-        ".jif",
-        ".jfif",
-        ".tif",
-        ".tiff",
-        ".heic",
-        ".dng",
-        ".erf",
-        ".nrw",
-        ".raf",
-        ".rw2",
-        ".arw",
-        ".webp",
-    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-
-    private static readonly FrozenSet<string> JpegExtensions = new HashSet<string>
-    {
-        ".jpg",
-        ".jpeg",
-        ".jpe",
-        ".jif",
-        ".jfif",
-    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private readonly ILogger<IThumbnailGenerator> _logger;
 
@@ -134,7 +32,7 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
     {
         var extension = Path.GetExtension(filePath);
 
-        if (!SupportedImageExtensions.Contains(extension) && !SupportedNonImageExtensions.Contains(extension))
+        if (!KnownFileExtensions.ImageExtensions.Contains(extension) && !KnownFileExtensions.VideoExtensions.Contains(extension))
         {
             _logger.LogInformation("Thumbnail generation skipped: file extension not supported");
             thumbnailBytes = ReadOnlyMemory<byte>.Empty;
@@ -219,7 +117,7 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
 
     private static bool IsRequestingHdPreview(int numberOfPixelsOnLargestSide)
     {
-        return numberOfPixelsOnLargestSide > IThumbnailGenerator.MaxThumbnailNumberOfPixelsOnLargestSide;
+        return numberOfPixelsOnLargestSide > IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide;
     }
 
     private static RenderTargetBitmap GetNonTransparentBitmap(BitmapSource bitmap)
@@ -312,7 +210,7 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
 
         public bool IsHdPreviewAllowed()
         {
-            if (!SupportedImageExtensions.Contains(_extension))
+            if (!KnownFileExtensions.ImageExtensions.Contains(_extension))
             {
                 _logger.LogInformation("HD preview generation skipped: file extension not supported");
                 return false;
@@ -323,13 +221,13 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
                 return false;
             }
 
-            if (JpegExtensions.Contains(_extension))
+            if (KnownFileExtensions.JpegExtensions.Contains(_extension))
             {
-                if (imageNumberOfPixelsOnLargestSide <= IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide)
+                if (imageNumberOfPixelsOnLargestSide <= IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide)
                 {
                     _logger.LogInformation(
                         "HD preview generation skipped: JPEG image too small (largest side smaller or equal than {RequiredSize}",
-                        IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide);
+                        IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide);
 
                     return false;
                 }

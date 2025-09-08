@@ -354,12 +354,52 @@ internal sealed class CryptographyService : ICryptographyService
         return GetRandomBase64Bytes(32);
     }
 
-    public byte[] HashNodeName(byte[] hashKey, string nodeName)
+    public string HashNodeNameHex(byte[] hashKey, string nodeName)
     {
         // TODO: Check FIPS compliance
+        var length = Encoding.UTF8.GetByteCount(nodeName);
+        Span<byte> nodeNameSpan = stackalloc byte[length];
+        var bytesWritten = Encoding.UTF8.GetBytes(nodeName, nodeNameSpan);
+
+        if (length != bytesWritten)
+        {
+            throw new CryptographicException($"Cannot compute HMAC name hash: bytes length {length} differs from written bytes {bytesWritten}");
+        }
+
         using var hmac = new HMACSHA256(hashKey);
-        var digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(nodeName));
-        return digest;
+        Span<byte> hmacSha256Digest = stackalloc byte[HMACSHA256.HashSizeInBytes];
+
+        if (!hmac.TryComputeHash(nodeNameSpan, hmacSha256Digest, out bytesWritten)
+            || bytesWritten != HMACSHA256.HashSizeInBytes)
+        {
+            throw new CryptographicException($"Invalid HMAC name hash: computed hash with length {bytesWritten} instead {HMACSHA256.HashSizeInBytes}");
+        }
+
+        return hmacSha256Digest.ToHexString();
+    }
+
+    public string HashContentDigestHex(byte[] hashKey, string digest)
+    {
+        // TODO: Check FIPS compliance
+        var length = Encoding.UTF8.GetByteCount(digest);
+        Span<byte> digestSpan = stackalloc byte[length];
+        var bytesWritten = Encoding.UTF8.GetBytes(digest, digestSpan);
+
+        if (length != bytesWritten)
+        {
+            throw new CryptographicException($"Cannot compute HMAC content hash: bytes length {length} differs from written bytes {bytesWritten}");
+        }
+
+        using var hmacSha256 = new HMACSHA256(hashKey);
+        Span<byte> hmacSha256Digest = stackalloc byte[HMACSHA256.HashSizeInBytes];
+
+        if (!hmacSha256.TryComputeHash(digestSpan, hmacSha256Digest, out bytesWritten)
+            || bytesWritten != HMACSHA256.HashSizeInBytes)
+        {
+            throw new CryptographicException($"Invalid HMAC content hash: computed hash with length {bytesWritten} instead {HMACSHA256.HashSizeInBytes}");
+        }
+
+        return hmacSha256Digest.ToHexString();
     }
 
     public byte[] HashBlockContent(Stream blockContentStream)

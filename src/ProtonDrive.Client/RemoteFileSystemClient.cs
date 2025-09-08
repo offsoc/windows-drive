@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Proton.Security.Cryptography.Abstractions;
 using ProtonDrive.BlockVerification;
+using ProtonDrive.Client.Albums.Contracts;
 using ProtonDrive.Client.Configuration;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
@@ -37,12 +38,14 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
     private readonly string? _virtualParentId;
     private readonly string? _linkId;
     private readonly string? _linkName;
+    private readonly bool _isPhotoClient;
     private readonly IClientInstanceIdentityProvider _clientInstanceIdentityProvider;
     private readonly IFileContentTypeProvider _fileContentTypeProvider;
     private readonly IRemoteNodeService _remoteNodeService;
     private readonly ILinkApiClient _linkApiClient;
     private readonly IFolderApiClient _folderApiClient;
     private readonly IFileApiClient _fileApiClient;
+    private readonly IPhotoApiClient _photoApiClient;
     private readonly IVolumeApiClient _volumeApiClient;
     private readonly ICryptographyService _cryptographyService;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -51,6 +54,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
     private readonly IBlockVerifierFactory _blockVerifierFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly Action<Exception> _reportBlockVerificationOrDecryptionFailure;
+    private readonly ILogger<RemoteFileSystemClient> _logger;
 
     internal RemoteFileSystemClient(
         DriveApiConfig config,
@@ -61,6 +65,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         ILinkApiClient linkApiClient,
         IFolderApiClient folderApiClient,
         IFileApiClient fileApiClient,
+        IPhotoApiClient photoApiClient,
         IVolumeApiClient volumeApiClient,
         ICryptographyService cryptographyService,
         IHttpClientFactory httpClientFactory,
@@ -77,11 +82,13 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         _virtualParentId = fileSystemClientParameters.VirtualParentId;
         _linkId = fileSystemClientParameters.LinkId;
         _linkName = fileSystemClientParameters.LinkName;
+        _isPhotoClient = fileSystemClientParameters.IsPhotoClient;
         _clientInstanceIdentityProvider = clientInstanceIdentityProvider;
         _remoteNodeService = remoteNodeService;
         _linkApiClient = linkApiClient;
         _folderApiClient = folderApiClient;
         _fileApiClient = fileApiClient;
+        _photoApiClient = photoApiClient;
         _volumeApiClient = volumeApiClient;
         _cryptographyService = cryptographyService;
         _httpClientFactory = httpClientFactory;
@@ -90,6 +97,8 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         _blockVerifierFactory = blockVerifierFactory;
         _loggerFactory = loggerFactory;
         _reportBlockVerificationOrDecryptionFailure = reportBlockVerificationOrDecryptionFailure;
+
+        _logger = _loggerFactory.CreateLogger<RemoteFileSystemClient>();
     }
 
     private delegate Task<MultipleResponses<FolderChildrenDeletionResponse>> DeleteAsyncDelegate(
@@ -184,6 +193,18 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         var hashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(nodeKey.PublicKey, nodeKey);
         parameters.NodeHashKey = hashKeyEncrypter.EncryptHashKey(hashKey);
 
+        if (_isPhotoClient)
+        {
+            var albumCreationParameters = new AlbumCreationParameters
+            {
+                LinkCreationParameters = AlbumLinkCreationParameters.FromFolderCreationParameters(parameters),
+            };
+
+            var albumResponse = await CreateAlbumAsync(albumCreationParameters, cancellationToken).ConfigureAwait(false);
+
+            return info.WithId(albumResponse.Album.LinkId.Value);
+        }
+
         var response = await CreateFolderAsync(parameters, cancellationToken).ConfigureAwait(false);
 
         return info.WithId(response.FolderId.Value);
@@ -255,13 +276,25 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             SignatureAddress = signatureAddress,
         };
 
-        var revisionSealer = _revisionSealerFactory.Create(
-            _shareId,
-            response.FileRevisionId.LinkId,
-            response.FileRevisionId.Value,
-            contentEncrypter,
-            signatureAddress,
-            extendedAttributesBuilder);
+        IRevisionSealer revisionSealer;
+
+        if (_isPhotoClient)
+        {
+            revisionSealer = _revisionSealerFactory.CreatePhotoSealer(
+                new RevisionSealerParameters(_shareId, response.FileRevisionId.LinkId, response.FileRevisionId.Value, info.ParentId),
+                contentEncrypter,
+                signatureAddress,
+                extendedAttributesBuilder,
+                fileMetadataProvider);
+        }
+        else
+        {
+            revisionSealer = _revisionSealerFactory.CreateRegularSealer(
+                new RevisionSealerParameters(_shareId, response.FileRevisionId.LinkId, response.FileRevisionId.Value, info.ParentId),
+                contentEncrypter,
+                signatureAddress,
+                extendedAttributesBuilder);
+        }
 
         var nodeInfoWithIds = info.WithId(response.FileRevisionId.LinkId).WithRevisionId(response.FileRevisionId.Value);
 
@@ -270,6 +303,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             stream,
             stream.UploadedBlocks,
             stream.BlockSize,
+            fileMetadataProvider.CreationTimeUtc,
             revisionSealer);
 
         async Task<(PgpSessionKey ContentSessionKey, PrivatePgpKey NodeKey)> GetExistingKeysAsync(string linkId)
@@ -312,7 +346,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
                 _reportBlockVerificationOrDecryptionFailure),
             info.Id);
 
-        return new RemoteFileRevision(stream, remoteFile.ModificationTime, remoteFile.ExtendedAttributes);
+        return new RemoteFileRevision(stream, remoteFile.CreationTime, remoteFile.ModificationTime, remoteFile.ExtendedAttributes);
     }
 
     public async Task<IRevisionCreationProcess<string>> CreateRevision(
@@ -375,10 +409,9 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             SignatureAddress = signatureAddress,
         };
 
-        var revisionSealer = _revisionSealerFactory.Create(
-            _shareId,
-            info.Id,
-            revisionId,
+        // Photos do not support revisions
+        var revisionSealer = _revisionSealerFactory.CreateRegularSealer(
+            new RevisionSealerParameters(_shareId, info.Id, revisionId),
             contentEncrypter,
             signatureAddress,
             extendedAttributesBuilder);
@@ -394,11 +427,14 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             stream,
             stream.UploadedBlocks,
             stream.BlockSize,
+            fileMetadataProvider.CreationTimeUtc,
             revisionSealer);
     }
 
     public async Task Move(NodeInfo<string> info, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Moving file with ID {FileID} to {DestinationName}", info.Id, destinationInfo.Name);
+
         EnsureId(info.Id);
         Ensure.IsFalse(
             string.IsNullOrEmpty(destinationInfo.Name) && string.IsNullOrEmpty(destinationInfo.ParentId),
@@ -439,7 +475,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             cancellationToken).ConfigureAwait(false);
 
         var name = nameEncrypter.EncryptNodeName(destinationName);
-        var nameHash = _cryptographyService.HashNodeName(destinationParentFolder.HashKey, destinationName).ToHexString();
+        var nameHash = _cryptographyService.HashNodeNameHex(destinationParentFolder.HashKey, destinationName);
 
         if (!isRenameOnly)
         {
@@ -452,19 +488,46 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
             var isSigningNodePassphraseRequired = nodeToMove.IsNodePassphraseSignedAnonymously;
 
-            var parameters = new MoveLinkParameters
+            if (_isPhotoClient)
             {
-                ParentLinkId = destinationParentFolder.Id,
-                NodePassphrase = encryptedPassphrase,
-                NodePassphraseSignature = isSigningNodePassphraseRequired ? signature : null,
-                SignatureEmailAddress = isSigningNodePassphraseRequired ? signatureAddress.EmailAddress : null,
-                Name = name,
-                NameHash = nameHash,
-                NameSignatureEmailAddress = signatureAddress.EmailAddress,
-                OriginalNameHash = nodeToMove.NameHash,
-            };
+                var albumLinkId = destinationInfo.ParentId;
+                EnsureId(albumLinkId);
+                Ensure.NotNullOrEmpty(info.Sha1Digest, nameof(info.Sha1Digest));
 
-            await MoveNodeAsync(nodeToMove.Id, parameters, cancellationToken).ConfigureAwait(false);
+                var photosParameters = new PhotoToAddListParameters
+                {
+                    Photos =
+                    [
+                        new PhotoToAddParameter
+                        {
+                            Name = name,
+                            LinkId = info.Id,
+                            NameHash = nameHash,
+                            NameSignatureEmailAddress = signatureAddress.EmailAddress,
+                            NodePassphrase = encryptedPassphrase,
+                            ContentHash = _cryptographyService.HashContentDigestHex(destinationParentFolder.HashKey, info.Sha1Digest),
+                        },
+                    ],
+                };
+
+                await AddToAlbumAsync(albumLinkId, photosParameters, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                var parameters = new MoveLinkParameters
+                {
+                    ParentLinkId = destinationParentFolder.Id,
+                    NodePassphrase = encryptedPassphrase,
+                    NodePassphraseSignature = isSigningNodePassphraseRequired ? signature : null,
+                    SignatureEmailAddress = isSigningNodePassphraseRequired ? signatureAddress.EmailAddress : null,
+                    Name = name,
+                    NameHash = nameHash,
+                    NameSignatureEmailAddress = signatureAddress.EmailAddress,
+                    OriginalNameHash = nodeToMove.NameHash,
+                };
+
+                await MoveNodeAsync(nodeToMove.Id, parameters, cancellationToken).ConfigureAwait(false);
+            }
 
             // MIME type is not updated when moving to another parent. If the file name has changed,
             // it might require to additionally use renaming (to the same name) to set a new MIME type.
@@ -658,6 +721,24 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         }
     }
 
+    private async Task<AlbumCreationResponse> CreateAlbumAsync(AlbumCreationParameters parameters, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _photoApiClient.CreateAlbumAsync(_volumeId, parameters, cancellationToken).ThrowOnFailure().ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ExceptionMapping.TryMapException(
+                                       ex,
+                                       id: null,
+                                       includeObjectId: true,
+                                       out var mappedException))
+        {
+            /* If something goes wrong, we assume there is a problem with the parent folder */
+
+            throw mappedException;
+        }
+    }
+
     private async Task<(FileCreationResponse Response, bool FileDraftExists)> CreateFileAsync(
         FileCreationParameters parameters,
         CancellationToken cancellationToken)
@@ -753,6 +834,31 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             return await _remoteNodeService.GetShareAsync(_shareId, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id: null, includeObjectId: false, out var mappedException))
+        {
+            throw mappedException;
+        }
+    }
+
+    private async Task AddToAlbumAsync(string albumLinkId, PhotoToAddListParameters parameters, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogDebug("Adding photo file with ID {FileID} to album {AlbumLinkID}", parameters.Photos.First().LinkId, albumLinkId);
+
+            await _photoApiClient.AddPhotosToAlbumAsync(_volumeId, albumLinkId, parameters, cancellationToken)
+                .ThrowOnFailure()
+                .ConfigureAwait(false);
+
+            _logger.LogDebug("Photo file with ID {FileID} added to album {AlbumLinkID}", parameters.Photos.First().LinkId, albumLinkId);
+        }
+        catch (ApiException ex) when (ex.ResponseCode is ResponseCode.DoesNotExist or ResponseCode.InvalidRequirements or ResponseCode.TooManyChildren
+                                      && ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))
+        {
+            /* A specific case when the limit of photos is reached on the destination album or when the album does not exist */
+
+            throw mappedException;
+        }
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))
         {
             throw mappedException;
         }
@@ -993,7 +1099,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             parameters.NodePassphrase = encryptedPassphrase;
             parameters.NodePassphraseSignature = passphraseSignature;
             parameters.SignatureEmailAddress = signatureAddress.EmailAddress;
-            parameters.NameHash = _cryptographyService.HashNodeName(parentFolder.HashKey, info.Name).ToHexString();
+            parameters.NameHash = _cryptographyService.HashNodeNameHex(parentFolder.HashKey, info.Name);
 
             return (parameters, nodeKey, signatureAddress);
         }

@@ -43,4 +43,9 @@ internal sealed class ErrorReporting : IErrorReporting
     {
         SentrySdk.CaptureException(ex);
     }
+
+    public void CaptureError(string message)
+    {
+        SentrySdk.CaptureMessage(message, SentryLevel.Error);
+    }
 }

@@ -8,13 +8,14 @@ using ProtonDrive.Shared;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Windows.FileSystem.Photos;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client;
 
 /// <summary>
 /// Classic local File System Client for Windows.
 /// </summary>
-public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemClient<long>
+internal sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemClient<long>
 {
     private static readonly EnumerationOptions EnumerationOptions = new()
     {
@@ -32,11 +33,16 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
     private readonly IThumbnailGenerator _thumbnailGenerator;
     private readonly IFileMetadataGenerator _fileMetadataGenerator;
+    private readonly IPhotoTagsGenerator _photoTagsGenerator;
 
-    public ClassicFileSystemClient(IThumbnailGenerator thumbnailGenerator, IFileMetadataGenerator fileMetadataGenerator)
+    public ClassicFileSystemClient(
+        IThumbnailGenerator thumbnailGenerator,
+        IFileMetadataGenerator fileMetadataGenerator,
+        IPhotoTagsGenerator photoTagsGenerator)
     {
         _thumbnailGenerator = thumbnailGenerator;
         _fileMetadataGenerator = fileMetadataGenerator;
+        _photoTagsGenerator = photoTagsGenerator;
     }
 
     public void Connect(string syncRootPath, IFileHydrationDemandHandler<long> fileHydrationDemandHandler)
@@ -118,7 +124,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
             CheckIdentity(file, info);
             CheckMetadata(file, info);
 
-            return Task.FromResult((IRevision)new FileRevision(file, _thumbnailGenerator, _fileMetadataGenerator));
+            return Task.FromResult((IRevision)new FileRevision(file, _thumbnailGenerator, _fileMetadataGenerator, _photoTagsGenerator));
         }
         catch
         {
@@ -144,7 +150,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
             FileSystemFileAccess.ReadAttributes | FileSystemFileAccess.WriteAttributes,
             FileShare.ReadWrite | FileShare.Delete);
 
-        CheckIsDirectory(directory, default);
+        CheckIsDirectory(directory, 0);
 
         directory.SetAttributes(info);
 
@@ -187,7 +193,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
                 // To make less confusion, renaming the temporary file before deletion ensures the name
                 // of the file being created does not appear mentioned in the logs as deleted.
                 // ReSharper disable once AccessToDisposedClosure
-                WithMappedException(() => fileForCheckingNameAvailability.Rename(tempFileName), default);
+                WithMappedException(() => fileForCheckingNameAvailability.Rename(tempFileName), 0);
             }
 
             tempInfo = info.ToTempFileInfo(tempFileName);
@@ -212,7 +218,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
             IRevisionCreationProcess<long> revisionCreationProcess = new ClassicRevisionCreationProcess(
                 file,
-                initialInfo: default,
+                initialInfo: null,
                 tempInfo,
                 finalInfo,
                 progressCallback);
@@ -274,7 +280,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var fileInfo = file.ToNodeInfo(parentId: default, refresh: false).WithSize(0).WithPath(file.FullPath);
+            var fileInfo = file.ToNodeInfo(parentId: 0, refresh: false).WithSize(0).WithPath(file.FullPath);
 
             IRevisionCreationProcess<long> revisionCreationProcess = new ClassicRevisionCreationProcess(
                 file,
@@ -395,7 +401,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
     private void CreateDirectoryInternal(NodeInfo<long> info)
     {
-        WithMappedException(() => FileSystemDirectory.Create(info.Path), default);
+        WithMappedException(() => FileSystemDirectory.Create(info.Path), 0);
     }
 
     private bool IsRename(NodeInfo<long> newInfo)
@@ -428,7 +434,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
         void UnsafeCheckIdentity()
         {
-            if (!id.Equals(default) && !fsObject.ObjectId.Equals(id))
+            if (!id.Equals(0) && !fsObject.ObjectId.Equals(id))
             {
                 throw new FileSystemClientException<long>(
                     $"Wrong file system object ID, expected {id} but found {fsObject.ObjectId}",
@@ -440,7 +446,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
     private void CheckIdentity(FileSystemEntry fsEntry, NodeInfo<long> info)
     {
-        if (!info.Id.Equals(default) && !fsEntry.ObjectId.Equals(info.Id))
+        if (!info.Id.Equals(0) && !fsEntry.ObjectId.Equals(info.Id))
         {
             throw new FileSystemClientException<long>(
                 $"Wrong file system object ID, expected {info.Id} but found {fsEntry.ObjectId}",
@@ -531,7 +537,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
 
     private NodeInfo<long> ToNodeInfo(FileSystemObject fsObject, bool refresh)
     {
-        return WithMappedException(UnsafeToNodeInfo, id: default);
+        return WithMappedException(UnsafeToNodeInfo, id: 0);
 
         NodeInfo<long> UnsafeToNodeInfo()
         {
@@ -595,7 +601,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
         {
             origin();
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id, id != default, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id, id != 0, out var mappedException))
         {
             throw mappedException;
         }
@@ -607,7 +613,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
         {
             return origin();
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id, id != default, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id, id != 0, out var mappedException))
         {
             throw mappedException;
         }

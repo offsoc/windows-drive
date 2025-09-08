@@ -36,6 +36,7 @@ internal sealed class ExtendedAttributesBuilder : IExtendedAttributesBuilder
     public DateTime? LastWriteTime { get; set; }
     public IEnumerable<int>? BlockSizes { get; set; }
     public string? Sha1Digest { get; set; }
+    public DateTime? CaptureTime { get; private set; }
 
     public async Task<string?> BuildAsync(CancellationToken cancellationToken)
     {
@@ -80,6 +81,8 @@ internal sealed class ExtendedAttributesBuilder : IExtendedAttributesBuilder
             var locationExtendedAttributes = fileMetadata?.GetLocationExtendedAttributes();
             var cameraExtendedAttributes = fileMetadata?.GetCameraExtendedAttributes();
             var mediaExtendedAttributes = fileMetadata?.GetMediaExtendedAttributes();
+
+            CaptureTime = cameraExtendedAttributes?.CaptureTime?.DateTime;
 
             var extendedAttributes = new ExtendedAttributes(
                 commonExtendedAttributes,

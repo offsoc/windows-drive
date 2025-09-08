@@ -20,6 +20,7 @@ public sealed class SyncFolder
     public SyncFolderType Type { get; }
     public SyncMethod SyncMethod => Mapping.SyncMethod;
     public string LocalPath { get; }
+    public int MappingId => Mapping.Id;
     public string? RemoteName => Mapping.Remote.RootItemName;
     public string? RemoteShareId => Mapping.Remote.ShareId;
     public bool RemoteIsReadOnly => Mapping.Remote.IsReadOnly;

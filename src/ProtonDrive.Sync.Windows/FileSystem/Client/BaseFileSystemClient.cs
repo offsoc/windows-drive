@@ -7,7 +7,7 @@ using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client;
 
-public abstract class BaseFileSystemClient
+internal abstract class BaseFileSystemClient
 {
     public Task Delete(NodeInfo<long> info, CancellationToken cancellationToken)
     {

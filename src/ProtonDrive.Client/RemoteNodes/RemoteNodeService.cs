@@ -205,6 +205,20 @@ internal sealed class RemoteNodeService : IRemoteNodeService
                     hashKey.ToArray(),
                     extendedAttributes);
 
+            case LinkType.Album:
+                var albumHashKey = DecryptHashKey(link.Id, link.AlbumProperties?.NodeHashKey ?? string.Empty, nodeKey, nodeKey.PublicKey);
+
+                return new RemoteFolder(
+                    link,
+                    name,
+                    nameSessionKey,
+                    parentPath,
+                    nodeKey,
+                    passphrase,
+                    passphraseSessionKey,
+                    albumHashKey.ToArray(),
+                    extendedAttributes);
+
             default:
                 throw new NotSupportedException($"Unknown link type '{link.Type}'");
         }

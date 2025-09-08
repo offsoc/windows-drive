@@ -19,6 +19,7 @@ public class NodeInfo<TId> : ICloneable
     public DateTime LastWriteTimeUtc { get; private set; }
     public long Size { get; private set; } = -1;
     public long? SizeOnStorage { get; private set; }
+    public string? Sha1Digest { get; private set; }
 
     public bool IsEmpty => Root is null && (Id is null || Id.Equals(default)) && string.IsNullOrEmpty(Path) && string.IsNullOrEmpty(Name);
 
@@ -104,6 +105,13 @@ public class NodeInfo<TId> : ICloneable
     public NodeInfo<TId> WithPlaceholderState(PlaceholderState value)
     {
         PlaceholderState = value;
+
+        return this;
+    }
+
+    public NodeInfo<TId> WithSha1Digest(string value)
+    {
+        Sha1Digest = value;
 
         return this;
     }

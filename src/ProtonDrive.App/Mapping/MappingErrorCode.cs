@@ -21,6 +21,7 @@ public enum MappingErrorCode
     LocalFolderIncludesAnAlreadySyncedFolder,
     LocalFolderNonSyncable,
     OnDemandSyncRootNotRegistered,
+    OnDemandSyncRootMissingSyncRootFlag,
     ConflictingOnDemandSyncRootExists,
     ConflictingDescendantOnDemandSyncRootExists,
     InsufficientLocalFreeSpace,

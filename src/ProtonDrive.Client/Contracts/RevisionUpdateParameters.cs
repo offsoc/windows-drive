@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ProtonDrive.Client.Photos.Contracts;
 
 namespace ProtonDrive.Client.Contracts;
 
@@ -21,4 +22,8 @@ public sealed class RevisionUpdateParameters
 
     [JsonPropertyName("XAttr")]
     public string? ExtendedAttributes { get; }
+
+    [JsonPropertyName("Photo")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public PhotoRevisionDetails? PhotoDetails { get; set; }
 }

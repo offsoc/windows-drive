@@ -1,0 +1,10 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace ProtonDrive.Client.FileUploading;
+
+public interface IPhotoHashProvider
+{
+    public Task<string> GetContentHashAsync(string shareId, string parentLinkId, string sha1Digest, CancellationToken cancellationToken);
+    public Task<string> GetNameHashAsync(string shareId, string parentLinkId, string filename, CancellationToken cancellationToken);
+}

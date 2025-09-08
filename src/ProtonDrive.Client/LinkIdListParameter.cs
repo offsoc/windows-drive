@@ -6,5 +6,5 @@ namespace ProtonDrive.Client;
 public sealed class LinkIdListParameter
 {
     [JsonPropertyName("LinkIDs")]
-    public List<string> LinkIds { get; } = new();
+    public List<string> LinkIds { get; init; } = [];
 }

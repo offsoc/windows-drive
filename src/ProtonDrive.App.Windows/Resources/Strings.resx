@@ -441,7 +441,7 @@
     <value>All files are always available on this device</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1" xml:space="preserve">
-    <value>Files within "{0}" folder will now always be available on device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>Files within "{0}" folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2" xml:space="preserve">
@@ -680,14 +680,46 @@ disable storage optimization at any time.</value>
   <data name="Main_Photos_Folders_Items_Label" xml:space="preserve">
     <value>item(s)</value>
   </data>
+  <data name="Main_Photos_Folders_Error_ImportFailed" xml:space="preserve">
+    <value>Import failed. Try removing the folder and importing it again. If the issue persists, please contact support.</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportingItemsFormat" xml:space="preserve">
+    <value>Importing... {0} of {1}</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_NotStarted" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Importing" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Interrupted" xml:space="preserve">
+    <value>Import was interrupted</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Succeeded" xml:space="preserve">
+    <value>Import succeeded</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_Failed" xml:space="preserve">
+    <value>Import failed</value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_ValidationFailed" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="PhotoImportFolderStatus_Value_SetupFailed" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat" xml:space="preserve">
-    <value>Imported {0} of {1} items</value>
+    <value>Imported {0} of {1}</value>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label" xml:space="preserve">
     <value>No photos/videos found</value>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>_Remove</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_OpenFolder" xml:space="preserve">
+    <value>_Open folder</value>
+    <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Title" xml:space="preserve">
     <value>Import from Google Photos</value>
@@ -706,6 +738,9 @@ disable storage optimization at any time.</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button" xml:space="preserve">
     <value>Select Folder</value>
+  </data>
+  <data name="Main_Photos_Warning_UploadUnavailable" xml:space="preserve">
+    <value>Uploading photos is temporarily unavailable</value>
   </data>
   <data name="Main_Settings_Title" xml:space="preserve">
     <value>Settings</value>
@@ -945,6 +980,9 @@ disable storage optimization at any time.</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered" xml:space="preserve">
     <value>Sync folder was unexpectedly unregistered. Set up a new sync folder.</value>
+  </data>
+  <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag" xml:space="preserve">
+    <value>Sync folder is invalid. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_ConflictingOnDemandSyncRootExists" xml:space="preserve">
     <value>This folder is already synced on-demand. Set up a new sync folder.</value>
@@ -1422,13 +1460,13 @@ Contents of files will be downloaded on demand only.</value>  </data>
     <value>{0} folder(s) cannot be synced because they are system folder(s)</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat" xml:space="preserve">
-    <value>{0} folder(s) cannot be synced because included in a folder already synced to Proton Drive</value>
+    <value>{0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat" xml:space="preserve">
-    <value>{0} folder(s) cannot be synced because have a subfolder already synced to Proton Drive</value>
+    <value>{0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat" xml:space="preserve">
-    <value>{0} folder(s) cannot be synced because located on a non-supported drive</value>
+    <value>{0} folder(s) cannot be synced because they are located on a non-supported drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat" xml:space="preserve">
     <value>{0} folder(s) cannot be synced because network folders are not supported</value>

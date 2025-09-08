@@ -20,7 +20,7 @@ internal sealed class PhotosFeatureStateValidator : IPhotosFeatureStateValidator
 
         if (state.Status is not PhotosFeatureStatus.Ready)
         {
-            _logger.LogWarning("Photos feature is not ready, status is {PhotosFeatureStatus}", state.Status);
+            _logger.LogWarning("Photos feature is not ready (status is {PhotosFeatureStatus})", state.Status);
 
             return state.Status switch
             {

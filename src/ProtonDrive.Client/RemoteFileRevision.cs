@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,14 +13,16 @@ internal sealed class RemoteFileRevision : IRevision
     private readonly Stream _contentStream;
     private readonly ExtendedAttributes? _extendedAttributes;
 
-    public RemoteFileRevision(Stream contentStream, DateTime lastWriteTimeUtc, ExtendedAttributes? extendedAttributes)
+    public RemoteFileRevision(Stream contentStream, DateTime creationTimeUtc, DateTime lastWriteTimeUtc, ExtendedAttributes? extendedAttributes)
     {
         _contentStream = contentStream;
         _extendedAttributes = extendedAttributes;
+        CreationTimeUtc = creationTimeUtc;
         LastWriteTimeUtc = lastWriteTimeUtc;
     }
 
     public long Size => _contentStream.Length;
+    public DateTime CreationTimeUtc { get; }
     public DateTime LastWriteTimeUtc { get; }
 
     public Task CheckReadabilityAsync(CancellationToken cancellationToken)
@@ -62,6 +65,11 @@ internal sealed class RemoteFileRevision : IRevision
             _extendedAttributes.Location?.Longitude);
 
         return Task.FromResult(metadata);
+    }
+
+    public Task<IReadOnlySet<PhotoTag>> GetPhotoTagsAsync(CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
     }
 
     public void Dispose()

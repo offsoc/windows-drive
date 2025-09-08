@@ -43,7 +43,6 @@
     <ProjectReference Include="..\ProtonDrive.Sync.Agent\ProtonDrive.Sync.Agent.csproj" />
     <ProjectReference Include="..\ProtonDrive.Sync.Engine\ProtonDrive.Sync.Engine.csproj" />
     <ProjectReference Include="..\ProtonDrive.Sync.Shared\ProtonDrive.Sync.Shared.csproj" />
-    <ProjectReference Include="..\ProtonDrive.Sync.Windows\ProtonDrive.Sync.Windows.csproj" />
     <ProjectReference Include="..\ProtonDrive.Update\ProtonDrive.Update.csproj" />
   </ItemGroup>
 

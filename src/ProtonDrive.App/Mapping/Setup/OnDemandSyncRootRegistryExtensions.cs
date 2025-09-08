@@ -23,7 +23,7 @@ internal static class OnDemandSyncRootRegistryExtensions
 
         // If the mapping status is Complete, then the on-demand sync root should already be registered.
         // Registering the same sync root on top of existing registration works, it updates the characteristics of the root, if any have changed.
-        // We do care about the unexpected un-registration of previously registered on-demand sync root, because if we register it again,
+        // We care about the unexpected un-registration of previously registered on-demand sync root, because if we register it again,
         // the folder might have placeholder files removed, so the app would delete them on Proton Drive, which is not what the user expects.
         if (mapping.Status is MappingStatus.Complete && mapping.SyncMethod is SyncMethod.OnDemand)
         {
@@ -35,6 +35,8 @@ internal static class OnDemandSyncRootRegistryExtensions
                     return new MappingErrorInfo(MappingErrorCode.LocalFileSystemAccessFailed);
                 case OnDemandSyncRootVerificationVerdict.NotRegistered:
                     return new MappingErrorInfo(MappingErrorCode.OnDemandSyncRootNotRegistered);
+                case OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag:
+                    return new MappingErrorInfo(MappingErrorCode.OnDemandSyncRootMissingSyncRootFlag);
             }
         }
 

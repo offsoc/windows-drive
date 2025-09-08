@@ -1925,7 +1925,7 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because included in a folder already synced to Proton Drive.
+        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive.
         /// </summary>
         internal static string Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat {
             get {
@@ -1935,7 +1935,7 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because have a subfolder already synced to Proton Drive.
+        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive.
         /// </summary>
         internal static string Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat {
             get {
@@ -1964,7 +1964,7 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because located on a non-supported drive.
+        ///   Looks up a localized string similar to {0} folder(s) cannot be synced because they are located on a non-supported drive.
         /// </summary>
         internal static string Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat {
             get {
@@ -2184,7 +2184,7 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Files within &quot;{0}&quot; folder will now always be available on device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer)..
+        ///   Looks up a localized string similar to Files within &quot;{0}&quot; folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer)..
         /// </summary>
         internal static string Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1 {
             get {
@@ -2337,11 +2337,29 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Imported {0} of {1} items.
+        ///   Looks up a localized string similar to Import failed. Try removing the folder and importing it again. If the issue persists, please contact support..
+        /// </summary>
+        internal static string Main_Photos_Folders_Error_ImportFailed {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_Error_ImportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imported {0} of {1}.
         /// </summary>
         internal static string Main_Photos_Folders_ImportedItemsFormat {
             get {
                 return ResourceManager.GetString("Main_Photos_Folders_ImportedItemsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importing... {0} of {1}.
+        /// </summary>
+        internal static string Main_Photos_Folders_ImportingItemsFormat {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_ImportingItemsFormat", resourceCulture);
             }
         }
         
@@ -2355,7 +2373,16 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove.
+        ///   Looks up a localized string similar to _Open folder.
+        /// </summary>
+        internal static string Main_Photos_Folders_Menu_Item_OpenFolder {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_Menu_Item_OpenFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Remove.
         /// </summary>
         internal static string Main_Photos_Folders_Menu_Item_Remove {
             get {
@@ -2486,6 +2513,15 @@ namespace ProtonDrive.App.Windows.Resources {
         internal static string Main_Photos_Title {
             get {
                 return ResourceManager.GetString("Main_Photos_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading photos is temporarily unavailable.
+        /// </summary>
+        internal static string Main_Photos_Warning_UploadUnavailable {
+            get {
+                return ResourceManager.GetString("Main_Photos_Warning_UploadUnavailable", resourceCulture);
             }
         }
         
@@ -3319,6 +3355,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sync folder is invalid. Set up a new sync folder..
+        /// </summary>
+        internal static string MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag {
+            get {
+                return ResourceManager.GetString("MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sync folder was unexpectedly unregistered. Set up a new sync folder..
         /// </summary>
         internal static string MappingErrorCode_Value_OnDemandSyncRootNotRegistered {
@@ -3594,6 +3639,69 @@ namespace ProtonDrive.App.Windows.Resources {
         internal static string Onboarding_UpgradeStorage_Title {
             get {
                 return ResourceManager.GetString("Onboarding_UpgradeStorage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import failed.
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_Failed {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_Importing {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_Importing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import was interrupted.
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_Interrupted {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_Interrupted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_NotStarted {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_NotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_SetupFailed {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_SetupFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import succeeded.
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_Succeeded {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_Succeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PhotoImportFolderStatus_Value_ValidationFailed {
+            get {
+                return ResourceManager.GetString("PhotoImportFolderStatus_Value_ValidationFailed", resourceCulture);
             }
         }
         

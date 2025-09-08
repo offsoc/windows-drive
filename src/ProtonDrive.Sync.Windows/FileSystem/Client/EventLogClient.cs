@@ -8,7 +8,7 @@ using ProtonDrive.Sync.Windows.FileSystem.Watcher;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client;
 
-public class EventLogClient : IRootableEventLogClient<long>
+internal class EventLogClient : IRootableEventLogClient<long>
 {
     private static readonly IReadOnlyCollection<EventLogEntry<long>> SkippedEventLogEntry = [new(EventLogChangeType.Skipped)];
 
@@ -35,7 +35,7 @@ public class EventLogClient : IRootableEventLogClient<long>
             OnNextEntries(SkippedEventLogEntry);
             _watcher.EnableRaisingEvents = true;
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, default, includeObjectId: false, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, 0, includeObjectId: false, out var mappedException))
         {
             throw mappedException;
         }

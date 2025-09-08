@@ -18,6 +18,11 @@ public enum OnDemandSyncRootVerificationVerdict
     Invalid,
 
     /// <summary>
+    /// Provided folder path belongs to on-demand sync root with same ID, but file system does not consider it as a sync root
+    /// </summary>
+    MissingSyncRootFlag,
+
+    /// <summary>
     /// Provided folder path belongs to on-demand sync root with different ID
     /// </summary>
     ConflictingRootExists,

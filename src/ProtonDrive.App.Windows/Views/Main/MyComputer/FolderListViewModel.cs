@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,7 +105,7 @@ internal sealed class FolderListViewModel : ObservableObject, ISyncFoldersAware,
 
                     if (!_fileSystemDisplayNameAndIconProvider.TryGetDisplayNameAndIcon(folder.LocalPath, ShellIconSize.Small, out var name, out var icon))
                     {
-                        name = Path.GetFileName(folder.LocalPath);
+                        name = _fileSystemDisplayNameAndIconProvider.GetDisplayNameWithoutAccess(folder.LocalPath) ?? string.Empty;
                         icon = _fileSystemDisplayNameAndIconProvider.GetFolderIconWithoutAccess(folder.LocalPath, ShellIconSize.Small);
                     }
 

@@ -84,6 +84,7 @@ public static class ApiClientConfigurator
                 sp.GetRequiredService<ILinkApiClient>(),
                 sp.GetRequiredService<IFolderApiClient>(),
                 sp.GetRequiredService<IFileApiClient>(),
+                sp.GetRequiredService<IPhotoApiClient>(),
                 sp.GetRequiredService<IVolumeApiClient>(),
                 sp.GetRequiredService<ICryptographyService>(),
                 sp.GetRequiredService<IHttpClientFactory>(),
@@ -162,6 +163,9 @@ public static class ApiClientConfigurator
         services.AddSingleton<IContactService, ContactService>();
         services.AddSingleton<ISharedWithMeClient, SharedWithMeClient>();
 
+        services.AddSingleton<IPhotoHashProvider, PhotoHashProvider>();
+        services.AddSingleton<IPhotoDuplicateService, PhotoDuplicateService>();
+
         services.AddApiHttpClients(AuthHttpClientName, GetAuthBaseAddress, GetDefaultNumberOfRetries, GetDefaultTimeout)
             .AddApiClient<IAuthenticationApiClient>()
             .AddApiClient<IAuthenticationSessionApiClient>()
@@ -191,6 +195,7 @@ public static class ApiClientConfigurator
             .AddApiClient<ILinkApiClient>()
             .AddApiClient<IFolderApiClient>()
             .AddApiClient<IFileApiClient>()
+            .AddApiClient<IPhotoApiClient>()
             ;
 
         services.AddApiHttpClients(DocsHttpClientName, GetDocsBaseAddress, GetDefaultNumberOfRetries, GetDefaultTimeout, useOfflinePolicy: false)

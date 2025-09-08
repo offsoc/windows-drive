@@ -17,6 +17,7 @@ using ProtonDrive.App.Notifications;
 using ProtonDrive.App.Notifications.Offers;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Photos;
+using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;
@@ -50,6 +51,7 @@ using ProtonDrive.Shared.Security.Cryptography;
 using ProtonDrive.Shared.Threading;
 using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem.Client;
+using ProtonDrive.Sync.Windows.FileSystem.Photos;
 using ProtonDrive.Sync.Windows.Security.Cryptography;
 
 namespace ProtonDrive.App.Windows.Configuration;
@@ -214,7 +216,9 @@ internal static class AppServices
             .AddSingleton<PhotosViewModel>()
             .AddSingleton<PhotosImportViewModel>()
             .AddSingleton<ISyncFoldersAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
+            .AddSingleton<IPhotoImportFoldersAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
             .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
+            .AddSingleton<IPhotosFeatureStateAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
 
             .AddSingleton<SettingsViewModel>()
             .AddSingleton<AboutViewModel>()
@@ -249,10 +253,9 @@ internal static class AppServices
 
             .AddSingleton<IThumbnailGenerator, Win32ThumbnailGenerator>()
             .AddSingleton<IFileMetadataGenerator, WinRtFileMetadataGenerator>()
-
-            .AddSingleton<IFileSystemClient<long>>(provider => new ClassicFileSystemClient(
-                provider.GetRequiredService<IThumbnailGenerator>(),
-                provider.GetRequiredService<IFileMetadataGenerator>()))
+            .AddSingleton<IPhotoTagsGenerator, PhotoTagsGenerator>()
+            .AddSingleton<ILocalFileSystemClientFactory, LocalFileSystemClientFactory>()
+            .AddSingleton<ILocalEventLogClientFactory, LocalEventLogClientFactory>()
 
             .AddSingleton<IFileSystemIdentityProvider<long>, FileSystemIdentityProvider>()
             ;

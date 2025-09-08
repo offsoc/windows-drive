@@ -10,7 +10,7 @@ using Windows.Storage.FileProperties;
 
 namespace ProtonDrive.App.Windows.Services;
 
-public sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
+internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
 {
     private readonly ILogger<WinRtFileMetadataGenerator> _logger;
 
@@ -38,7 +38,7 @@ public sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
 
         var cameraManufacturer = imageProperties.CameraManufacturer;
         var cameraModel = imageProperties.CameraModel;
-        var captureTime = imageProperties.DateTaken;
+        var captureTime = FileMetadataValidator.IsValidCaptureTime(imageProperties.DateTaken) ? imageProperties.DateTaken : default(DateTimeOffset?);
         var cameraOrientation = (int)imageProperties.Orientation;
         var cameraDevice = (cameraManufacturer + " " + cameraModel).Trim();
 
@@ -110,7 +110,11 @@ public sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
         }
         catch (Exception ex) when (ex.IsFileAccessException() || ex is COMException)
         {
-            _logger.LogWarning("Metadata generation failed: {FailureNote}: {ErrorCode} {ErrorMessage}", failureNote, ex.GetRelevantFormattedErrorCode(), ex.Message);
+            _logger.LogWarning(
+                "Metadata generation failed: {FailureNote}: {ErrorCode} {ErrorMessage}",
+                failureNote,
+                ex.GetRelevantFormattedErrorCode(),
+                ex.Message);
             return null;
         }
     }

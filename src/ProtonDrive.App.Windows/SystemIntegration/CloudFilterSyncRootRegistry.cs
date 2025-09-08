@@ -15,7 +15,9 @@ using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
+using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Sync.Windows.FileSystem;
+using ProtonDrive.Sync.Windows.FileSystem.CloudFiles;
 using ProtonDrive.Sync.Windows.Shell;
 using Vanara.PInvoke;
 using Windows.Security.Cryptography;
@@ -38,6 +40,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     private readonly AppConfig _appConfig;
     private readonly IFileSystemDisplayNameAndIconProvider _fileSystemDisplayNameAndIconProvider;
+    private readonly IErrorReporting _errorReporting;
     private readonly ILogger<CloudFilterSyncRootRegistry> _logger;
 
     private string? _userAccountId;
@@ -46,10 +49,12 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
     public CloudFilterSyncRootRegistry(
         AppConfig appConfig,
         IFileSystemDisplayNameAndIconProvider fileSystemDisplayNameAndIconProvider,
+        IErrorReporting errorReporting,
         ILogger<CloudFilterSyncRootRegistry> logger)
     {
         _appConfig = appConfig;
         _fileSystemDisplayNameAndIconProvider = fileSystemDisplayNameAndIconProvider;
+        _errorReporting = errorReporting;
         _logger = logger;
     }
 
@@ -301,6 +306,16 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 actualInfo.InSyncPolicy == rootInfo.InSyncPolicy &&
                 actualInfo.HardlinkPolicy == rootInfo.HardlinkPolicy)
             {
+                if (!HasSyncRootFlag(rootInfo.Path.Path))
+                {
+                    _logger.LogWarning("On-demand sync root \"{RootId}\" is missing sync root flag", rootInfo.Id);
+
+                    // Report to Sentry as this helps us detect potential data corruption issues early.
+                    // Later, we may replace this with a more specific recovery or mitigation strategy.
+                    _errorReporting.CaptureError("On-demand sync root is missing sync root flag");
+                    return (OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag, ConflictingRootInfo: null);
+                }
+
                 _logger.LogInformation("On-demand sync root \"{RootId}\" is valid", rootInfo.Id);
                 return (OnDemandSyncRootVerificationVerdict.Valid, ConflictingRootInfo: null);
             }
@@ -308,12 +323,20 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             if (actualInfo.Id != rootInfo.Id)
             {
                 _logger.LogWarning("On-demand sync root \"{RootId}\" is conflicting with \"{ConflictingRootId}\"", rootInfo.Id, actualInfo.Id);
-
                 return (OnDemandSyncRootVerificationVerdict.ConflictingRootExists, ConflictingRootInfo: actualInfo);
             }
 
-            _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", rootInfo.Id);
+            if (!HasSyncRootFlag(rootInfo.Path.Path))
+            {
+                _logger.LogWarning("On-demand sync root \"{RootId}\" is missing sync root flag", rootInfo.Id);
 
+                // Report to Sentry as this helps us detect potential data corruption issues early.
+                // Later, we may replace this with a more specific recovery or mitigation strategy.
+                _errorReporting.CaptureError("On-demand sync root is missing sync root flag");
+                return (OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag, ConflictingRootInfo: null);
+            }
+
+            _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", rootInfo.Id);
             return (OnDemandSyncRootVerificationVerdict.Invalid, ConflictingRootInfo: null);
         }
         catch (COMException ex) when (ex.ErrorCode == ErrorCodeElementNotFound)
@@ -324,7 +347,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         catch (Exception ex) when (ex.IsFileAccessException() || ex is TypeInitializationException || ex is COMException)
         {
             ex.TryGetRelevantFormattedErrorCode(out var errorCode);
-            _logger.LogError("Failed to verify on-demand sync root \"{RootId}\": {ErrorCode} {ErrorMessage}.", rootInfo.Id, errorCode, ex.Message);
+            _logger.LogError("Failed to verify on-demand sync root \"{RootId}\": {ErrorCode} {ErrorMessage}", rootInfo.Id, errorCode, ex.Message);
             return (OnDemandSyncRootVerificationVerdict.VerificationFailed, ConflictingRootInfo: null);
         }
     }
@@ -637,6 +660,35 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
         rootId = $"{ProviderName}!{userSid}!{userAccountId}!{root.RootId}";
         return true;
+    }
+
+    private bool HasSyncRootFlag(string path)
+    {
+        var placeholderState = GetPlaceholderState(path);
+
+        if (!placeholderState.HasFlag(PlaceholderState.SyncRoot))
+        {
+            _logger.LogWarning("Root folder placeholder state is {PlaceholderState}", placeholderState);
+            return false;
+        }
+
+        return true;
+    }
+
+    private PlaceholderState GetPlaceholderState(string path)
+    {
+        try
+        {
+            using var directory = FileSystemDirectory.Open(path, FileSystemFileAccess.ReadAttributes, FileShare.ReadWrite);
+
+            return directory.GetPlaceholderState();
+        }
+        catch (Exception ex) when (ex.IsFileAccessException())
+        {
+            _logger.LogWarning("Failed to get placeholder state: {ErrorCode}: {ErrorMessage}", ex.GetRelevantFormattedErrorCode(), ex.Message);
+
+            return PlaceholderState.Invalid;
+        }
     }
 
     private void SetInSync(string path)

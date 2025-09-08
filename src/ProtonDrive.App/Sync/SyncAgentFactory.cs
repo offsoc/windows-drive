@@ -23,7 +23,6 @@ using ProtonDrive.Sync.Agent.Validation;
 using ProtonDrive.Sync.Engine;
 using ProtonDrive.Sync.Shared;
 using ProtonDrive.Sync.Shared.FileSystem;
-using ProtonDrive.Sync.Windows.FileSystem.Client;
 
 namespace ProtonDrive.App.Sync;
 
@@ -51,8 +50,8 @@ internal sealed class SyncAgentFactory
     private readonly LocalRootMapForDeletionDetectionFactory _localSyncRootMapForDeletionDetectionFactory;
     private readonly FileSanitizationProvider _fileSanitizerProvider;
     private readonly ILocalVolumeInfoProvider _localVolumeInfoProvider;
-    private readonly IThumbnailGenerator _thumbnailGenerator;
-    private readonly IFileMetadataGenerator _fileMetadataGenerator;
+    private readonly ILocalFileSystemClientFactory _localUndecoratedFileSystemClientFactory;
+    private readonly ILocalEventLogClientFactory _localUndecoratedEventLogClientFactory;
     private readonly IRootDeletionHandler _syncRootDeletionHandler;
     private readonly ISyncFolderStructureProtector _folderStructureProtector;
     private readonly IScheduler _scheduler;
@@ -67,8 +66,8 @@ internal sealed class SyncAgentFactory
         LocalRootMapForDeletionDetectionFactory localSyncRootMapForDeletionDetectionFactory,
         FileSanitizationProvider fileSanitizerProvider,
         ILocalVolumeInfoProvider localVolumeInfoProvider,
-        IFileMetadataGenerator fileMetadataGenerator,
-        IThumbnailGenerator thumbnailGenerator,
+        ILocalFileSystemClientFactory localUndecoratedFileSystemClientFactory,
+        ILocalEventLogClientFactory localUndecoratedEventLogClientFactory,
         IRootDeletionHandler syncRootDeletionHandler,
         ISyncFolderStructureProtector folderStructureProtector,
         IScheduler scheduler,
@@ -82,8 +81,8 @@ internal sealed class SyncAgentFactory
         _localSyncRootMapForDeletionDetectionFactory = localSyncRootMapForDeletionDetectionFactory;
         _fileSanitizerProvider = fileSanitizerProvider;
         _localVolumeInfoProvider = localVolumeInfoProvider;
-        _fileMetadataGenerator = fileMetadataGenerator;
-        _thumbnailGenerator = thumbnailGenerator;
+        _localUndecoratedFileSystemClientFactory = localUndecoratedFileSystemClientFactory;
+        _localUndecoratedEventLogClientFactory = localUndecoratedEventLogClientFactory;
         _syncRootDeletionHandler = syncRootDeletionHandler;
         _folderStructureProtector = folderStructureProtector;
         _scheduler = scheduler;
@@ -151,8 +150,7 @@ internal sealed class SyncAgentFactory
         var localFileSystemClient = new LocalDecoratedFileSystemClientFactory(
                 _localVolumeInfoProvider,
                 _loggerFactory,
-                () => new ClassicFileSystemClient(_thumbnailGenerator, _fileMetadataGenerator),
-                () => new OnDemandHydrationFileSystemClient(_thumbnailGenerator, _fileMetadataGenerator, _loggerFactory),
+                _localUndecoratedFileSystemClientFactory,
                 fileUploadAbortionStrategy,
                 _folderStructureProtector)
             .GetClient(mappings, localAdapterSettings);
@@ -160,7 +158,7 @@ internal sealed class SyncAgentFactory
         var localEventLogClient =
             new LocalDecoratedEventLogClientFactory(
                     _loggerFactory,
-                    () => new EventLogClient(),
+                    _localUndecoratedEventLogClientFactory,
                     _localSyncRootMapForDeletionDetectionFactory,
                     fileUploadAbortionStrategy,
                     _syncRootDeletionHandler)

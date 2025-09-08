@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using ProtonDrive.Client.Cryptography;
 
 namespace ProtonDrive.Client.FileUploading;
 
-internal sealed class RevisionSealer : IRevisionSealer
+internal class RevisionSealer : IRevisionSealer
 {
     private readonly string _shareId;
     private readonly string _fileId;
@@ -22,9 +23,7 @@ internal sealed class RevisionSealer : IRevisionSealer
     private readonly ILogger<RevisionSealer> _logger;
 
     public RevisionSealer(
-        string shareId,
-        string fileId,
-        string revisionId,
+        RevisionSealerParameters parameters,
         IPgpSignatureProducer signatureProducer,
         Address signatureAddress,
         IRevisionManifestCreator revisionManifestCreator,
@@ -35,9 +34,9 @@ internal sealed class RevisionSealer : IRevisionSealer
         _fileRevisionUpdateApiClient = fileRevisionUpdateApiClient;
         _logger = logger;
         _signatureProducer = signatureProducer;
-        _shareId = shareId;
-        _fileId = fileId;
-        _revisionId = revisionId;
+        _shareId = parameters.ShareId;
+        _fileId = parameters.FileId;
+        _revisionId = parameters.RevisionId;
         _signatureAddress = signatureAddress;
         _revisionManifestCreator = revisionManifestCreator;
         _extendedAttributesBuilder = extendedAttributesBuilder;
@@ -45,6 +44,7 @@ internal sealed class RevisionSealer : IRevisionSealer
 
     public async Task SealRevisionAsync(
         IReadOnlyCollection<UploadedBlock> blocks,
+        DateTime creationTimeUtc,
         string sha1Digest,
         CancellationToken cancellationToken)
     {
@@ -61,13 +61,25 @@ internal sealed class RevisionSealer : IRevisionSealer
 
         var extendedAttributes = await _extendedAttributesBuilder.BuildAsync(cancellationToken).ConfigureAwait(false);
 
-        var revisionUpdateParameters = new RevisionUpdateParameters(manifestSignature, _signatureAddress.EmailAddress, extendedAttributes);
+        var parameters = await GetRevisionParametersAsync(manifestSignature, extendedAttributes, creationTimeUtc, sha1Digest, cancellationToken)
+            .ConfigureAwait(false);
 
         _logger.LogDebug("File with ID {FileID} SHA1 checksum is {SHA1}", _fileId, sha1Digest);
 
         await _fileRevisionUpdateApiClient
-            .UpdateRevisionAsync(_shareId, _fileId, _revisionId, revisionUpdateParameters, cancellationToken)
+            .UpdateRevisionAsync(_shareId, _fileId, _revisionId, parameters, cancellationToken)
             .ThrowOnFailure()
             .ConfigureAwait(false);
+    }
+
+    protected virtual Task<RevisionUpdateParameters> GetRevisionParametersAsync(
+        string manifestSignature,
+        string? extendedAttributes,
+        DateTime creationTimeUtc,
+        string sha1Digest,
+        CancellationToken cancellationToken)
+    {
+        var revisionUpdateParameters = new RevisionUpdateParameters(manifestSignature, _signatureAddress.EmailAddress, extendedAttributes);
+        return Task.FromResult(revisionUpdateParameters);
     }
 }

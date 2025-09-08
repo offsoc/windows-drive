@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,20 +8,15 @@ using ProtonDrive.App.Settings;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Logging;
-using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Mapping.SyncFolders;
 
-internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IMappingStateAware
+internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware
 {
     private readonly AppConfig _appConfig;
     private readonly IMappingRegistry _mappingRegistry;
     private readonly ILocalSyncFolderValidator _localSyncFolderValidator;
-    private readonly Lazy<IEnumerable<ISyncFoldersAware>> _syncFoldersAware;
     private readonly ILogger<SyncFolderService> _logger;
-
-    private readonly ICollection<SyncFolder> _syncFolders = [];
-    private readonly IScheduler _scheduler = new SerialScheduler();
 
     private IReadOnlyCollection<RemoteToLocalMapping> _activeMappings = [];
 
@@ -30,13 +24,11 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
         AppConfig appConfig,
         IMappingRegistry mappingRegistry,
         ILocalSyncFolderValidator localSyncFolderValidator,
-        Lazy<IEnumerable<ISyncFoldersAware>> syncFoldersAware,
         ILogger<SyncFolderService> logger)
     {
         _appConfig = appConfig;
         _mappingRegistry = mappingRegistry;
         _localSyncFolderValidator = localSyncFolderValidator;
-        _syncFoldersAware = syncFoldersAware;
         _logger = logger;
     }
 
@@ -241,84 +233,6 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
         IReadOnlyCollection<RemoteToLocalMapping> deletedMappings)
     {
         _activeMappings = activeMappings;
-
-        Schedule(HandleMappingsChange);
-
-        return;
-
-        void HandleMappingsChange()
-        {
-            var unprocessedSyncFolders = _syncFolders.ToList();
-            var newSyncFolders = new List<SyncFolder>();
-
-            foreach (var mapping in activeMappings)
-            {
-                var syncFolder = _syncFolders.FirstOrDefault(s => s.Mapping == mapping);
-                if (syncFolder != null)
-                {
-                    unprocessedSyncFolders.Remove(syncFolder);
-                    OnSyncFolderChanged(SyncFolderChangeType.Updated, syncFolder);
-
-                    continue;
-                }
-
-                newSyncFolders.Add(new SyncFolder(mapping));
-            }
-
-            foreach (var syncFolder in unprocessedSyncFolders)
-            {
-                RemoveSyncFolder(syncFolder);
-            }
-
-            foreach (var syncFolder in newSyncFolders)
-            {
-                AddSyncFolder(syncFolder);
-            }
-        }
-    }
-
-    void IMappingStateAware.OnMappingStateChanged(RemoteToLocalMapping mapping, MappingState state)
-    {
-        Schedule(HandleMappingStateChange);
-
-        return;
-
-        void HandleMappingStateChange()
-        {
-            var syncFolder = _syncFolders.FirstOrDefault(s => s.Mapping == mapping);
-
-            if (syncFolder?.SetState(state) ?? false)
-            {
-                OnSyncFolderChanged(SyncFolderChangeType.Updated, syncFolder);
-            }
-
-            if (state.Status is MappingSetupStatus.Failed)
-            {
-                FailChildSyncFolders();
-            }
-        }
-
-        void FailChildSyncFolders()
-        {
-            if (mapping.Type is not MappingType.SharedWithMeRootFolder)
-            {
-                return;
-            }
-
-            foreach (var childSyncFolder in _syncFolders.Where(s => s.Type is SyncFolderType.SharedWithMeItem))
-            {
-                if (childSyncFolder.SetState(state))
-                {
-                    OnSyncFolderChanged(SyncFolderChangeType.Updated, childSyncFolder);
-                }
-            }
-        }
-    }
-
-    internal Task WaitForCompletionAsync()
-    {
-        // Wait for all previously scheduled internal tasks to complete
-        return _scheduler.Schedule(() => false);
     }
 
     private IEnumerable<string> GetSyncedFolderPaths()
@@ -328,30 +242,5 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
         return _activeMappings
             .Where(x => x.Type is not MappingType.SharedWithMeItem)
             .Select(x => x.Local.Path);
-    }
-
-    private void AddSyncFolder(SyncFolder syncFolder)
-    {
-        _syncFolders.Add(syncFolder);
-        OnSyncFolderChanged(SyncFolderChangeType.Added, syncFolder);
-    }
-
-    private void RemoveSyncFolder(SyncFolder syncFolder)
-    {
-        _syncFolders.Remove(syncFolder);
-        OnSyncFolderChanged(SyncFolderChangeType.Removed, syncFolder);
-    }
-
-    private void OnSyncFolderChanged(SyncFolderChangeType changeType, SyncFolder syncFolder)
-    {
-        foreach (var listener in _syncFoldersAware.Value)
-        {
-            listener.OnSyncFolderChanged(changeType, syncFolder);
-        }
-    }
-
-    private void Schedule(Action action)
-    {
-        _scheduler.Schedule(action);
     }
 }

@@ -2,6 +2,8 @@
 
 public enum Feature
 {
+    DriveAlbumsDisabled,
+    DrivePhotosUploadDisabled,
     DriveSharingDisabled,
     DriveSharingEditingDisabled,
     DriveWindowsForceMigrationToVolumeEvents,

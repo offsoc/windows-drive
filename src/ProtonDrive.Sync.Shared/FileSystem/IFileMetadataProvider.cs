@@ -1,8 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public interface IFileMetadataProvider
 {
-    public Task<FileMetadata?> GetMetadataAsync();
+    DateTime CreationTimeUtc { get; }
+
+    Task<FileMetadata?> GetMetadataAsync();
+
+    Task<IReadOnlySet<PhotoTag>> GetPhotoTagsAsync(CancellationToken cancellationToken);
 }

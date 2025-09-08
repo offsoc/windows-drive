@@ -13,6 +13,7 @@ internal interface IExtendedAttributesBuilder
     IEnumerable<int>? BlockSizes { get; set; }
     PublicPgpKey? NodeKey { get; init; }
     string? Sha1Digest { get; set; }
+    DateTime? CaptureTime { get; }
 
     Task<string?> BuildAsync(CancellationToken cancellationToken);
 }

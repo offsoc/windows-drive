@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MetadataExtractor" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" />
     <PackageReference Include="Vanara.PInvoke.CldApi" />

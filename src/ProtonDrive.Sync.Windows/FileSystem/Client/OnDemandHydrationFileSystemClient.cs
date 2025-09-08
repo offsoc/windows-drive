@@ -11,11 +11,12 @@ using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem.Client.CloudFiles;
+using ProtonDrive.Sync.Windows.FileSystem.Photos;
 using static Vanara.PInvoke.CldApi;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client;
 
-public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IFileSystemClient<long>
+internal sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IFileSystemClient<long>
 {
     private static readonly EnumerationOptions EnumerationOptions = new()
     {
@@ -26,6 +27,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
 
     private readonly IThumbnailGenerator _thumbnailGenerator;
     private readonly IFileMetadataGenerator _fileMetadataGenerator;
+    private readonly IPhotoTagsGenerator _photoTagsGenerator;
     private readonly ILoggerFactory _loggerFactory;
     private string? _currentConnectionRootPath;
     private int _numberOfConnections;
@@ -33,10 +35,15 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
     private SyncRootConnection? _syncRootConnection;
     private SyncRootCallbackDispatcher? _syncRootCallbackDispatcher;
 
-    public OnDemandHydrationFileSystemClient(IThumbnailGenerator thumbnailGenerator, IFileMetadataGenerator fileMetadataGenerator, ILoggerFactory loggerFactory)
+    public OnDemandHydrationFileSystemClient(
+        IThumbnailGenerator thumbnailGenerator,
+        IFileMetadataGenerator fileMetadataGenerator,
+        IPhotoTagsGenerator photoTagsGenerator,
+        ILoggerFactory loggerFactory)
     {
         _thumbnailGenerator = thumbnailGenerator;
         _fileMetadataGenerator = fileMetadataGenerator;
+        _photoTagsGenerator = photoTagsGenerator;
         _loggerFactory = loggerFactory;
     }
 
@@ -215,7 +222,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
 
         try
         {
-            return Task.FromResult((IRevision)new FileRevision(fileForReadingData, _thumbnailGenerator, _fileMetadataGenerator));
+            return Task.FromResult((IRevision)new FileRevision(fileForReadingData, _thumbnailGenerator, _fileMetadataGenerator, _photoTagsGenerator));
         }
         catch
         {
@@ -284,7 +291,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
 
                 try
                 {
-                    var fileInfo = tempFile.ToNodeInfo(parentId: default, refresh: false).WithSize(0).WithPath(tempFile.FullPath);
+                    var fileInfo = tempFile.ToNodeInfo(parentId: 0, refresh: false).WithSize(0).WithPath(tempFile.FullPath);
 
                     revisionCreationProcess = new ImmediatelyHydratingOnDemandRevisionCreationProcess(
                         tempFile,
