@@ -31,10 +31,12 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
     };
 
     private readonly IThumbnailGenerator _thumbnailGenerator;
+    private readonly IFileMetadataGenerator _fileMetadataGenerator;
 
-    public ClassicFileSystemClient(IThumbnailGenerator thumbnailGenerator)
+    public ClassicFileSystemClient(IThumbnailGenerator thumbnailGenerator, IFileMetadataGenerator fileMetadataGenerator)
     {
         _thumbnailGenerator = thumbnailGenerator;
+        _fileMetadataGenerator = fileMetadataGenerator;
     }
 
     public void Connect(string syncRootPath, IFileHydrationDemandHandler<long> fileHydrationDemandHandler)
@@ -116,7 +118,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
             CheckIdentity(file, info);
             CheckMetadata(file, info);
 
-            return Task.FromResult((IRevision)new FileRevision(file, _thumbnailGenerator));
+            return Task.FromResult((IRevision)new FileRevision(file, _thumbnailGenerator, _fileMetadataGenerator));
         }
         catch
         {
@@ -153,6 +155,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -230,6 +233,7 @@ public sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSystemC
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {

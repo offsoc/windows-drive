@@ -29,12 +29,14 @@ using ProtonDrive.App.Mapping.Setup;
 using ProtonDrive.App.Mapping.Setup.CloudFiles;
 using ProtonDrive.App.Mapping.Setup.ForeignDevices;
 using ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
+using ProtonDrive.App.Mapping.Setup.PhotoFolders;
 using ProtonDrive.App.Mapping.Setup.SharedWithMe.SharedWithMeItem;
 using ProtonDrive.App.Mapping.Setup.SharedWithMe.SharedWithMeRootFolder;
 using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Mapping.Teardown;
 using ProtonDrive.App.Notifications.Offers;
 using ProtonDrive.App.Onboarding;
+using ProtonDrive.App.Photos;
 using ProtonDrive.App.Reporting;
 using ProtonDrive.App.Sanitization;
 using ProtonDrive.App.Services;
@@ -217,16 +219,31 @@ public static class AppServices
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<VolumeService>())
                 .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<VolumeService>())
 
+                .AddSingleton<PhotoVolumeService>()
+                .AddSingleton<IPhotoVolumeService>(provider => provider.GetRequiredService<PhotoVolumeService>())
+                .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<PhotoVolumeService>())
+                .AddSingleton<IVolumeStateAware>(provider => provider.GetRequiredService<PhotoVolumeService>())
+                .AddSingleton<IPhotosFeatureStateAware>(provider => provider.GetRequiredService<PhotoVolumeService>())
+
                 .AddSingleton<DeviceService>()
                 .AddSingleton<IDeviceService>(provider => provider.GetRequiredService<DeviceService>())
                 .AddSingleton<IStartableService>(provider => provider.GetRequiredService<DeviceService>())
                 .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<DeviceService>())
                 .AddSingleton<IVolumeStateAware>(provider => provider.GetRequiredService<DeviceService>())
 
+                .AddSingleton<PhotosFeatureService>()
+                .AddSingleton<IStartableService>(provider => provider.GetRequiredService<PhotosFeatureService>())
+                .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<PhotosFeatureService>())
+                .AddSingleton<IVolumeStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
+                .AddSingleton<IPhotoVolumeStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
+                .AddSingleton<IPhotosOnboardingStateAware>(provider => provider.GetRequiredService<PhotosFeatureService>())
+
                 .AddSingleton<SyncFolderService>()
                 .AddSingleton<ISyncFolderService>(provider => provider.GetRequiredService<SyncFolderService>())
                 .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<SyncFolderService>())
                 .AddSingleton<IMappingStateAware>(provider => provider.GetRequiredService<SyncFolderService>())
+
+                .AddSingleton<IPhotoFolderService, PhotoFolderService>()
 
                 .AddSingleton<MappingRegistry>()
                 .AddSingleton<IMappingRegistry>(provider => provider.GetRequiredService<MappingRegistry>())
@@ -246,15 +263,22 @@ public static class AppServices
                 .AddSingleton<MappingValidationDispatcher>()
                 .AddSingleton<MappingFoldersSetupDispatcher>()
                 .AddSingleton<MappingSetupFinalizationDispatcher>()
+
                 .AddSingleton<CloudFilesMappingFolderValidationStep>()
                 .AddSingleton<CloudFilesMappingFoldersSetupStep>()
                 .AddSingleton<CloudFilesMappingSetupFinalizationStep>()
+
                 .AddSingleton<HostDeviceFolderMappingFolderValidationStep>()
                 .AddSingleton<HostDeviceFolderMappingFoldersSetupStep>()
                 .AddSingleton<HostDeviceFolderMappingSetupFinalizationStep>()
+
+                .AddSingleton<PhotoFolderMappingValidationStep>()
+                .AddSingleton<PhotoFolderMappingSetupStep>()
+
                 .AddSingleton<ForeignDeviceMappingFolderValidationStep>()
                 .AddSingleton<ForeignDeviceMappingFoldersSetupStep>()
                 .AddSingleton<ForeignDeviceMappingSetupFinalizationStep>()
+
                 .AddSingleton<SharedWithMeRootFolderMappingFoldersSetupStep>()
                 .AddSingleton<SharedWithMeRootFolderMappingSetupFinalizationStep>()
                 .AddSingleton<SharedWithMeItemMappingValidationStep>()
@@ -267,6 +291,21 @@ public static class AppServices
                 .AddSingleton<OnDemandSyncEligibilityValidator>()
                 .AddSingleton<IRemoteFolderValidationStep, RemoteFolderValidationStep>()
                 .AddSingleton<IRemoteSharedWithMeItemValidationStep, RemoteSharedWithMeItemValidationStep>()
+
+                .AddSingleton<LocalFolderSetupAssistant>()
+                .AddSingleton<ILocalFolderSetupAssistant>(provider => provider.GetRequiredService<LocalFolderSetupAssistant>())
+
+                .AddSingleton<PhotosFeatureStateValidator>()
+                .AddSingleton<IPhotosFeatureStateValidator>(provider => provider.GetRequiredService<PhotosFeatureStateValidator>())
+                .AddSingleton<IPhotosFeatureStateAware>(provider => provider.GetRequiredService<PhotosFeatureStateValidator>())
+
+                .AddSingleton<RemotePhotoVolumeValidator>()
+                .AddSingleton<IRemotePhotoVolumeValidator>(provider => provider.GetRequiredService<RemotePhotoVolumeValidator>())
+                .AddSingleton<IPhotoVolumeStateAware>(provider => provider.GetRequiredService<RemotePhotoVolumeValidator>())
+
+                .AddSingleton<RemotePhotoVolumeSetupAssistant>()
+                .AddSingleton<IRemotePhotoVolumeSetupAssistant>(provider => provider.GetRequiredService<RemotePhotoVolumeSetupAssistant>())
+                .AddSingleton<IPhotoVolumeStateAware>(provider => provider.GetRequiredService<RemotePhotoVolumeSetupAssistant>())
 
                 .AddSingleton<IMappingTeardownPipeline, MappingTeardownPipeline>()
                 .AddSingleton<CloudFilesMappingTeardownStep>()
@@ -336,6 +375,7 @@ public static class AppServices
                 .AddSingleton<IRemoteSettingsStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
                 .AddSingleton<IVolumeStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
+                .AddSingleton<IPhotoVolumeStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
                 .AddSingleton<IDeviceServiceStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
                 .AddSingleton<IMappingsSetupStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
                 .AddSingleton<IOfflineStateAware>(provider => provider.GetRequiredService<ResilientSetup>())
@@ -421,12 +461,14 @@ public static class AppServices
                 .AddSingleton(provider => new Lazy<IEnumerable<IAccountSwitchingAware>>(provider.GetRequiredService<IEnumerable<IAccountSwitchingAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IUserStateAware>>(provider.GetRequiredService<IEnumerable<IUserStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IVolumeStateAware>>(provider.GetRequiredService<IEnumerable<IVolumeStateAware>>))
+                .AddSingleton(provider => new Lazy<IEnumerable<IPhotoVolumeStateAware>>(provider.GetRequiredService<IEnumerable<IPhotoVolumeStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IDeviceServiceStateAware>>(provider.GetRequiredService<IEnumerable<IDeviceServiceStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IDevicesAware>>(provider.GetRequiredService<IEnumerable<IDevicesAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IMappingsAware>>(provider.GetRequiredService<IEnumerable<IMappingsAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IMappingStateAware>>(provider.GetRequiredService<IEnumerable<IMappingStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IOnboardingStateAware>>(provider.GetRequiredService<IEnumerable<IOnboardingStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<ISharedWithMeOnboardingStateAware>>(provider.GetRequiredService<IEnumerable<ISharedWithMeOnboardingStateAware>>))
+                .AddSingleton(provider => new Lazy<IEnumerable<IPhotosOnboardingStateAware>>(provider.GetRequiredService<IEnumerable<IPhotosOnboardingStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IStorageOptimizationOnboardingStateAware>>(provider.GetRequiredService<IEnumerable<IStorageOptimizationOnboardingStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IMappingsSetupStateAware>>(provider.GetRequiredService<IEnumerable<IMappingsSetupStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IAccountSwitchingHandler>>(provider.GetRequiredService<IEnumerable<IAccountSwitchingHandler>>))
@@ -438,6 +480,7 @@ public static class AppServices
                 .AddSingleton(provider => new Lazy<IEnumerable<IOfflineStateAware>>(provider.GetRequiredService<IEnumerable<IOfflineStateAware>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IIpcMessageHandler>>(provider.GetRequiredService<IEnumerable<IIpcMessageHandler>>))
                 .AddSingleton(provider => new Lazy<IEnumerable<IOffersAware>>(provider.GetRequiredService<IEnumerable<IOffersAware>>))
+                .AddSingleton(provider => new Lazy<IEnumerable<IPhotosFeatureStateAware>>(provider.GetRequiredService<IEnumerable<IPhotosFeatureStateAware>>))
 
                 .AddSingleton<ActivityService>()
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<ActivityService>())

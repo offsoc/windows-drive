@@ -454,6 +454,9 @@ Désactivez et réactivez sa synchronisation pour le restaurer et effacer cette 
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Une erreur s'est produite.</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>Le nom contient un caractère non valide.</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>Le nom est vide.</value>
   </data>
@@ -463,17 +466,14 @@ Désactivez et réactivez sa synchronisation pour le restaurer et effacer cette 
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>Le nom se termine par un espace.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>Le nom contient un caractère non valide.</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>Le nom n'est pas pris en charge par Windows.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>Le nom est trop long.</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Recherche de mise à jour...</value>
@@ -699,11 +699,11 @@ Désactivez et réactivez sa synchronisation pour le restaurer et effacer cette 
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>Le nom est déjà utilisé.</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>Le nom contient des caractères non valides.</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Une erreur s'est produite.</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>Le nom contient des caractères non valides.</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>Veuillez indiquer un nom.</value>
@@ -932,6 +932,57 @@ désactiver l'optimisation du stockage à tout moment.</value>
   <data name="Main_MyComputer_Title">
     <value>Mon ordinateur</value>
   </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Importation : {0} sur {1} éléments</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>éléments</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>retirer</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>Aucune photo/vidéo</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Guide étape par étape pour exporter vos photos depuis Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Exportez vos photos depuis Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>Il doit s'agir du dossier décompressé contenant vos photos et vidéos exportées.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Importez le dossier Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Sélectionner le dossier</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Importer depuis Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>Comment fonctionne l'importation de photos ?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Importer un dossier local depuis votre ordinateur</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Importer un dossier</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Importer les photos de Google depuis Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Importer depuis Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Importer des photos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Photos</value>
+  </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Modifier</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1093,6 +1144,12 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Élément de menu : Mon ordinateur</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Photos</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Élément de menu : Photos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Paramètres</value>
   </data>
@@ -1211,10 +1268,16 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>L'enregistrement du dossier de synchronisation a été annulé de façon inattendue. Configurez un nouveau dossier de synchronisation.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Photos indisponible</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>La fonctionnalité Photos n'est pas prête.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
     <value>L'accès au fichier ou au dossier partagé sur Proton Drive est impossible. Vérifiez s'il est toujours partagé avec vous.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
     <value>Les autorisations du fichier ou du dossier partagé Proton Drive ont changé. Désactivez et réactivez sa synchronisation pour résoudre le problème.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">

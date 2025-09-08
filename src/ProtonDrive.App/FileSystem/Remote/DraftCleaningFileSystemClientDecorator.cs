@@ -24,12 +24,14 @@ internal sealed class DraftCleaningFileSystemClientDecorator : FileSystemClientD
         NodeInfo<string> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         await DeletePreviousDraftIfExists(info, isForCreation: true, cancellationToken).ConfigureAwait(false);
 
-        var fileHydrationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+        var fileHydrationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken)
+            .ConfigureAwait(false);
 
         var createdFileInfo = fileHydrationProcess.FileInfo;
 
@@ -50,12 +52,21 @@ internal sealed class DraftCleaningFileSystemClientDecorator : FileSystemClientD
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         await DeletePreviousDraftIfExists(info, isForCreation: false, cancellationToken).ConfigureAwait(false);
 
-        var fileHydrationProcess = await base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken)
+        var fileHydrationProcess = await base.CreateRevision(
+                info,
+                size,
+                lastWriteTime,
+                tempFileName,
+                thumbnailProvider,
+                fileMetadataProvider,
+                progressCallback,
+                cancellationToken)
             .ConfigureAwait(false);
 
         var existingFileInfo = fileHydrationProcess.FileInfo;

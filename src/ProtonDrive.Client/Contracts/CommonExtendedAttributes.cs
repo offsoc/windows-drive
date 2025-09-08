@@ -12,4 +12,7 @@ public sealed class CommonExtendedAttributes
     public DateTime? LastWriteTime { get; set; }
 
     public IEnumerable<int>? BlockSizes { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Digests? Digests { get; set; }
 }

@@ -10,7 +10,8 @@ public sealed class JsonUtf8Serializer : IBinarySerializer, IThrowsExpectedExcep
     private readonly JsonSerializerOptions _options = new()
     {
         WriteIndented = true,
-        Converters = { new Base64JsonConverter() }
+        AllowTrailingCommas = true,
+        Converters = { new Base64JsonConverter() },
     };
 
     public T? Deserialize<T>(Stream stream)

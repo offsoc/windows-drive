@@ -83,7 +83,7 @@
     </DataTemplate>
 
     <DataTemplate
-        x:Key="StorageOptimizationOnboardingBadgeTemplate"
+        x:Key="NewFeatureBadgeTemplate"
         DataType="notification:NotificationBadge">
         <Border
             Background="{StaticResource PositiveBrush}"

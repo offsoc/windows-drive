@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ProtonDrive.Client.Contracts;
+namespace ProtonDrive.Client.Volumes.Contracts;
 
 public sealed class VolumeRootShare
 {

@@ -18,7 +18,13 @@ internal sealed class ReadOnlyFileSystemClientDecorator : FileSystemClientDecora
         throw GetException();
     }
 
-    public override Task<IRevisionCreationProcess<string>> CreateFile(NodeInfo<string> info, string? tempFileName, IThumbnailProvider thumbnailProvider, Action<Progress>? progressCallback, CancellationToken cancellationToken)
+    public override Task<IRevisionCreationProcess<string>> CreateFile(
+        NodeInfo<string> info,
+        string? tempFileName,
+        IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
+        Action<Progress>? progressCallback,
+        CancellationToken cancellationToken)
     {
         throw GetException();
     }
@@ -29,6 +35,7 @@ internal sealed class ReadOnlyFileSystemClientDecorator : FileSystemClientDecora
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {

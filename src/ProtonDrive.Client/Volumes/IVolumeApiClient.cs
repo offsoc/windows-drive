@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ProtonDrive.Client.Contracts;
+using ProtonDrive.Client.Volumes.Contracts;
 using Refit;
 
 namespace ProtonDrive.Client.Volumes;
@@ -17,9 +17,13 @@ internal interface IVolumeApiClient
 
     [Post("/volumes")]
     [BearerAuthorizationHeader]
-    Task<VolumeCreationResponse> CreateVolumeAsync(VolumeCreationParameters parameters, CancellationToken cancellationToken);
+    Task<VolumeCreationResponse> CreateMainVolumeAsync(VolumeCreationParameters parameters, CancellationToken cancellationToken);
 
     [Post("/volumes/{volumeId}/thumbnails")]
     [BearerAuthorizationHeader]
     Task<ThumbnailListResponse> GetThumbnailsAsync(string volumeId, ThumbnailQueryParameters parameters, CancellationToken cancellationToken);
+
+    [Post("/photos/volumes")]
+    [BearerAuthorizationHeader]
+    Task<VolumeCreationResponse> CreatePhotoVolumeAsync(PhotoVolumeCreationParameters parameters, CancellationToken cancellationToken);
 }

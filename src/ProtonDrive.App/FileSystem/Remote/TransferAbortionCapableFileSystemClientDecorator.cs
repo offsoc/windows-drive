@@ -74,6 +74,11 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
             return _decoratedInstance.TryGetThumbnail(numberOfPixelsOnLargestSide, maxNumberOfBytes, out thumbnailBytes);
         }
 
+        public Task<FileMetadata?> GetMetadataAsync()
+        {
+            return _decoratedInstance.GetMetadataAsync();
+        }
+
         public void Dispose()
         {
             _decoratedInstance.Dispose();

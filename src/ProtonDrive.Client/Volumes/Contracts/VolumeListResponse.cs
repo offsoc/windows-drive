@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ProtonDrive.Client.Contracts;
+namespace ProtonDrive.Client.Volumes.Contracts;
 
 public sealed record VolumeListResponse : ApiResponse
 {

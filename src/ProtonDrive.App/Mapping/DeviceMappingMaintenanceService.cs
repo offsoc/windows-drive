@@ -30,6 +30,7 @@ internal sealed class DeviceMappingMaintenanceService : IStoppableService, IDevi
     private ImmutableList<Device> _devices = [];
     private DeviceServiceStatus _deviceServiceStatus = DeviceServiceStatus.Idle;
     private volatile bool _stopping;
+    private volatile bool _hasReceivedMappings;
     private bool _mappingsModificationIsInProgress;
 
     public DeviceMappingMaintenanceService(
@@ -99,6 +100,8 @@ internal sealed class DeviceMappingMaintenanceService : IStoppableService, IDevi
             return;
         }
 
+        _hasReceivedMappings = true;
+
         ScheduleMappingMaintenance();
     }
 
@@ -145,7 +148,7 @@ internal sealed class DeviceMappingMaintenanceService : IStoppableService, IDevi
 
     private async Task MaintainMappingsAsync(CancellationToken cancellationToken)
     {
-        if (_stopping)
+        if (_stopping || !_hasReceivedMappings)
         {
             return;
         }

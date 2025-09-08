@@ -126,6 +126,12 @@
   <data name="Main_Sidebar_NavigationMenu_Item_Activity_HelpText" xml:space="preserve">
     <value>Menu item: Activity</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos" xml:space="preserve">
+    <value>Photos</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText" xml:space="preserve">
+    <value>Menu item: Photos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_SharedWithMe" xml:space="preserve">
     <value>Shared with me</value>
   </data>
@@ -384,7 +390,7 @@
     <value>Cancel</value>
   </data>
   <data name="Main_MyComputer_Title" xml:space="preserve">
-    <value>My Computer</value>
+    <value>My computer</value>
   </data>
   <data name="Main_MyComputer_Device_Label" xml:space="preserve">
     <value>This device</value>
@@ -650,6 +656,57 @@ disable storage optimization at any time.</value>
   <data name="Main_Activity_Rename_Status_Value_Renaming" xml:space="preserve">
     <value>Renaming...</value>
   </data>
+  <data name="Main_Photos_Title" xml:space="preserve">
+    <value>Photos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label" xml:space="preserve">
+    <value>How does photo import work?</value>
+  </data>
+  <data name="Main_Photos_Import_Title" xml:space="preserve">
+    <value>Import photos</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title" xml:space="preserve">
+    <value>Import a folder</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description" xml:space="preserve">
+    <value>Import a local folder from your computer</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title" xml:space="preserve">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description" xml:space="preserve">
+    <value>Import Google photos from Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label" xml:space="preserve">
+    <value>item(s)</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat" xml:space="preserve">
+    <value>Imported {0} of {1} items</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label" xml:space="preserve">
+    <value>No photos/videos found</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title" xml:space="preserve">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title" xml:space="preserve">
+    <value>1. Export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description" xml:space="preserve">
+    <value>Step-by-step guide of how to export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title" xml:space="preserve">
+    <value>2. Import Google Photos folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description" xml:space="preserve">
+    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button" xml:space="preserve">
+    <value>Select Folder</value>
+  </data>
   <data name="Main_Settings_Title" xml:space="preserve">
     <value>Settings</value>
   </data>
@@ -907,6 +964,18 @@ disable storage optimization at any time.</value>
   <data name="MappingErrorCode_Value_InsufficientDeviceQuota" xml:space="preserve">
     <value>The maximum number of synced computers has been reached. Delete unnecessary computers from Proton Drive on web.</value>
   </data>
+  <data name="MappingErrorCode_Value_PhotosDisabled" xml:space="preserve">
+    <value>Proton Photos unavailable</value>
+  </data>
+  <data name="MappingErrorCode_Value_PhotosNotReady" xml:space="preserve">
+    <value>Photos feature not ready</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist" xml:space="preserve">
+    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged" xml:space="preserve">
+    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
+  </data>
   <data name="MappingErrorCode_Value_SharingDisabled" xml:space="preserve">
     <value>Sharing is temporarily unavailable</value>
   </data>
@@ -1111,12 +1180,6 @@ Toggle its sync off and on again to restore it and clear this error.</value>
   </data>
   <data name="FileSystemErrorCode_Value_ReadOnlyRoot" xml:space="preserve">
     <value>View-only files and folders can't be modified. Turn sync off and on under "Shared with me" to resolve.</value>
-  </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist" xml:space="preserve">
-    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
-  </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged" xml:space="preserve">
-    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
   </data>
   <data name="SystemTray_Menu_Item_OpenProtonDrive" xml:space="preserve">
     <value>_Open Proton Drive</value>

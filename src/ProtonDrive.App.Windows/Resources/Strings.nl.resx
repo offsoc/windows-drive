@@ -454,6 +454,9 @@ Zet de synchronisatie uit en weer aan om deze te herstellen en deze fout te verw
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Er is iets fout gegaan.</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>Naam bevat een ongeldig teken</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>Naam niet ingevuld</value>
   </data>
@@ -463,17 +466,14 @@ Zet de synchronisatie uit en weer aan om deze te herstellen en deze fout te verw
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>Naam eindigt op een spatie</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>Naam bevat een ongeldig teken</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>Naam niet ondersteund door Windows</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>Naam te lang</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Zoeken naar updates...</value>
@@ -699,11 +699,11 @@ Zet de synchronisatie uit en weer aan om deze te herstellen en deze fout te verw
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>Naam al in gebruik</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>Naam bevat ongeldige tekens</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Er is iets misgegaan</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>Naam bevat ongeldige tekens</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>Naam is verplicht</value>
@@ -931,6 +931,57 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
   <data name="Main_MyComputer_Title">
     <value>Mijn computer</value>
   </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Geïmporteerd {0} van {1} items</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>item(s)</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>verwijderen</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>Geen foto's/video's gevonden</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Stapsgewijze handleiding hoe u uw Google Foto's exporteert</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Uw Google Foto's exporteren</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>Dit moet de uitgepakte map met uw geëxporteerde foto's en video's zijn.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Google Foto's map importeren</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Map selecteren</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Importeren vanuit Google Foto's</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>Hoe werkt het importeren van foto's?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Importeer een lokale map vanaf uw computer</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Map importeren</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Importeer Google foto's uit Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Importeren vanuit Google Foto's</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Importeer foto's</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Foto's</value>
+  </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Wijzigen</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1092,6 +1143,12 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Menu-item: Mijn computer</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Foto's</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Menu-item: Foto's</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Instellingen</value>
   </data>
@@ -1210,11 +1267,17 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>De gesynchroniseerde map is onverwachts niet geregistreerd. Stel een nieuwe gesynchroniseerde map in.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>Kan geen toegang krijgen tot het gedeelde Proton Drive-bestand of de map. Controleer of die nog steeds met u gedeeld wordt.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Foto's niet beschikbaar</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>Permissies van gedeeld Proton Drive-bestand of map zijn veranderd. Schakel de synchronisatie uit en weer in om op te lossen.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>Foto's functie niet gereed</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>Kan geen toegang krijgen tot het gedeelde Proton Drive bestand of map. Controleer of die nog steeds met u gedeeld wordt.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>Machtigingen van gedeeld Proton Drive bestand of map zijn veranderd. Schakel de synchronisatie uit en weer in om op te lossen.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Delen is tijdelijk niet beschikbaar</value>

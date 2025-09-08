@@ -84,16 +84,15 @@ internal sealed class CloudFilesMappingFoldersSetupStep
             replica.RootLinkId = volume.RootLinkId;
             replica.InternalVolumeId = _volumeIdentityProvider.GetRemoteVolumeId(replica.VolumeId);
 
-            return default;
+            return null;
         }
     }
 
     private MappingErrorCode? SetUpLocalFolder(LocalReplica replica, LinkType remoteRootType, CancellationToken cancellationToken)
     {
-        if (replica.RootFolderId != default)
+        if (replica.IsSetUp())
         {
-            // Already set up
-            return default;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -144,13 +143,13 @@ internal sealed class CloudFilesMappingFoldersSetupStep
 
         if (!mapping.Local.RootFolderId.Equals(rootFolder.Id))
         {
-            _logger.LogWarning("The local sync folder identity has diverged");
+            _logger.LogWarning("The local sync folder identity has diverged from {PreviousId} to {NewId}", mapping.Local.RootFolderId, rootFolder.Id);
             return MappingErrorCode.LocalFolderDiverged;
         }
 
         if (_localFolderService.EmptyFolderExists(mapping.Local.Path, _specialFolders))
         {
-            return default;
+            return null;
         }
 
         bool remoteFolderIsEmpty;
@@ -174,7 +173,7 @@ internal sealed class CloudFilesMappingFoldersSetupStep
             return MappingErrorCode.LocalAndRemoteFoldersNotEmpty;
         }
 
-        return default;
+        return null;
     }
 
     private bool TryCreateLocalFolder(string path)

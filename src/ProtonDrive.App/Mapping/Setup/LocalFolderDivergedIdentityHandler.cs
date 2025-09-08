@@ -27,7 +27,7 @@ internal sealed class LocalFolderDivergedIdentityHandler
     {
         if (mapping.Type is not MappingType.HostDeviceFolder)
         {
-            _logger.LogWarning("Mapping type is not {ExpectedMappingType}", MappingType.HostDeviceFolder);
+            _logger.LogDebug("Diverged folder identity not accepted: Mapping type is not {ExpectedMappingType}", MappingType.HostDeviceFolder);
             return false;
         }
 
@@ -35,7 +35,7 @@ internal sealed class LocalFolderDivergedIdentityHandler
 
         if (replica.VolumeSerialNumber != 0 && replica.VolumeSerialNumber != folderInfo.VolumeInfo.VolumeSerialNumber)
         {
-            _logger.LogWarning("Volume serial number has diverged");
+            _logger.LogWarning("Diverged folder identity not accepted: Volume serial number has diverged");
             return false;
         }
 
@@ -43,27 +43,27 @@ internal sealed class LocalFolderDivergedIdentityHandler
 
         if (!_localFolderService.NonEmptyFolderExists(path))
         {
-            _logger.LogWarning("Local sync folder is empty");
+            _logger.LogWarning("Diverged folder identity not accepted: Local sync folder is empty");
             return false;
         }
 
         var parentPath = Path.GetDirectoryName(path);
         if (string.IsNullOrEmpty(parentPath))
         {
-            _logger.LogWarning("Unable to obtain the parent path of local sync folder");
+            _logger.LogWarning("Diverged folder identity not accepted: Unable to obtain the parent path of local sync folder");
             return false;
         }
 
         var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         if (string.IsNullOrEmpty(userProfilePath))
         {
-            _logger.LogWarning("Unable to obtain the user profile folder");
+            _logger.LogWarning("Diverged folder identity not accepted: Unable to obtain the user profile folder");
             return false;
         }
 
         if (!parentPath.Equals(userProfilePath, StringComparison.OrdinalIgnoreCase))
         {
-            _logger.LogWarning("The local sync folder is not a subfolder of user profile");
+            _logger.LogWarning("Diverged folder identity not accepted: The local sync folder is not a subfolder of user profile");
             return false;
         }
 

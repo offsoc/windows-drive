@@ -1,26 +1,10 @@
-﻿namespace ProtonDrive.Client.Devices.Contracts;
+﻿using ProtonDrive.Client.Shares.Contracts;
+
+namespace ProtonDrive.Client.Devices.Contracts;
 
 internal sealed class DeviceCreationParameters
 {
-    private DeviceDeviceCreationParameters? _device;
-    private DeviceShareCreationParameters? _share;
-    private DeviceLinkCreationParameters? _link;
-
-    public DeviceDeviceCreationParameters Device
-    {
-        get => _device ??= new();
-        init => _device = value;
-    }
-
-    public DeviceShareCreationParameters Share
-    {
-        get => _share ??= new();
-        init => _share = value;
-    }
-
-    public DeviceLinkCreationParameters Link
-    {
-        get => _link ??= new();
-        init => _link = value;
-    }
+    public required DeviceDeviceCreationParameters Device { get; init; }
+    public required ShareCreationParameters Share { get; init; }
+    public required LinkCreationParameters Link { get; init; }
 }

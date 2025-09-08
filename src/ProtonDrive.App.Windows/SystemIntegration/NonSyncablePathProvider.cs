@@ -11,13 +11,13 @@ internal sealed class NonSyncablePathProvider : INonSyncablePathProvider
 
     public NonSyncablePathProvider(AppConfig appConfig)
     {
-        _paths = new Lazy<IReadOnlyList<string>>(() => Array.AsReadOnly(new[]
-        {
+        _paths = new Lazy<IReadOnlyList<string>>(() => Array.AsReadOnly(
+        [
             Environment.GetFolderPath(Environment.SpecialFolder.Windows),
             Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
             Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
             appConfig.AppDataPath,
-        }));
+        ]));
     }
 
     public IReadOnlyList<string> Paths => _paths.Value;

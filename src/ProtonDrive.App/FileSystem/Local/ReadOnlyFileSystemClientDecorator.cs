@@ -19,12 +19,13 @@ internal class ReadOnlyFileSystemClientDecorator : FileSystemClientDecoratorBase
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         var readOnlyInfo = ToReadOnly(info);
 
-        return base.CreateFile(readOnlyInfo, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateFile(readOnlyInfo, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task<IRevisionCreationProcess<long>> CreateRevision(
@@ -33,12 +34,21 @@ internal class ReadOnlyFileSystemClientDecorator : FileSystemClientDecoratorBase
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         var readOnlyInfo = ToReadOnly(info);
 
-        return base.CreateRevision(readOnlyInfo, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateRevision(
+            readOnlyInfo,
+            size,
+            lastWriteTime,
+            tempFileName,
+            thumbnailProvider,
+            fileMetadataProvider,
+            progressCallback,
+            cancellationToken);
     }
 
     public override Task Delete(NodeInfo<long> info, CancellationToken cancellationToken)

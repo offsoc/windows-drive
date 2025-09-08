@@ -193,6 +193,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         NodeInfo<string> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -228,14 +229,14 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         var blockVerifier = await GetBlockVerifierAsync(response.FileRevisionId.LinkId, response.FileRevisionId.Value, nodeKey, cancellationToken)
             .ConfigureAwait(false);
 
+        var fileIdentity = new FileIdentity(_volumeId, _shareId, response.FileRevisionId.LinkId, response.FileRevisionId.Value);
+
         var stream = new RemoteFileWriteStream(
             _fileApiClient,
             _httpClientFactory,
             _cryptographyService,
             _bufferPool,
-            _shareId,
-            response.FileRevisionId.LinkId,
-            response.FileRevisionId.Value,
+            fileIdentity,
             signatureAddress,
             contentEncrypter,
             thumbnailProvider,
@@ -243,7 +244,10 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             _reportBlockVerificationOrDecryptionFailure,
             progressCallback);
 
-        var extendedAttributesBuilder = new ExtendedAttributesBuilder(_cryptographyService, _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
+        var extendedAttributesBuilder = new ExtendedAttributesBuilder(
+            _cryptographyService,
+            fileMetadataProvider,
+            _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
         {
             NodeKey = nodeKey.PublicKey,
             LastWriteTime = info.LastWriteTimeUtc,
@@ -261,7 +265,12 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
         var nodeInfoWithIds = info.WithId(response.FileRevisionId.LinkId).WithRevisionId(response.FileRevisionId.Value);
 
-        return new RemoteRevisionCreationProcess(nodeInfoWithIds, stream, stream.UploadedBlocks, stream.BlockSize, revisionSealer);
+        return new RemoteRevisionCreationProcess(
+            nodeInfoWithIds,
+            stream,
+            stream.UploadedBlocks,
+            stream.BlockSize,
+            revisionSealer);
 
         async Task<(PgpSessionKey ContentSessionKey, PrivatePgpKey NodeKey)> GetExistingKeysAsync(string linkId)
         {
@@ -303,7 +312,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
                 _reportBlockVerificationOrDecryptionFailure),
             info.Id);
 
-        return new RemoteFileRevision(stream, remoteFile.ModificationTime);
+        return new RemoteFileRevision(stream, remoteFile.ModificationTime, remoteFile.ExtendedAttributes);
     }
 
     public async Task<IRevisionCreationProcess<string>> CreateRevision(
@@ -312,6 +321,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -339,14 +349,14 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         var blockVerifier = await GetBlockVerifierAsync(remoteFile.Id, revisionId, nodeKey, cancellationToken)
             .ConfigureAwait(false);
 
+        var fileIdentity = new FileIdentity(_volumeId, _shareId, info.Id, revisionId);
+
         var stream = new RemoteFileWriteStream(
             _fileApiClient,
             _httpClientFactory,
             _cryptographyService,
             _bufferPool,
-            _shareId,
-            info.Id,
-            revisionId,
+            fileIdentity,
             signatureAddress,
             contentEncrypter,
             thumbnailProvider,
@@ -354,7 +364,10 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             _reportBlockVerificationOrDecryptionFailure,
             progressCallback);
 
-        var extendedAttributesBuilder = new ExtendedAttributesBuilder(_cryptographyService, _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
+        var extendedAttributesBuilder = new ExtendedAttributesBuilder(
+            _cryptographyService,
+            fileMetadataProvider,
+            _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
         {
             NodeKey = nodeKey.PublicKey,
             LastWriteTime = lastWriteTime,
@@ -376,7 +389,12 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             .WithSize(size)
             .WithLastWriteTimeUtc(lastWriteTime);
 
-        return new RemoteRevisionCreationProcess(nodeInfoWithIds, stream, stream.UploadedBlocks, stream.BlockSize, revisionSealer);
+        return new RemoteRevisionCreationProcess(
+            nodeInfoWithIds,
+            stream,
+            stream.UploadedBlocks,
+            stream.BlockSize,
+            revisionSealer);
     }
 
     public async Task Move(NodeInfo<string> info, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
@@ -438,8 +456,8 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             {
                 ParentLinkId = destinationParentFolder.Id,
                 NodePassphrase = encryptedPassphrase,
-                NodePassphraseSignature = isSigningNodePassphraseRequired ? signature : default,
-                SignatureEmailAddress = isSigningNodePassphraseRequired ? signatureAddress.EmailAddress : default,
+                NodePassphraseSignature = isSigningNodePassphraseRequired ? signature : null,
+                SignatureEmailAddress = isSigningNodePassphraseRequired ? signatureAddress.EmailAddress : null,
                 Name = name,
                 NameHash = nameHash,
                 NameSignatureEmailAddress = signatureAddress.EmailAddress,
@@ -734,7 +752,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         {
             return await _remoteNodeService.GetShareAsync(_shareId, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, default, includeObjectId: false, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id: null, includeObjectId: false, out var mappedException))
         {
             throw mappedException;
         }
@@ -902,7 +920,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
     {
         // Modification time is used as Folder last write time.
         // Modification time for files is not checked in favor of checking Revision ID.
-        if (remoteNode is not RemoteFolder _ || info.LastWriteTimeUtc == default)
+        if (remoteNode is not RemoteFolder || info.LastWriteTimeUtc == default)
         {
             return true;
         }
@@ -999,7 +1017,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             throw new FileSystemClientException<string>(
                 "Node Id value is not specified",
                 FileSystemErrorCode.PathBasedAccessNotSupported,
-                objectId: default);
+                objectId: null);
         }
     }
 
@@ -1010,7 +1028,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             throw new FileSystemClientException<string>(
                 "Parent node Id value is not specified",
                 FileSystemErrorCode.PathBasedAccessNotSupported,
-                objectId: default);
+                objectId: null);
         }
     }
 }

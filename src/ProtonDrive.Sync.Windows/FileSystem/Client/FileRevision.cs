@@ -12,13 +12,15 @@ internal sealed class FileRevision : IRevision
 
     private readonly FileSystemFile _file;
     private readonly IThumbnailGenerator _thumbnailGenerator;
+    private readonly IFileMetadataGenerator _fileMetadataGenerator;
 
     private Stream? _stream;
 
-    public FileRevision(FileSystemFile file, IThumbnailGenerator thumbnailGenerator)
+    public FileRevision(FileSystemFile file, IThumbnailGenerator thumbnailGenerator, IFileMetadataGenerator fileMetadataGenerator)
     {
         _file = file;
         _thumbnailGenerator = thumbnailGenerator;
+        _fileMetadataGenerator = fileMetadataGenerator;
 
         Size = _file.Size;
         LastWriteTimeUtc = _file.LastWriteTimeUtc;
@@ -41,7 +43,7 @@ internal sealed class FileRevision : IRevision
 
         Stream OpenContentStream()
         {
-            long fileId = default;
+            long fileId = 0;
 
             try
             {
@@ -59,6 +61,11 @@ internal sealed class FileRevision : IRevision
     public bool TryGetThumbnail(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, out ReadOnlyMemory<byte> thumbnailBytes)
     {
         return _thumbnailGenerator.TryGenerateThumbnail(_file.FullPath, numberOfPixelsOnLargestSide, maxNumberOfBytes, out thumbnailBytes);
+    }
+
+    public Task<FileMetadata?> GetMetadataAsync()
+    {
+        return _fileMetadataGenerator.GetMetadataAsync(_file.FullPath);
     }
 
     public bool TryGetFileHasChanged(out bool hasChanged)

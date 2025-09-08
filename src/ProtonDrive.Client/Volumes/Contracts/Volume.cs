@@ -1,14 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ProtonDrive.Client.Contracts;
+namespace ProtonDrive.Client.Volumes.Contracts;
 
 public enum VolumeState
 {
-    None = 0,
     Active = 1,
-    Deleted = 2,
     Locked = 3,
-    Restored = 4,
+}
+
+public enum VolumeType
+{
+    Main = 1,
+    Photo = 2,
 }
 
 public sealed class Volume
@@ -17,6 +20,7 @@ public sealed class Volume
     public required string Id { get; set; }
     public long UsedSpace { get; set; }
     public VolumeState State { get; set; }
+    public VolumeType Type { get; set; }
 
     public required VolumeRootShare Share { get; set; }
 }

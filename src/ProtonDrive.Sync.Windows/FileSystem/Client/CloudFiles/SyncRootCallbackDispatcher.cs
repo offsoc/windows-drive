@@ -21,8 +21,8 @@ internal sealed class SyncRootCallbackDispatcher : IAsyncDisposable
 
     private readonly CancellationTokenSource? _commonCancellationTokenSource = new();
     private readonly SemaphoreSlim _disposalSemaphore = new(1, 1);
-    private readonly ConcurrentDictionary<CF_TRANSFER_KEY, CancellationTokenSource> _cancellationTokenSources = new();
-    private readonly ConcurrentDictionary<CF_TRANSFER_KEY, Task> _transferTasks = new();
+    private readonly ConcurrentDictionary<CF_TRANSFER_KEY, CancellationTokenSource> _cancellationTokenSources = [];
+    private readonly ConcurrentDictionary<CF_TRANSFER_KEY, Task> _transferTasks = [];
     private readonly IFileHydrationDemandHandler<long> _fileHydrationDemandHandler;
     private readonly ILogger<SyncRootCallbackDispatcher> _logger;
 
@@ -39,15 +39,6 @@ internal sealed class SyncRootCallbackDispatcher : IAsyncDisposable
             new() { Type = CF_CALLBACK_TYPE.CF_CALLBACK_TYPE_CANCEL_FETCH_DATA, Callback = CancelFetchData },
             CF_CALLBACK_REGISTRATION.CF_CALLBACK_REGISTRATION_END,
         };
-
-        // TODO: prevent exceptions in constructor
-        CfGetPlatformInfo(out var platformVersion).ThrowExceptionForHR();
-
-        _logger.LogInformation(
-            "Platform version: RevisionNumber = {RevisionNumber:x8}, BuildNumber = {BuildNumber:x8}, IntegrationNumber = {IntegrationNumber:x8}",
-            platformVersion.RevisionNumber,
-            platformVersion.BuildNumber,
-            platformVersion.IntegrationNumber);
     }
 
     public CF_CALLBACK_REGISTRATION[] CallbackTable { get; }
@@ -309,9 +300,8 @@ internal sealed class SyncRootCallbackDispatcher : IAsyncDisposable
                 _logger);
 
             using var hydrationProcess = new FileHydrationProcess<long>(fileInfo, dataTransferStream, UpdateFileSize);
-            {
-                await _fileHydrationDemandHandler.HandleAsync(hydrationProcess, cancellationToken).ConfigureAwait(false);
-            }
+
+            await _fileHydrationDemandHandler.HandleAsync(hydrationProcess, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {

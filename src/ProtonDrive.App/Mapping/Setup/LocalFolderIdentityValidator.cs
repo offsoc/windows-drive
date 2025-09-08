@@ -34,7 +34,7 @@ internal sealed class LocalFolderIdentityValidator : IMappingsAware
         if ((replica.RootFolderId != 0 && replica.RootFolderId != folderId)
             || (replica.VolumeSerialNumber != 0 && replica.VolumeSerialNumber != volumeSerialNumber))
         {
-            _logger.LogWarning("The local sync folder identity has diverged");
+            _logger.LogWarning("The local sync folder identity has diverged from {PreviousId} to {NewId}", replica.RootFolderId, folderId);
             return MappingErrorCode.LocalFolderDiverged;
         }
 

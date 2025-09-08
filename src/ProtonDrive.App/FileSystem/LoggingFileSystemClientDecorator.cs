@@ -72,6 +72,7 @@ internal sealed class LoggingFileSystemClientDecorator<TId> : FileSystemClientDe
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -82,7 +83,7 @@ internal sealed class LoggingFileSystemClientDecorator<TId> : FileSystemClientDe
             info.ParentId,
             tempFileName ?? string.Empty);
 
-        return base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task<IRevisionCreationProcess<TId>> CreateRevision(
@@ -91,6 +92,7 @@ internal sealed class LoggingFileSystemClientDecorator<TId> : FileSystemClientDe
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -102,7 +104,7 @@ internal sealed class LoggingFileSystemClientDecorator<TId> : FileSystemClientDe
             info.Id,
             tempFileName ?? string.Empty);
 
-        return base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task Move(NodeInfo<TId> info, NodeInfo<TId> newInfo, CancellationToken cancellationToken)

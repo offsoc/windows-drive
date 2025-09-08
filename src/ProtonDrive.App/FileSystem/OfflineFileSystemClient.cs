@@ -31,6 +31,7 @@ internal sealed class OfflineFileSystemClient<TId> : IFileSystemClient<TId>
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -63,6 +64,7 @@ internal sealed class OfflineFileSystemClient<TId> : IFileSystemClient<TId>
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {

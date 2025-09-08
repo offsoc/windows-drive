@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
   <Fragment>
-    <Property Id="CLEANSUPAPPDATAONUNINSTALL" Value="1" Secure="yes" />
-
+    <Property Id="CLEANUPAPPDATAONREMOVE" Value="1" Secure="yes" />
+    
     <StandardDirectory Id="LocalAppDataFolder" />
 
+    <!--
+    The UI checkbox only recognizes 2 states of the property to determine whether it is checked or not: empty / not empty.
+    If overriden by command line to anything other than a positive value, unset the property.
+    -->
+    <SetProperty
+      Id="CLEANUPAPPDATAONREMOVE"
+      Value=""
+      Condition="(CLEANUPAPPDATAONREMOVE &lt;&gt; 1) AND (CLEANUPAPPDATAONREMOVE &lt;&gt; yes) AND (CLEANUPAPPDATAONREMOVE &lt;&gt; true)"
+      Before="AppSearch"
+      Sequence="first" />
+
     <!-- Only set the path if cleanup is enabled -->
-    <SetProperty Id="PathOfLocalAppDataToDelete" Value="[LocalAppDataFolder]Proton\[ProductName]" Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANSUPAPPDATAONUNINSTALL = 1" Before="Wix4RemoveFoldersEx_$(sys.BUILDARCHSHORT)" Sequence="execute" />
+    <SetProperty
+      Id="PathOfLocalAppDataToDelete"
+      Value="[LocalAppDataFolder]Proton\[ProductName]"
+      Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANUPAPPDATAONREMOVE"
+      Before="Wix4RemoveFoldersEx_$(sys.BUILDARCHSHORT)"
+      Sequence="execute" />
 
     <Component Id="LocalAppData" Directory="INSTALLFOLDER" Guid="EC53C504-7015-4F3F-A76F-615089E79F5A">
       <!-- This removes the Proton Drive folder, even if it's not empty -->
@@ -23,14 +39,14 @@
     
     <CustomAction
       Id="RemoveProtonDriveRegistryKey"
+      Execute="immediate"
       BinaryRef="ProtonExtensions"
       DllEntry="RemoveProtonDriveRegistryKey"
-      Execute="immediate"
       Return="ignore" />
 
     <InstallExecuteSequence>
-      <Custom Action="CleanUpFromApp" After="InstallValidate" Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANSUPAPPDATAONUNINSTALL = 1" />
-      <Custom Action="RemoveProtonDriveRegistryKey" Before="InstallValidate" Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANSUPAPPDATAONUNINSTALL = 1" />
+      <Custom Action="CleanUpFromApp" After="InstallInitialize" Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANUPAPPDATAONREMOVE" />
+      <Custom Action="RemoveProtonDriveRegistryKey" Before="InstallFinalize" Condition="REMOVE AND (NOT UPGRADINGPRODUCTCODE) AND CLEANUPAPPDATAONREMOVE" />
     </InstallExecuteSequence>
   </Fragment>
 </Wix>

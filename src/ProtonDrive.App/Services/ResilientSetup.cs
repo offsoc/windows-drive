@@ -20,9 +20,9 @@ using ProtonDrive.Sync.Shared.SyncActivity;
 
 namespace ProtonDrive.App.Services;
 
-internal class ResilientSetup
-    : ISessionStateAware, IRemoteSettingsStateAware, IAccountStateAware, IVolumeStateAware, IDeviceServiceStateAware, IMappingsSetupStateAware, ISyncStateAware, IOfflineStateAware,
-        IStoppableService, IDisposable
+internal class ResilientSetup :
+    ISessionStateAware, IRemoteSettingsStateAware, IAccountStateAware, IVolumeStateAware, IPhotoVolumeStateAware, IDeviceServiceStateAware,
+    IMappingsSetupStateAware, ISyncStateAware, IOfflineStateAware, IStoppableService, IDisposable
 {
     private readonly ILogger<ResilientSetup> _logger;
 
@@ -42,6 +42,7 @@ internal class ResilientSetup
         IRemoteSettingsService settingsService,
         IAccountService accountService,
         IVolumeService volumeService,
+        IPhotoVolumeService photoVolumeService,
         IDeviceService deviceService,
         IMappingSetupService mappingSetupService,
         ISyncService syncService,
@@ -63,6 +64,7 @@ internal class ResilientSetup
             { ServiceType.RemoteSettings, new ServiceInfo(ServiceType.RemoteSettings, () => settingsService.SetUpAsync(), "Retrying remote settings setup") },
             { ServiceType.Account, new ServiceInfo(ServiceType.Account, () => accountService.SetUpAccountAsync(), "Retrying user account setup") },
             { ServiceType.Volume, new ServiceInfo(ServiceType.Volume, () => volumeService.GetActiveVolumeAsync(), "Retrying volume setup") },
+            { ServiceType.PhotoVolume, new ServiceInfo(ServiceType.PhotoVolume, () => photoVolumeService.RetryFailedSetupAsync(), "Retrying photo volume setup") },
             { ServiceType.Device, new ServiceInfo(ServiceType.Device, () => deviceService.SetUpDevicesAsync(), "Retrying device setup") },
             { ServiceType.MappingSetup, new ServiceInfo(ServiceType.MappingSetup, () => mappingSetupService.SetUpMappingsAsync(), "Retrying sync folder mappings setup") },
             { ServiceType.Synchronization, new ServiceInfo(ServiceType.Synchronization, () => syncService.RestartAsync(), "Restarting sync service") },
@@ -75,6 +77,7 @@ internal class ResilientSetup
         RemoteSettings,
         Account,
         Volume,
+        PhotoVolume,
         Device,
         MappingSetup,
         Synchronization,
@@ -127,12 +130,24 @@ internal class ResilientSetup
     {
         var serviceStatus = value.Status switch
         {
-            VolumeServiceStatus.Succeeded => ServiceStatus.Succeeded,
-            VolumeServiceStatus.Failed => ServiceStatus.Failed,
+            VolumeStatus.Ready => ServiceStatus.Succeeded,
+            VolumeStatus.Failed => ServiceStatus.Failed,
             _ => ServiceStatus.Other,
         };
 
         HandleServiceStateChange(ServiceType.Volume, serviceStatus);
+    }
+
+    void IPhotoVolumeStateAware.OnPhotoVolumeStateChanged(VolumeState value)
+    {
+        var serviceStatus = value.Status switch
+        {
+            VolumeStatus.Ready => ServiceStatus.Succeeded,
+            VolumeStatus.Failed => ServiceStatus.Failed,
+            _ => ServiceStatus.Other,
+        };
+
+        HandleServiceStateChange(ServiceType.PhotoVolume, serviceStatus);
     }
 
     void IDeviceServiceStateAware.OnDeviceServiceStateChanged(DeviceServiceStatus status)
@@ -188,7 +203,7 @@ internal class ResilientSetup
 
     async Task IStoppableService.StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"{nameof(ResilientSetup)} is stopping");
+        _logger.LogDebug($"{nameof(ResilientSetup)} is stopping");
         _stopping = true;
         _handleDelay.Cancel();
 
@@ -196,7 +211,7 @@ internal class ResilientSetup
 
         _timer.Stop();
 
-        _logger.LogInformation($"{nameof(ResilientSetup)} stopped");
+        _logger.LogDebug($"{nameof(ResilientSetup)} stopped");
     }
 
     public void Dispose()

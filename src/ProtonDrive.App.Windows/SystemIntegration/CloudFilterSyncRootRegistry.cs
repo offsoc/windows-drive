@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -33,12 +34,14 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
     private const string UserSyncRootsKeyName = "UserSyncRoots";
     private const int SyncRootFlagShowSiblingsAsGroup = 1 << 9;
     private static readonly Guid ProviderId = Guid.Parse("{87C55815-A77B-4E44-A871-182F19499B54}");
+    private static readonly IReadOnlyCollection<string> NonSupportedPaths = GetNonSupportedPaths();
 
     private readonly AppConfig _appConfig;
     private readonly IFileSystemDisplayNameAndIconProvider _fileSystemDisplayNameAndIconProvider;
     private readonly ILogger<CloudFilterSyncRootRegistry> _logger;
 
     private string? _userAccountId;
+    private bool _platformVersionIsLogged;
 
     public CloudFilterSyncRootRegistry(
         AppConfig appConfig,
@@ -83,6 +86,12 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     public async Task<bool> TryRegisterAsync(OnDemandSyncRootInfo root)
     {
+        if (!IsPathSupported(root.Path))
+        {
+            _logger.LogWarning("Failed to register on-demand sync root \"{RootId}\": Non supported path", root.RootId);
+            return false;
+        }
+
         var rootInfo = await CreateSyncRootInfoAsync(root).ConfigureAwait(false);
 
         if (rootInfo == null)
@@ -108,6 +117,29 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         _userAccountId = value.Status is SessionStatus.Started ? value.UserId : null;
     }
 
+    private static IReadOnlyCollection<string> GetNonSupportedPaths()
+    {
+        // For some folders, like "%UserProfile%\AppData", on-demand sync root registration succeeds, and it works, but verification fails.
+        // Both StorageProviderSyncRootManager.GetSyncRootInformationForFolder and StorageProviderSyncRootManager.GetSyncRootInformationForId
+        // throw exception as if the root is not registered. To prevent later failure, we prevent registration on non-supported paths.
+        return new[]
+            {
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            }
+            .Where(x => !string.IsNullOrEmpty(x))
+            .Select(PathComparison.EnsureTrailingSeparator)
+            .ToList()
+            .AsReadOnly();
+    }
+
+    private static bool IsPathSupported(string path)
+    {
+        path = PathComparison.EnsureTrailingSeparator(path);
+
+        return !NonSupportedPaths.Any(nonSupportedPath => path.StartsWith(nonSupportedPath, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static bool TryRemoveAllEntries(ILogger logger)
     {
         try
@@ -119,7 +151,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
             foreach (var rootId in syncRootManagerKey.GetSubKeyNames().Where(n => n.StartsWith($"{ProviderName}!")))
             {
-                TryShowShellFolder(rootId, logger);
+                TryShowShellFolder(rootId, out _, logger);
 
                 succeeded &= TryUnregisterSyncRoot(rootId, logger);
             }
@@ -158,12 +190,20 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
     /// Restores Windows registry keys and values to match the status before hiding the shell folder.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If we do not restore previous state, the <see cref="StorageProviderSyncRootManager"/> does not
     /// recognize some registry keys as belonging to the sync root. As a result, registering already
     /// registered sync root duplicates registry keys, unregistering leaves registry keys not deleted.
+    /// </para>
+    /// <para>
+    /// A single shell folder serves to multiple sync roots when they are grouped (<see cref="ShellFolderSiblingsGrouping.Grouped"/>).
+    /// Upon unregistering a grouped sync root, if other grouped sync roots still exist, the shell folder remains.
+    /// </para>
     /// </remarks>
-    private static bool TryShowShellFolder(string rootId, ILogger logger)
+    private static bool TryShowShellFolder(string rootId, out string? hiddenNamespaceClassId, ILogger logger)
     {
+        hiddenNamespaceClassId = null;
+
         try
         {
             using var syncRootKey = Registry.LocalMachine.OpenSubKey($"{SyncRootManagerKeyName}\\{rootId}", writable: false);
@@ -192,6 +232,10 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
             desktopNameSpaceSubKey.SetValue(name: null, rootId, RegistryValueKind.String);
 
+            // Non-null value means the shell folder was hidden, so that the caller knows whether to
+            // hide it again upon unregistering the sync root.
+            hiddenNamespaceClassId = namespaceClassId;
+
             return true;
         }
         catch (Exception ex) when (ex is InvalidOperationException or ObjectDisposedException or SecurityException or UnauthorizedAccessException)
@@ -199,18 +243,6 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             logger.LogWarning("Failed to un-hide shell folder: {ErrorMessage}", ex.Message);
             return false;
         }
-    }
-
-    private static void SetInSync(string path)
-    {
-        using var directory = FileSystemDirectory.Open(path, FileSystemFileAccess.WriteAttributes, FileShare.ReadWrite);
-
-        var result = CldApi.CfSetInSyncState(
-            directory.FileHandle,
-            CldApi.CF_IN_SYNC_STATE.CF_IN_SYNC_STATE_IN_SYNC,
-            CldApi.CF_SET_IN_SYNC_FLAGS.CF_SET_IN_SYNC_FLAG_NONE);
-
-        Marshal.ThrowExceptionForHR((int)result);
     }
 
     private static void NotifyChanges(string path)
@@ -246,6 +278,8 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     private (OnDemandSyncRootVerificationVerdict Verdict, StorageProviderSyncRootInfo? ConflictingRootInfo) VerifySyncRoot(StorageProviderSyncRootInfo rootInfo)
     {
+        LogPlatformVersionOnce();
+
         try
         {
             var actualInfo = StorageProviderSyncRootManager.GetSyncRootInformationForFolder(rootInfo.Path);
@@ -313,13 +347,15 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         catch (Exception ex) when (ex.IsFileAccessException() || ex is TypeInitializationException || ex is COMException)
         {
             ex.TryGetRelevantFormattedErrorCode(out var errorCode);
-            _logger.LogError("Failed to get descendants of on-demand sync root \"{RootId}\": {ErrorCode} {ErrorMessage}.", rootInfo.Id, errorCode, ex.Message);
+            _logger.LogError("Failed to get descendants of on-demand sync root \"{RootId}\": {ErrorCode}: {ErrorMessage}.", rootInfo.Id, errorCode, ex.Message);
             return null;
         }
     }
 
     private bool TryRegisterSyncRoot(StorageProviderSyncRootInfo rootInfo, ShellFolderVisibility shellFolderVisibility)
     {
+        LogPlatformVersionOnce();
+
         try
         {
             RestoreVisibility(rootInfo);
@@ -341,10 +377,10 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
             if (errorCode is "0x80040111")
             {
-                _logger.LogWarning("Failed to register on-demand sync root: Cloud Files API not supported");
+                _logger.LogError("Failed to register on-demand sync root: Cloud Files not supported");
             }
 
-            _logger.LogWarning("Failed to register on-demand sync root \"{RootId}\": {ErrorCode} {ErrorMessage}", rootInfo.Id, errorCode, ex.Message);
+            _logger.LogError("Failed to register on-demand sync root \"{RootId}\": {ErrorCode}: {ErrorMessage}", rootInfo.Id, errorCode, ex.Message);
             return false;
         }
     }
@@ -410,7 +446,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     private void RestoreVisibility(StorageProviderSyncRootInfo rootInfo)
     {
-        if (TryShowShellFolder(rootInfo.Id, _logger))
+        if (TryShowShellFolder(rootInfo.Id, out _, _logger))
         {
             return;
         }
@@ -426,7 +462,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             return;
         }
 
-        TryShowShellFolder(siblingRootId, _logger);
+        TryShowShellFolder(siblingRootId, out _, _logger);
     }
 
     private bool TryUnregisterSyncRoot(OnDemandSyncRootInfo root)
@@ -436,10 +472,12 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             return false;
         }
 
-        TryShowShellFolder(rootId, _logger);
+        TryShowShellFolder(rootId, out var namespaceClassId, _logger);
 
         if (TryUnregisterSyncRoot(rootId, _logger))
         {
+            HideShellFolderByNamespaceClass(namespaceClassId);
+
             NotifyChanges(root.Path);
 
             return true;
@@ -486,6 +524,23 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
             var namespaceClassId = syncRootKey.GetValue(NamespaceClassIdValueName) as string
                                    ?? throw new InvalidOperationException($"Registry value '{NamespaceClassIdValueName}' not found");
 
+            HideShellFolderByNamespaceClass(namespaceClassId);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or ObjectDisposedException or SecurityException or UnauthorizedAccessException)
+        {
+            _logger.LogWarning("Failed to hide shell folder: {ErrorMessage}", ex.Message);
+        }
+    }
+
+    private void HideShellFolderByNamespaceClass(string? namespaceClassId)
+    {
+        if (string.IsNullOrEmpty(namespaceClassId))
+        {
+            return;
+        }
+
+        try
+        {
             using var desktopNameSpaceKey = Registry.CurrentUser.OpenSubKey(DesktopNameSpaceKeyName, writable: true)
                       ?? throw new InvalidOperationException($"Registry key '{DesktopNameSpaceKeyName}' not found");
 
@@ -575,5 +630,52 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
         rootId = $"{ProviderName}!{userSid}!{userAccountId}!{root.RootId}";
         return true;
+    }
+
+    private void SetInSync(string path)
+    {
+        try
+        {
+            using var directory = FileSystemDirectory.Open(path, FileSystemFileAccess.WriteAttributes, FileShare.ReadWrite);
+
+            var result = CldApi.CfSetInSyncState(
+                directory.FileHandle,
+                CldApi.CF_IN_SYNC_STATE.CF_IN_SYNC_STATE_IN_SYNC,
+                CldApi.CF_SET_IN_SYNC_FLAGS.CF_SET_IN_SYNC_FLAG_NONE);
+
+            Marshal.ThrowExceptionForHR((int)result);
+        }
+        catch (Exception ex) when (ex.IsFileAccessException() || ex is COMException)
+        {
+            _logger.LogWarning("Failed to set folder in-sync: {ErrorCode}: {ErrorMessage}", ex.GetRelevantFormattedErrorCode(), ex.Message);
+        }
+    }
+
+    private void LogPlatformVersionOnce()
+    {
+        if (_platformVersionIsLogged)
+        {
+            return;
+        }
+
+        try
+        {
+            var result = CldApi.CfGetPlatformInfo(out var platformVersion);
+
+            Marshal.ThrowExceptionForHR((int)result);
+
+            _logger.LogInformation(
+                "Cloud Files platform version: RevisionNumber = {RevisionNumber:x8}, BuildNumber = {BuildNumber:x8}, IntegrationNumber = {IntegrationNumber:x8}",
+                platformVersion.RevisionNumber,
+                platformVersion.BuildNumber,
+                platformVersion.IntegrationNumber);
+
+            _platformVersionIsLogged = true;
+        }
+        catch (Exception ex) when (ex.IsFileAccessException() || ex is COMException)
+        {
+            _logger.LogError("Failed to obtain Cloud Files platform version: {ErrorCode}: {ErrorMessage}", ex.GetRelevantFormattedErrorCode(), ex.Message);
+            _platformVersionIsLogged = true;
+        }
     }
 }

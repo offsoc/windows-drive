@@ -454,6 +454,9 @@ Geri yüklemek ve bu hatayı gidermek için eşitlemeyi kapatıp yeniden açın.
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Bir sorun çıktı</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>Ad içinde geçersiz bir karakter var</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>Ad boş olamaz</value>
   </data>
@@ -463,17 +466,14 @@ Geri yüklemek ve bu hatayı gidermek için eşitlemeyi kapatıp yeniden açın.
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>Ad bir boşluk ile bitiyor</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>Ad içinde geçersiz karakterler var</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>Ad Windows tarafından desteklenmiyor</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>Ad çok uzun</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Güncelleme denetleniyor...</value>
@@ -699,11 +699,11 @@ Geri yüklemek ve bu hatayı gidermek için eşitlemeyi kapatıp yeniden açın.
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>Ad zaten kullanılıyor</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>Ad içinde geçersiz karakterler var</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Bir sorun çıktı</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>Ad içinde geçersiz karakterler var</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>Adın yazılması zorunludur</value>
@@ -930,6 +930,57 @@ Dosyaların bu aygıtta yalnızca onları açtığınızda ya da her zaman bulun
   <data name="Main_MyComputer_Title">
     <value>Bilgisayarım</value>
   </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Imported {0} of {1} items</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>item(s)</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>remove</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>No photos/videos found</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Step-by-step guide of how to export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Import Google Photos folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Select Folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>How does photo import work?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Import a local folder from your computer</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Import a folder</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Import Google photos from Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Import photos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Fotoğraflar</value>
+  </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Değiştir</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1091,6 +1142,12 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Menü ögesi: Bilgisayarım</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Fotoğraflar</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Menü ögesi: Fotoğraflar</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Ayarlar</value>
   </data>
@@ -1209,11 +1266,17 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Eşitleme klasörünün kaydı beklenmedik bir şekilde kaldırıldı. Yeni bir eşitleme klasörü ayarlayın.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>Paylaşılan Proton Drive dosyasına veya klasörüne erişilemiyor. Sizinle hala paylaşılıp paylaşılmadığını kontrol edin.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Photos unavailable</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>Paylaşılan Proton Drive dosyası veya klasörünün izinleri değişmiş. Sorunu çözmek için eşitlemeyi kapatıp yeniden açın.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>Photos feature not ready</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Paylaşım geçici olarak kullanılamıyor</value>

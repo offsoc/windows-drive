@@ -96,6 +96,7 @@ internal sealed class ExecutionStep<TId, TAltId>
             nodeInfo,
             GetTempFileName(nodeModel),
             sourceRevision,
+            sourceRevision, // This looks awkward, but it's intentional: IRevision implements both IThumbnailProvider and IFileMetadataProvider
             progressCallback,
             cancellationToken).ConfigureAwait(false);
 
@@ -122,6 +123,7 @@ internal sealed class ExecutionStep<TId, TAltId>
                 sourceRevision.LastWriteTimeUtc,
                 GetTempFileName(nodeModel),
                 sourceRevision,
+                sourceRevision, // This looks awkward, but it's intentional: IRevision implements both IThumbnailProvider and IFileMetadataProvider
                 progressCallback,
                 cancellationToken)
             .ConfigureAwait(false);

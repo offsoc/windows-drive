@@ -64,10 +64,9 @@ internal sealed class SharedWithMeItemMappingSetupStep
         var localReplica = mapping.Local;
         var localFolderPath = localReplica.Path;
 
-        if (localReplica.RootFolderId != default)
+        if (localReplica.IsSetUp())
         {
-            // Already set up
-            return default;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -123,10 +122,10 @@ internal sealed class SharedWithMeItemMappingSetupStep
     {
         var localReplica = mapping.Local;
 
-        if (localReplica.InternalVolumeId != default)
+        if (localReplica.InternalVolumeId != 0)
         {
             // Already set up
-            return default;
+            return null;
         }
 
         localReplica.InternalVolumeId = _volumeIdentityProvider.GetUniqueLocalVolumeId();

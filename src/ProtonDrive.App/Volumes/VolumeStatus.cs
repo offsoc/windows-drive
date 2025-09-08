@@ -1,9 +1,9 @@
 ﻿namespace ProtonDrive.App.Volumes;
 
-public enum VolumeServiceStatus
+public enum VolumeStatus
 {
     Idle,
     SettingUp,
-    Succeeded,
+    Ready,
     Failed,
 }

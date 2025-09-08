@@ -1,0 +1,435 @@
+﻿<UserControl
+    x:Class="ProtonDrive.App.Windows.Views.Main.Photos.PhotosImportView"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:ProtonDrive.App.Windows.Toolkit.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loc="clr-namespace:ProtonDrive.App.Windows.Resources"
+    xmlns:local="clr-namespace:ProtonDrive.App.Windows.Views.Main.Photos"
+    xmlns:mapping="clr-namespace:ProtonDrive.App.Mapping;assembly=ProtonDrive.App"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shared="clr-namespace:ProtonDrive.App.Windows.Views.Shared"
+    Padding="24"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance local:PhotosImportViewModel}">
+    <UserControl.Resources>
+        <DataTemplate
+            x:Key="PhotoFolderTemplate"
+            DataType="{x:Type local:ImportFolderViewModel}">
+            <Border
+                Style="{StaticResource RoundedSection.DarkTheme}"
+                Margin="0,10,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Source="{StaticResource Icon.BlueFolder}"
+                        Height="16"
+                        VerticalAlignment="Center" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        TextTrimming="CharacterEllipsis"
+                        Margin="10,0,0,0">
+                        <Run
+                            Text="{Binding Name, Mode=OneWay}"
+                            ToolTip="{Binding Path}" />
+                        <LineBreak />
+                        <Run
+                            Text="{Binding NumberOfItemsToProcess, Mode=OneWay}"
+                            Foreground="{StaticResource GrayBrush}" />
+                        <Run
+                            Text="{loc:Resource Main_Photos_Folders_Items_Label}"
+                            Foreground="{StaticResource GrayBrush}" />
+                    </TextBlock>
+
+                    <shared:MappingStatusView
+                        Grid.Column="2"
+                        Visibility="{Binding ValidationResult, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={x:Static mapping:SyncFolderValidationResult.Succeeded}}"
+                        MaxWidth="300"
+                        VerticalAlignment="Center"
+                        Margin="15,0,0,0" />
+
+                    <Grid
+                        Grid.Column="2"
+                        Visibility="{Binding ValidationResult, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Static mapping:SyncFolderValidationResult.Succeeded}}"
+                        MaxWidth="300"
+                        VerticalAlignment="Center"
+                        Margin="15,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image
+                            Grid.Column="0"
+                            Source="{StaticResource Icon.Warning}"
+                            Width="16"
+                            Height="16"
+                            VerticalAlignment="Center" />
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="{Binding ValidationResult, Converter={x:Static converters:EnumToDisplayTextConverter.Instance}}"
+                            FontSize="{StaticResource TextBlock.Small.FontSize}"
+                            Foreground="{StaticResource PendingBrush}"
+                            TextWrapping="Wrap"
+                            Margin="10,0,0,0" />
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Column="3"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{Binding NumberOfItemsToProcess, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={StaticResource IntZero}}"
+                        VerticalAlignment="Center">
+                        <TextBlock Margin="10,0,0,0">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{loc:Resource Main_Photos_Folders_ImportedItemsFormat}">
+                                    <Binding Path="NumberOfProcessedItems" />
+                                    <Binding Path="NumberOfItemsToProcess" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </TextBlock>
+
+                    <Grid
+                        Grid.Column="3"
+                        Visibility="{Binding Status, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={x:Static mapping:MappingSetupStatus.Succeeded}}">
+                        <TextBlock
+                            Text="{loc:Resource Main_Photos_Folders_NoItemsFound_Label}"
+                            FontSize="{StaticResource TextBlock.Small.FontSize}"
+                            Foreground="{StaticResource GrayBrush}"
+                            TextTrimming="CharacterEllipsis"
+                            Visibility="{Binding NumberOfItemsToProcess, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={StaticResource IntZero}}"
+                            VerticalAlignment="Center" />
+                    </Grid>
+
+                    <Button
+                        Grid.Column="4"
+                        Content="{loc:Resource Main_Photos_Folders_Menu_Item_Remove}"
+                        CommandParameter="{Binding .}"
+                        Command="{Binding ElementName=ImportedFoldersItemsControl, Path=DataContext.RemoveFolderCommand}"
+                        Style="{StaticResource GrayHyperlinkButtonStyle}"
+                        MinWidth="60"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Right"
+                        Margin="20,0,0,0" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid Visibility="{Binding IsDisplayingImportGooglePhotosDetails, Converter={x:Static converters:BooleanToVisibilityConverter.TrueIsCollapsed}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Text="{loc:Resource Main_Photos_Title}"
+                    Style="{StaticResource Title.DarkTheme.Style}" />
+
+                <Button
+                    Grid.Column="1"
+                    Command="{Binding OpenImportGooglePhotosSupportUrlCommand}"
+                    Style="{StaticResource GrayHyperlinkButtonStyle}"
+                    VerticalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="{loc:Resource Main_Photos_Import_HowImportWorks_Label}" />
+
+                        <Image
+                            Grid.Column="1"
+                            Source="{StaticResource Icon.InfoCircle}"
+                            Width="16"
+                            Height="16"
+                            VerticalAlignment="Center"
+                            Margin="7,2,0,0" />
+                    </Grid>
+                </Button>
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="0"
+                    Text="{loc:Resource Main_Photos_Import_Title}"
+                    Margin="0,10,0,0" />
+
+                <Button
+                    AutomationProperties.AutomationId="ImportGoogleFolderButton"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Command="{Binding AddFolderCommand}"
+                    Style="{StaticResource SectionButtonStyle}"
+                    Padding="16"
+                    Margin="0,20,0,0">
+                    <Border CornerRadius="4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Image
+                                Grid.ColumnSpan="2"
+                                Source="{StaticResource Icon.NavigationMenu.MyComputer}"
+                                Height="24"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" />
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Grid.Row="1"
+                                Text="{loc:Resource Main_Photos_Import_ImportFolder_Title}"
+                                FontSize="{StaticResource TextBlock.Caption.FontSize}"
+                                TextTrimming="CharacterEllipsis"
+                                Margin="0,10,0,0" />
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Grid.Row="2"
+                                Text="{loc:Resource Main_Photos_Import_ImportFolder_Description}"
+                                Foreground="{StaticResource GrayBrush}"
+                                TextTrimming="CharacterEllipsis" />
+
+                            <Image
+                                Grid.Column="1"
+                                Grid.Row="2"
+                                Source="{StaticResource Icon.RightChevron}"
+                                Height="16" />
+                        </Grid>
+                    </Border>
+                </Button>
+
+                <Button
+                    AutomationProperties.AutomationId="ImportGoogleFolderButton"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Command="{Binding DisplayImportGooglePhotosDetailsCommand}"
+                    Style="{StaticResource SectionButtonStyle}"
+                    Padding="16"
+                    Margin="20,20,0,0">
+                    <Border CornerRadius="4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Image
+                                Grid.ColumnSpan="2"
+                                Source="{StaticResource Icon.Google}"
+                                Height="24"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" />
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Grid.Row="1"
+                                Text="{loc:Resource Main_Photos_Import_ImportFromGoogle_Title}"
+                                FontSize="{StaticResource TextBlock.Caption.FontSize}"
+                                TextTrimming="CharacterEllipsis"
+                                Margin="0,10,0,0" />
+
+                            <TextBlock
+                                Grid.Column="0"
+                                Grid.Row="2"
+                                Text="{loc:Resource Main_Photos_Import_ImportFromGoogle_Description}"
+                                Foreground="{StaticResource GrayBrush}"
+                                TextTrimming="CharacterEllipsis" />
+
+                            <Image
+                                Grid.Column="1"
+                                Grid.Row="2"
+                                Source="{StaticResource Icon.RightChevron}"
+                                Height="16" />
+                        </Grid>
+                    </Border>
+                </Button>
+            </Grid>
+
+            <ScrollViewer
+                Grid.Row="2"
+                VerticalScrollBarVisibility="Auto"
+                Margin="0,20,0,0">
+                <ScrollViewer.Style>
+                    <Style TargetType="ScrollViewer">
+                        <Style.Triggers>
+                            <Trigger Property="ComputedVerticalScrollBarVisibility" Value="Visible">
+                                <Setter Property="Padding" Value="0,0,10,0" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ScrollViewer.Style>
+
+                <ItemsControl
+                    Name="ImportedFoldersItemsControl"
+                    ItemTemplate="{StaticResource PhotoFolderTemplate}"
+                    ItemsSource="{Binding Folders}" />
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Visibility="{Binding IsDisplayingImportGooglePhotosDetails, Converter={x:Static converters:BooleanToVisibilityConverter.FalseIsCollapsed}, FallbackValue=Collapsed}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel
+                Grid.Row="0"
+                Orientation="Horizontal"
+                Margin="0,0,0,0">
+                <ToggleButton
+                    Cursor="Hand"
+                    IsChecked="{Binding IsDisplayingImportGooglePhotosDetails}">
+                    <ToggleButton.Style>
+                        <Style
+                            TargetType="ButtonBase"
+                            BasedOn="{StaticResource TransparentButtonStyle}">
+                            <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Foreground" Value="{StaticResource Text.DarkTheme.Brush}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+
+                    <TextBlock
+                        Text="{loc:Resource Main_Photos_Title}"
+                        Style="{StaticResource Heading1Style}" />
+                </ToggleButton>
+
+                <Image
+                    Source="{StaticResource Icon.RightChevron}"
+                    Height="16"
+                    Margin="15,0,0,0" />
+
+                <TextBlock
+                    Text="{loc:Resource Main_Photos_ImportFromGoogle_Title}"
+                    Foreground="{StaticResource Text.DarkTheme.Brush}"
+                    Style="{StaticResource Heading1Style}"
+                    Margin="15,0,0,0" />
+            </StackPanel>
+
+            <TextBlock
+                Grid.Row="1"
+                Text="{loc:Resource Main_Photos_ImportFromGoogle_Export_Title}"
+                Margin="0,20,0,0" />
+
+            <Button
+                Grid.Row="2"
+                Command="{Binding OpenImportGooglePhotosSupportUrlCommand}"
+                Style="{StaticResource SectionButtonStyle}"
+                VerticalContentAlignment="Center"
+                Margin="0,15,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Text="{loc:Resource Main_Photos_ImportFromGoogle_Export_Description}" />
+
+                    <Image
+                        Grid.Column="1"
+                        Source="{StaticResource Icon.ArrowWithSquare}"
+                        Height="16" />
+                </Grid>
+            </Button>
+
+            <TextBlock
+                Grid.Row="3"
+                Text="{loc:Resource Main_Photos_ImportFromGoogle_Import_Title}"
+                Margin="0,20,0,0" />
+
+            <Border
+                Grid.Row="4"
+                Style="{StaticResource RoundedSection.DarkTheme}"
+                Margin="0,15,0,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Source="{StaticResource Icon.BlueFilledFolder}"
+                        Height="24" />
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Text="{loc:Resource Main_Photos_ImportFromGoogle_Import_Description}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap"
+                        MaxWidth="300"
+                        Margin="0,20,0,0" />
+
+                    <Button
+                        Grid.Row="2"
+                        Content="{loc:Resource Main_Photos_ImportFromGoogle_SelectFolder_Button}"
+                        Command="{Binding AddFolderCommand}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,20,0,0" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

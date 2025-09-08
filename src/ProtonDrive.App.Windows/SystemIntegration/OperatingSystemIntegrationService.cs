@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.IO;
+using System.Security;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using ProtonDrive.Shared.Configuration;
 
@@ -20,38 +23,53 @@ internal sealed class OperatingSystemIntegrationService : IOperatingSystemIntegr
 
     public bool GetRunApplicationOnStartup()
     {
-        using var registryKey = Registry.CurrentUser.OpenSubKey(StartupKey, true);
+        try
+        {
+            using var registryKey = Registry.CurrentUser.OpenSubKey(StartupKey, writable: false);
 
-        return registryKey?.GetValue(ProtonDriveRegistryValueName) != null;
+            return registryKey?.GetValue(ProtonDriveRegistryValueName) != null;
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException)
+        {
+            _logger.LogWarning("Impossible to open start-up registry key: {Message}", ex.Message);
+            return false;
+        }
     }
 
     public void SetRunApplicationOnStartup(bool value)
     {
-        using var registryKey = Registry.CurrentUser.OpenSubKey(StartupKey, true);
-
-        if (registryKey == null)
+        try
         {
-            // We do not handle the absence of the registry key.
-            _logger.LogWarning("Impossible to set the app to open on start-up due to the absence of the registry key");
+            using var registryKey = Registry.CurrentUser.OpenSubKey(StartupKey, writable: true);
 
-            return;
-        }
-
-        if (value)
-        {
-            if (registryKey.GetValue(ProtonDriveRegistryValueName) != null)
+            if (registryKey == null)
             {
-                // Registry key value already set.
+                // We do not handle the absence of the registry key.
+                _logger.LogWarning("Impossible to set the app to open on start-up due to the absence of the registry key");
+
                 return;
             }
 
-            registryKey.SetValue(ProtonDriveRegistryValueName, $"\"{_appConfig.AppLaunchPath}\" -quiet");
-            _logger.LogInformation("App set to open on start-up automatically");
+            if (value)
+            {
+                if (registryKey.GetValue(ProtonDriveRegistryValueName) != null)
+                {
+                    // Registry key value already set.
+                    return;
+                }
+
+                registryKey.SetValue(ProtonDriveRegistryValueName, $"\"{_appConfig.AppLaunchPath}\" -quiet");
+                _logger.LogInformation("App set to open on start-up automatically");
+            }
+            else if (registryKey.GetValue(ProtonDriveRegistryValueName) != null)
+            {
+                registryKey.DeleteValue(ProtonDriveRegistryValueName);
+                _logger.LogInformation("App disabled to open on start-up automatically");
+            }
         }
-        else if (registryKey.GetValue(ProtonDriveRegistryValueName) != null)
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException)
         {
-            registryKey.DeleteValue(ProtonDriveRegistryValueName);
-            _logger.LogInformation("App disabled to open on start-up automatically");
+            _logger.LogWarning("Impossible to set the app to open on start-up: {Message}", ex.Message);
         }
     }
 }

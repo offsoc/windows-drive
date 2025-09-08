@@ -28,7 +28,7 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
         {
             if (link.ExtendedAttributes is null)
             {
-                return default;
+                return null;
             }
 
             var signatureEmailAddress = link.FileProperties?.ActiveRevision?.SignatureEmailAddress;

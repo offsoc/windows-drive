@@ -22,6 +22,18 @@ namespace ProtonDrive.App.Mapping;
 internal sealed class MappingSetupService
     : IMappingSetupService, IStoppableService, IMappingsAware, IVolumeStateAware, ISyncStateAware, IOnboardingStateAware, IRootDeletionHandler
 {
+    // Sync folder mappings are set up in a specific order based on mapping type
+    private static readonly MappingType[] MappingTypesToSetUp =
+    [
+        MappingType.CloudFiles,
+        MappingType.HostDeviceFolder,
+        MappingType.PhotoImport,
+        MappingType.PhotoBackup,
+        MappingType.ForeignDevice,
+        MappingType.SharedWithMeRootFolder,
+        MappingType.SharedWithMeItem,
+    ];
+
     private readonly IMappingRegistry _mappingRegistry;
     private readonly IMappingSetupPipeline _mappingSetupPipeline;
     private readonly IMappingTeardownPipeline _mappingTeardownPipeline;
@@ -38,6 +50,7 @@ internal sealed class MappingSetupService
     private SyncState _syncState = SyncState.Terminated;
     private OnboardingState _onboardingState = OnboardingState.Initial;
 
+    private volatile bool _hasReceivedMappings;
     private Mappings _mappings = new([], []);
     private Mappings _newMappings = new([], []);
 
@@ -87,23 +100,24 @@ internal sealed class MappingSetupService
         IReadOnlyCollection<RemoteToLocalMapping> deletedMappings)
     {
         _newMappings = new Mappings(activeMappings, [.. deletedMappings]);
+        _hasReceivedMappings = true;
 
         ScheduleSetup(forceRestart: true);
     }
 
     void IVolumeStateAware.OnVolumeStateChanged(VolumeState value)
     {
-        // Checking whether status changed into Succeeded from
-        // a different one, or from Succeeded into a different one
+        // Checking whether status changed into Ready from
+        // a different one, or from Ready into a different one
         var statusChanged = _volumeState.Status != value.Status
-                            && (_volumeState.Status == VolumeServiceStatus.Succeeded
-                                || value.Status == VolumeServiceStatus.Succeeded);
+                            && (_volumeState.Status == VolumeStatus.Ready
+                                || value.Status == VolumeStatus.Ready);
 
         _volumeState = value;
 
         if (statusChanged)
         {
-            ScheduleSetup(forceRestart: value.Status is VolumeServiceStatus.Idle);
+            ScheduleSetup(forceRestart: value.Status is VolumeStatus.Idle);
         }
     }
 
@@ -124,6 +138,11 @@ internal sealed class MappingSetupService
         syncRootIds.ForEach(_deletedSyncRootIds.Enqueue);
 
         ScheduleSetup(forceRestart: true);
+    }
+
+    internal Task WaitForCompletionAsync()
+    {
+        return _mappingsSetup.WaitForCompletionAsync();
     }
 
     private static bool HasMappingSetupSucceeded(IEnumerable<RemoteToLocalMapping> activeMappings, MappingType type)
@@ -285,7 +304,8 @@ internal sealed class MappingSetupService
 
     private bool ValidatePreconditions()
     {
-        return _volumeState.Status is VolumeServiceStatus.Succeeded
+        return _hasReceivedMappings
+            && _volumeState.Status is VolumeStatus.Ready
             && _onboardingState.Status is not OnboardingStatus.Onboarding;
     }
 
@@ -362,17 +382,7 @@ internal sealed class MappingSetupService
 
         ResetMappingsStatus(mappings);
 
-        // Sync folder mappings are set up in a specific order based on mapping type
-        var mappingTypesToSetUp = new[]
-        {
-            MappingType.CloudFiles,
-            MappingType.HostDeviceFolder,
-            MappingType.ForeignDevice,
-            MappingType.SharedWithMeRootFolder,
-            MappingType.SharedWithMeItem,
-        };
-
-        foreach (var type in mappingTypesToSetUp)
+        foreach (var type in MappingTypesToSetUp)
         {
             var mappingsToSetUp = mappings.Where(m => m.Type == type).ToList().AsReadOnly();
 

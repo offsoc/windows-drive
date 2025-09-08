@@ -4,6 +4,7 @@ internal enum ApplicationPage
 {
     Activity,
     MyComputer,
+    Photos,
     SharedWithMe,
     Settings,
     Account,

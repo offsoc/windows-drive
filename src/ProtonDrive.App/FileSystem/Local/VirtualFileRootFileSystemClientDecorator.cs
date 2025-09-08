@@ -51,12 +51,13 @@ internal sealed class VirtualFileRootFileSystemClientDecorator : FileSystemClien
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         ValidateFile(info);
 
-        return base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task<IRevision> OpenFileForReading(NodeInfo<long> info, CancellationToken cancellationToken)
@@ -72,12 +73,13 @@ internal sealed class VirtualFileRootFileSystemClientDecorator : FileSystemClien
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         ValidateFile(info);
 
-        return base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task Move(NodeInfo<long> info, NodeInfo<long> destinationInfo, CancellationToken cancellationToken)

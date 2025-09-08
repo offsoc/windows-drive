@@ -13,12 +13,12 @@ public enum ErrorScope
     ItemOperation,
 
     /// <summary>
-    /// Error occurred when attempting to open a .protondoc file
+    /// Error occurred when attempting to open a Proton Doc, Sheet, or other Proton document
     /// </summary>
     DocumentOpening,
 
     /// <summary>
-    /// Error occurred when attempting to sanitize a .protondoc file by adding the file extension
+    /// Error occurred when attempting to sanitize a Proton document file by adding the file extension
     /// </summary>
     DocumentNameMigration,
 

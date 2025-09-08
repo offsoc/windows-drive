@@ -26,7 +26,7 @@ internal sealed class AboutViewModel : PageViewModel
     private DateTime? _releaseDate;
     private UpdateStatus _updateStatus;
     private Version _newVersion = new();
-    private IReadOnlyList<ReleaseNoteViewModel> _releaseNotes = Array.Empty<ReleaseNoteViewModel>();
+    private IReadOnlyList<ReleaseNoteViewModel> _releaseNotes = [];
 
     public AboutViewModel(
         AppConfig config,

@@ -2,6 +2,7 @@
 using ProtonDrive.App.Windows.Views.Main.Account;
 using ProtonDrive.App.Windows.Views.Main.Activity;
 using ProtonDrive.App.Windows.Views.Main.MyComputer;
+using ProtonDrive.App.Windows.Views.Main.Photos;
 using ProtonDrive.App.Windows.Views.Main.Settings;
 using ProtonDrive.App.Windows.Views.Main.SharedWithMe;
 
@@ -12,6 +13,7 @@ internal class PageViewModelFactory
     public PageViewModelFactory(
         SyncStateViewModel activityViewModel,
         MyComputerViewModel myComputerViewModel,
+        PhotosViewModel photosViewModel,
         SharedWithMeViewModel sharedWithMeViewModel,
         SettingsViewModel settingsViewModel,
         AccountViewModel accountViewModel,
@@ -19,6 +21,7 @@ internal class PageViewModelFactory
     {
         ActivityViewModel = activityViewModel;
         MyComputerViewModel = myComputerViewModel;
+        PhotosViewModel = photosViewModel;
         SharedWithMeViewModel = sharedWithMeViewModel;
         SettingsViewModel = settingsViewModel;
         AccountViewModel = accountViewModel;
@@ -27,6 +30,7 @@ internal class PageViewModelFactory
 
     public SyncStateViewModel ActivityViewModel { get; }
     public MyComputerViewModel MyComputerViewModel { get; }
+    public PhotosViewModel PhotosViewModel { get; }
     public SharedWithMeViewModel SharedWithMeViewModel { get; }
     public SettingsViewModel SettingsViewModel { get; }
     public AccountViewModel AccountViewModel { get; }
@@ -38,6 +42,7 @@ internal class PageViewModelFactory
         {
             ApplicationPage.Activity => ActivityViewModel,
             ApplicationPage.MyComputer => MyComputerViewModel,
+            ApplicationPage.Photos => PhotosViewModel,
             ApplicationPage.SharedWithMe => SharedWithMeViewModel,
             ApplicationPage.Settings => SettingsViewModel,
             ApplicationPage.Account => AccountViewModel,

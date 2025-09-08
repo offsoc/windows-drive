@@ -39,6 +39,7 @@ internal sealed class ProtectingFolderFileSystemClientDecorator : FileSystemClie
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -46,7 +47,13 @@ internal sealed class ProtectingFolderFileSystemClientDecorator : FileSystemClie
 
         try
         {
-            var revisionCreationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+            var revisionCreationProcess = await base.CreateFile(
+                info,
+                tempFileName,
+                thumbnailProvider,
+                fileMetadataProvider,
+                progressCallback,
+                cancellationToken).ConfigureAwait(false);
 
             return new ProtectingRevisionCreationProcess(this, revisionCreationProcess, parentFolderProtectionHolder);
         }
@@ -64,6 +71,7 @@ internal sealed class ProtectingFolderFileSystemClientDecorator : FileSystemClie
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -75,7 +83,15 @@ internal sealed class ProtectingFolderFileSystemClientDecorator : FileSystemClie
 
             try
             {
-                var revisionCreationProcess = await base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+                var revisionCreationProcess = await base.CreateRevision(
+                    info,
+                    size,
+                    lastWriteTime,
+                    tempFileName,
+                    thumbnailProvider,
+                    fileMetadataProvider,
+                    progressCallback,
+                    cancellationToken).ConfigureAwait(false);
 
                 return new ProtectingRevisionCreationProcess(this, revisionCreationProcess, parentFolderProtectionHolder);
             }

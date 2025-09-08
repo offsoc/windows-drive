@@ -45,10 +45,11 @@ public abstract class FileSystemClientDecoratorBase<TId> : IFileSystemClient<TId
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        return _decoratedInstance.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return _decoratedInstance.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public virtual Task<IRevision> OpenFileForReading(NodeInfo<TId> info, CancellationToken cancellationToken)
@@ -62,10 +63,19 @@ public abstract class FileSystemClientDecoratorBase<TId> : IFileSystemClient<TId
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        return _decoratedInstance.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return _decoratedInstance.CreateRevision(
+            info,
+            size,
+            lastWriteTime,
+            tempFileName,
+            thumbnailProvider,
+            fileMetadataProvider,
+            progressCallback,
+            cancellationToken);
     }
 
     public virtual Task Move(NodeInfo<TId> info, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)

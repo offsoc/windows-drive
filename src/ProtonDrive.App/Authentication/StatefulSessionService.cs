@@ -76,7 +76,7 @@ public class StatefulSessionService
         }
         else
         {
-            _accountSetupErrorMessage = default;
+            _accountSetupErrorMessage = null;
             _accountSetupCompleted.Reset();
         }
     }
@@ -85,18 +85,18 @@ public class StatefulSessionService
     {
         switch (value.Status)
         {
-            case VolumeServiceStatus.Succeeded:
-                _accountSetupErrorMessage = default;
+            case VolumeStatus.Ready:
+                _accountSetupErrorMessage = null;
                 _accountSetupCompleted.Set();
                 break;
 
-            case VolumeServiceStatus.Failed:
+            case VolumeStatus.Failed:
                 _accountSetupErrorMessage = value.ErrorMessage;
                 _accountSetupCompleted.Set();
                 break;
 
             default:
-                _accountSetupErrorMessage = default;
+                _accountSetupErrorMessage = null;
                 _accountSetupCompleted.Reset();
                 break;
         }
@@ -277,7 +277,7 @@ public class StatefulSessionService
         if (string.IsNullOrEmpty(errorMessage))
         {
             // Account related setup has succeeded
-            return default;
+            return null;
         }
 
         // Account related setup has failed
@@ -290,7 +290,7 @@ public class StatefulSessionService
             });
     }
 
-    private Task ScheduleEndSession(ApiResponse? reason = default)
+    private Task ScheduleEndSession(ApiResponse? reason = null)
     {
         _cancellationHandle.Cancel();
         ForceOnline();

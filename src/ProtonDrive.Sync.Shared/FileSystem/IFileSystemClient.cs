@@ -104,6 +104,7 @@ public interface IFileSystemClient<TId>
     /// <param name="tempFileName">The name of a temporary file to use while writing file content.
     /// Null or empty string indicates to write directly to the destination file.</param>
     /// <param name="thumbnailProvider">An object that will provide a thumbnail for the file.</param>
+    /// <param name="fileMetadataProvider">An object that will provide the file metadata if available.</param>
     /// <param name="progressCallback">TODO</param>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>The <see cref="IRevisionCreationProcess{TId}"/> used for writing the file content and finishing
@@ -132,6 +133,7 @@ public interface IFileSystemClient<TId>
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken);
 
@@ -172,6 +174,7 @@ public interface IFileSystemClient<TId>
     /// <param name="tempFileName">The name of a temporary file to use while uploading file content.
     /// Null or empty string indicates to write directly to the destination file.</param>
     /// <param name="thumbnailProvider">An object that will provide a thumbnail for the file.</param>
+    /// <param name="fileMetadataProvider">An object that will provide the file metadata if available.</param>
     /// <param name="progressCallback">TODO</param>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns>The <see cref="IRevisionCreationProcess{TId}"/> used for writing the file content.</returns>
@@ -201,6 +204,7 @@ public interface IFileSystemClient<TId>
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken);
 

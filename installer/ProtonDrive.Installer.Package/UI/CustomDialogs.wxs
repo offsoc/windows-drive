@@ -91,7 +91,7 @@
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 
         <!-- This line was added -->
-        <Control Id="CleanupCheckBox" Type="CheckBox" X="25" Y="150" Width="320" Height="11" Property="CLEANSUPAPPDATAONUNINSTALL" Text="Remove [ProductName] settings and previously remembered credentials." CheckBoxValue="1" />
+        <Control Id="CleanupCheckBox" Type="CheckBox" X="25" Y="150" Width="320" Height="11" Property="CLEANUPAPPDATAONREMOVE" Text="!(loc.CleanupCheckBoxLabel)" CheckBoxValue="1" />
       </Dialog>
     </UI>
   </Fragment>

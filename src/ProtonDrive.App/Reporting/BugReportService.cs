@@ -18,7 +18,7 @@ namespace ProtonDrive.App.Reporting;
 internal class BugReportService : IBugReportService
 {
     private const int MaxNumberOfAppLogFilesToSend = 3;
-    private const int MaxNumberOfInstallationLogFilesToSend = 10;
+    private const int MaxNumberOfInstallationLogFilesToSend = 20;
     private const int BufferSize = 4_096;
 
     private static readonly string TempFolderPath = Path.GetTempPath();

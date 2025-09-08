@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using ProtonDrive.Client.Contracts;
@@ -13,7 +14,7 @@ namespace ProtonDrive.Client.FileUploading;
 
 internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 {
-    private readonly Stream _contentStream;
+    private readonly HashingStream _contentStream;
     private readonly IReadOnlyCollection<UploadedBlock> _uploadedBlocks;
     private readonly int _blockSize;
     private readonly IRevisionSealer _revisionSealer;
@@ -29,7 +30,7 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
 
         FileInfo = fileInfo;
 
-        _contentStream = contentStream;
+        _contentStream = new HashingStream(contentStream, HashAlgorithmName.SHA1);
         _uploadedBlocks = uploadedBlocks;
         _blockSize = blockSize;
 
@@ -51,7 +52,7 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         {
             ValidateUpload();
 
-            await _revisionSealer.SealRevisionAsync(_uploadedBlocks, cancellationToken).ConfigureAwait(false);
+            await _revisionSealer.SealRevisionAsync(_uploadedBlocks, GetSha1Digest(), cancellationToken).ConfigureAwait(false);
 
             return FileInfo.Copy().WithSizeOnStorage(_uploadedBlocks.Sum(b => (long)b.Size));
         }
@@ -92,5 +93,12 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         {
             throw new FileSystemClientException("The number of uploaded blocks does not equal the expected number", FileSystemErrorCode.IntegrityFailure);
         }
+    }
+
+    private string GetSha1Digest()
+    {
+        Span<byte> digestSpan = stackalloc byte[SHA1.HashSizeInBytes];
+        _contentStream.GetCurrentHash(digestSpan);
+        return Convert.ToHexStringLower(digestSpan);
     }
 }

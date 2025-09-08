@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Client.Contracts;
@@ -8,7 +7,7 @@ namespace ProtonDrive.App.Mapping.Setup;
 
 internal sealed class VolumeIdentityProvider : IMappingsAware
 {
-    private IReadOnlyCollection<RemoteToLocalMapping> _activeMappings = Array.Empty<RemoteToLocalMapping>();
+    private IReadOnlyCollection<RemoteToLocalMapping> _activeMappings = [];
 
     public int GetLocalVolumeId(int volumeSerialNumber)
     {
@@ -16,9 +15,9 @@ internal sealed class VolumeIdentityProvider : IMappingsAware
         var existingVolumeId = _activeMappings
             .Where(m => m.Local.VolumeSerialNumber == volumeSerialNumber && (m.Type is not MappingType.SharedWithMeItem || m.Remote.RootItemType is not LinkType.File))
             .Select(m => m.Local.InternalVolumeId)
-            .FirstOrDefault(x => x != default);
+            .FirstOrDefault(x => x != 0);
 
-        if (existingVolumeId != default)
+        if (existingVolumeId != 0)
         {
             return existingVolumeId;
         }
@@ -39,9 +38,9 @@ internal sealed class VolumeIdentityProvider : IMappingsAware
         var existingVolumeId = _activeMappings
             .Where(m => m.Remote.VolumeId == volumeId && m.Type is not MappingType.SharedWithMeItem)
             .Select(m => m.Remote.InternalVolumeId)
-            .FirstOrDefault(x => x != default);
+            .FirstOrDefault(x => x != 0);
 
-        if (existingVolumeId != default)
+        if (existingVolumeId != 0)
         {
             return existingVolumeId;
         }

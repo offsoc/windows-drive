@@ -17,6 +17,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
     private readonly FeatureFlags _featureFlags;
     private readonly Lazy<IEnumerable<IOnboardingStateAware>> _onboardingStateAware;
     private readonly Lazy<IEnumerable<ISharedWithMeOnboardingStateAware>> _sharedWithMeOnboardingStateAware;
+    private readonly Lazy<IEnumerable<IPhotosOnboardingStateAware>> _photosOnboardingStateAware;
     private readonly Lazy<IEnumerable<IStorageOptimizationOnboardingStateAware>> _storageOptimizationOnboardingStateAware;
     private readonly IRepository<OnboardingSettings> _settings;
     private readonly ILogger<OnboardingService> _logger;
@@ -27,6 +28,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         FeatureFlags featureFlags,
         Lazy<IEnumerable<IOnboardingStateAware>> onboardingStateAware,
         Lazy<IEnumerable<ISharedWithMeOnboardingStateAware>> sharedWithMeOnboardingStateAware,
+        Lazy<IEnumerable<IPhotosOnboardingStateAware>> photosOnboardingStateAware,
         Lazy<IEnumerable<IStorageOptimizationOnboardingStateAware>> storageOptimizationOnboardingStateAware,
         IRepository<OnboardingSettings> settings,
         ILogger<OnboardingService> logger)
@@ -34,6 +36,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         _featureFlags = featureFlags;
         _onboardingStateAware = onboardingStateAware;
         _sharedWithMeOnboardingStateAware = sharedWithMeOnboardingStateAware;
+        _photosOnboardingStateAware = photosOnboardingStateAware;
         _storageOptimizationOnboardingStateAware = storageOptimizationOnboardingStateAware;
         _settings = settings;
         _logger = logger;
@@ -89,6 +92,17 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         OnSharedWithMeOnboardingStateChanged(OnboardingStatus.Completed);
     }
 
+    public void CompletePhotosOnboarding()
+    {
+        var settings = GetSettings() with
+        {
+            IsPhotosOnboardingCompleted = true,
+        };
+
+        SaveSettings(settings);
+        OnPhotosOnboardingStateChanged(OnboardingStatus.Completed);
+    }
+
     public void CompleteStorageOptimizationOnboardingStep(StorageOptimizationOnboardingStep step)
     {
         if (step is StorageOptimizationOnboardingStep.None)
@@ -133,9 +147,8 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
 
         SetState(state);
 
-        var status = settings.IsSharedWithMeOnboardingCompleted ? OnboardingStatus.Completed : OnboardingStatus.NotStarted;
-
-        OnSharedWithMeOnboardingStateChanged(status);
+        OnSharedWithMeOnboardingStateChanged(GetStatus(settings.IsSharedWithMeOnboardingCompleted));
+        OnPhotosOnboardingStateChanged(GetStatus(settings.IsPhotosOnboardingCompleted));
         OnStorageOptimizationOnboardingStateChanged(GetNextStep(settings.StorageOptimizationOnboardingStep));
 
         return;
@@ -143,6 +156,11 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         bool IsEligibleForCompletion()
         {
             return state.Status is OnboardingStatus.Onboarding && state.Step is OnboardingStep.None or OnboardingStep.UpgradeStorage;
+        }
+
+        OnboardingStatus GetStatus(bool isCompleted)
+        {
+            return isCompleted ? OnboardingStatus.Completed : OnboardingStatus.NotStarted;
         }
     }
 
@@ -241,6 +259,14 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         foreach (var listener in _sharedWithMeOnboardingStateAware.Value)
         {
             listener.SharedWithMeOnboardingStateChanged(value);
+        }
+    }
+
+    private void OnPhotosOnboardingStateChanged(OnboardingStatus value)
+    {
+        foreach (var listener in _photosOnboardingStateAware.Value)
+        {
+            listener.OnPhotosOnboardingStateChanged(value);
         }
     }
 

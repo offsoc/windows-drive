@@ -1,33 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using ProtonDrive.Shared.Text.Serialization;
 
 namespace ProtonDrive.Client.Contracts;
 
 internal sealed class BlockUploadRequestParameters
 {
-    [JsonPropertyName("BlockList")]
-    public IReadOnlyCollection<BlockCreationParameters>? Blocks { get; init; }
-
     [JsonPropertyName("AddressID")]
-    public string? AddressId { get; init; }
-
-    [JsonPropertyName("ShareID")]
-    public string? ShareId { get; init; }
+    public required string AddressId { get; init; }
 
     [JsonPropertyName("LinkID")]
-    public string? LinkId { get; init; }
+    public required string LinkId { get; init; }
 
     [JsonPropertyName("RevisionID")]
-    public string? RevisionId { get; init; }
+    public required string RevisionId { get; init; }
 
-    [JsonPropertyName("Thumbnail")]
-    [JsonConverter(typeof(BooleanToIntegerJsonConverter))]
-    public bool? IncludesThumbnail { get; set; }
+    [JsonPropertyName("VolumeID")]
+    public required string VolumeId { get; init; }
 
-    [JsonConverter(typeof(Base64JsonConverter))]
-    public ReadOnlyMemory<byte>? ThumbnailHash { get; set; }
+    [JsonPropertyName("BlockList")]
+    public required IReadOnlyCollection<BlockCreationParameters> Blocks { get; init; }
 
-    public int? ThumbnailSize { get; set; }
+    [JsonPropertyName("ThumbnailList")]
+    public required IReadOnlyCollection<ThumbnailCreationParameters> Thumbnails { get; init; }
 }

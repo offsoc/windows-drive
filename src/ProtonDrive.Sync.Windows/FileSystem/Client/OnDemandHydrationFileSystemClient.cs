@@ -25,6 +25,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
     };
 
     private readonly IThumbnailGenerator _thumbnailGenerator;
+    private readonly IFileMetadataGenerator _fileMetadataGenerator;
     private readonly ILoggerFactory _loggerFactory;
     private string? _currentConnectionRootPath;
     private int _numberOfConnections;
@@ -32,9 +33,10 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
     private SyncRootConnection? _syncRootConnection;
     private SyncRootCallbackDispatcher? _syncRootCallbackDispatcher;
 
-    public OnDemandHydrationFileSystemClient(IThumbnailGenerator thumbnailGenerator, ILoggerFactory loggerFactory)
+    public OnDemandHydrationFileSystemClient(IThumbnailGenerator thumbnailGenerator, IFileMetadataGenerator fileMetadataGenerator, ILoggerFactory loggerFactory)
     {
         _thumbnailGenerator = thumbnailGenerator;
+        _fileMetadataGenerator = fileMetadataGenerator;
         _loggerFactory = loggerFactory;
     }
 
@@ -169,6 +171,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -212,7 +215,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
 
         try
         {
-            return Task.FromResult((IRevision)new FileRevision(fileForReadingData, _thumbnailGenerator));
+            return Task.FromResult((IRevision)new FileRevision(fileForReadingData, _thumbnailGenerator, _fileMetadataGenerator));
         }
         catch
         {
@@ -227,6 +230,7 @@ public sealed class OnDemandHydrationFileSystemClient : BaseFileSystemClient, IF
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {

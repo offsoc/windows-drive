@@ -2,8 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Proton.Security.Cryptography.Abstractions;
-using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Shares.Contracts;
+using ProtonDrive.Client.Volumes.Contracts;
 
 namespace ProtonDrive.Client.Volumes;
 
@@ -16,51 +17,81 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
         _cryptographyService = cryptographyService;
     }
 
-    public async Task<VolumeCreationParameters> CreateAsync(CancellationToken cancellationToken)
+    public async Task<VolumeCreationParameters> CreateForMainVolumeAsync(CancellationToken cancellationToken)
+    {
+        var (shareParameters, folderParameters) = await CreateParametersAsync(cancellationToken).ConfigureAwait(false);
+
+        return new VolumeCreationParameters
+        {
+            // Share creation parameters
+            AddressId = shareParameters.AddressId,
+            AddressKeyId = shareParameters.AddressKeyId,
+            ShareKey = shareParameters.Key,
+            SharePassphrase = shareParameters.Passphrase,
+            SharePassphraseSignature = shareParameters.PassphraseSignature,
+
+            // Folder creation parameters
+            FolderName = folderParameters.Name,
+            FolderKey = folderParameters.NodeKey,
+            FolderPassphrase = folderParameters.NodePassphrase,
+            FolderPassphraseSignature = folderParameters.NodePassphraseSignature,
+            FolderHashKey = folderParameters.NodeHashKey,
+        };
+    }
+
+    public async Task<PhotoVolumeCreationParameters> CreateForPhotoVolumeAsync(CancellationToken cancellationToken)
+    {
+        var (shareParameters, folderParameters) = await CreateParametersAsync(cancellationToken).ConfigureAwait(false);
+
+        return new PhotoVolumeCreationParameters
+        {
+            Share = shareParameters,
+            Link = folderParameters,
+        };
+    }
+
+    private async Task<(ShareCreationParameters Share, LinkCreationParameters Folder)> CreateParametersAsync(CancellationToken cancellationToken)
     {
         const string folderName = "root";
-        const string volumeName = "MainVolume";
-        const string shareName = "MainShare";
 
-        var parameters = new VolumeCreationParameters();
+        cancellationToken.ThrowIfCancellationRequested();
 
         var shareKeyPassphrase = _cryptographyService.GeneratePassphrase();
         var shareKey = _cryptographyService.GenerateShareOrNodeKey(shareKeyPassphrase);
         var (userEncrypter, address) = await _cryptographyService.CreateMainShareKeyPassphraseEncrypterAsync(cancellationToken).ConfigureAwait(false);
 
-        SetShareParameters(parameters, volumeName, shareName, shareKey, shareKeyPassphrase, address.Id, userEncrypter);
+        var shareParameters = GetRootShareCreationParameters(shareKey, shareKeyPassphrase, address, userEncrypter);
+        var folderParameters = await GetRootFolderCreationParametersAsync(folderName, shareKey, address.Id, cancellationToken).ConfigureAwait(false);
 
-        await SetFolderParameters(parameters, shareKey, folderName, address.Id, cancellationToken).ConfigureAwait(false);
-
-        return parameters;
+        return (shareParameters, folderParameters);
     }
 
-    private static void SetShareParameters(
-        VolumeCreationParameters parameters,
-        string volumeName,
-        string shareName,
+    private static ShareCreationParameters GetRootShareCreationParameters(
         PrivatePgpKey shareKey,
         ReadOnlyMemory<byte> shareKeyPassphrase,
-        string addressId,
+        Address address,
         ISigningCapablePgpMessageProducer userEncrypter)
     {
         var (encryptedShareKeyPassphrase, shareKeyPassphraseSignature, _) = userEncrypter.EncryptShareOrNodeKeyPassphrase(shareKeyPassphrase);
 
-        parameters.AddressId = addressId;
-        parameters.VolumeName = volumeName;
-        parameters.ShareName = shareName;
-        parameters.ShareKey = shareKey.ToString();
-        parameters.SharePassphrase = encryptedShareKeyPassphrase;
-        parameters.SharePassphraseSignature = shareKeyPassphraseSignature;
+        return new ShareCreationParameters
+        {
+            AddressId = address.Id,
+            AddressKeyId = address.GetPrimaryKey().Id,
+            Key = shareKey.ToString(),
+            Passphrase = encryptedShareKeyPassphrase,
+            PassphraseSignature = shareKeyPassphraseSignature,
+        };
     }
 
-    private async Task SetFolderParameters(
-        VolumeCreationParameters parameters,
+    private async Task<LinkCreationParameters> GetRootFolderCreationParametersAsync(
+        string name,
         PrivatePgpKey shareKey,
-        string folderName,
         string addressId,
         CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var (shareEncrypter, _) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(shareKey.PublicKey, addressId, cancellationToken)
             .ConfigureAwait(false);
 
@@ -70,10 +101,13 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
         var folderHashKey = _cryptographyService.GenerateHashKey();
         var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.PublicKey, folderKey);
 
-        parameters.FolderName = shareEncrypter.EncryptNodeName(folderName);
-        parameters.FolderKey = folderKey.ToString();
-        parameters.FolderPassphrase = encryptedFolderKeyPassphrase;
-        parameters.FolderPassphraseSignature = folderKeyPassphraseSignature;
-        parameters.FolderHashKey = folderHashKeyEncrypter.EncryptHashKey(folderHashKey);
+        return new LinkCreationParameters
+        {
+            Name = shareEncrypter.EncryptNodeName(name),
+            NodeKey = folderKey.ToString(),
+            NodePassphrase = encryptedFolderKeyPassphrase,
+            NodePassphraseSignature = folderKeyPassphraseSignature,
+            NodeHashKey = folderHashKeyEncrypter.EncryptHashKey(folderHashKey),
+        };
     }
 }

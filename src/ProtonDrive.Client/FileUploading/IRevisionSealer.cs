@@ -7,5 +7,8 @@ namespace ProtonDrive.Client.FileUploading;
 
 internal interface IRevisionSealer
 {
-    Task SealRevisionAsync(IReadOnlyCollection<UploadedBlock> blocks, CancellationToken cancellationToken);
+    Task SealRevisionAsync(
+        IReadOnlyCollection<UploadedBlock> blocks,
+        string sha1Digest,
+        CancellationToken cancellationToken);
 }

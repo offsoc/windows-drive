@@ -5,5 +5,6 @@
   <String Id="RequiredX64WindowsError" Value="This application requires Windows for x64 processors." />
   <String Id="RequiredArm64WindowsError" Value="This application requires Windows for Arm64 processors." />
   <String Id="RequiredWindows10OrNewerError" Value="This application requires a version of Windows equal to or newer than Windows 10 or Windows Server 2016 v1809." />
+  <String Id="CleanupCheckBoxLabel" Value="Remove [ProductName] settings and previously remembered credentials" />
 
 </WixLocalization>

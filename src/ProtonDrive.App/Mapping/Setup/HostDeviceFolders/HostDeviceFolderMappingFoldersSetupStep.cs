@@ -19,9 +19,8 @@ namespace ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
 internal sealed class HostDeviceFolderMappingFoldersSetupStep
 {
     private readonly IDeviceService _deviceService;
-    private readonly ILocalFolderService _localFolderService;
+    private readonly ILocalFolderSetupAssistant _localFolderSetupAssistant;
     private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
-    private readonly LocalFolderIdentityValidator _localFolderIdentityValidator;
     private readonly RemoteFolderNameValidator _remoteFolderNameValidator;
     private readonly VolumeIdentityProvider _volumeIdentityProvider;
     private readonly INumberSuffixedNameGenerator _numberSuffixedNameGenerator;
@@ -29,18 +28,16 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
 
     public HostDeviceFolderMappingFoldersSetupStep(
         IDeviceService deviceService,
-        ILocalFolderService localFolderService,
+        ILocalFolderSetupAssistant localFolderSetupAssistant,
         Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
-        LocalFolderIdentityValidator localFolderIdentityValidator,
         RemoteFolderNameValidator remoteFolderNameValidator,
         VolumeIdentityProvider volumeIdentityProvider,
         INumberSuffixedNameGenerator numberSuffixedNameGenerator,
         ILogger<HostDeviceFolderMappingFoldersSetupStep> logger)
     {
         _deviceService = deviceService;
-        _localFolderService = localFolderService;
+        _localFolderSetupAssistant = localFolderSetupAssistant;
         _remoteFileSystemClientFactory = remoteFileSystemClientFactory;
-        _localFolderIdentityValidator = localFolderIdentityValidator;
         _remoteFolderNameValidator = remoteFolderNameValidator;
         _volumeIdentityProvider = volumeIdentityProvider;
         _numberSuffixedNameGenerator = numberSuffixedNameGenerator;
@@ -49,16 +46,12 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
 
     public async Task<MappingErrorCode> SetUpFoldersAsync(RemoteToLocalMapping mapping, CancellationToken cancellationToken)
     {
-        if (mapping.Type is not MappingType.HostDeviceFolder)
-        {
-            throw new ArgumentException("Mapping type has unexpected value", nameof(mapping));
-        }
+        Ensure.IsTrue(mapping.Type is MappingType.HostDeviceFolder, "Mapping type has unexpected value", nameof(mapping));
 
-        var result =
+        return
             SetUpLocalFolder(mapping, cancellationToken) ??
-            await SetUpRemoteFolderAsync(mapping, cancellationToken).ConfigureAwait(false);
-
-        return result ?? MappingErrorCode.None;
+            await SetUpRemoteFolderAsync(mapping, cancellationToken).ConfigureAwait(false) ??
+            MappingErrorCode.None;
     }
 
     private static string GetFolderNameFromRootFolderPath(string path)
@@ -107,48 +100,15 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
 
     private MappingErrorCode? SetUpLocalFolder(RemoteToLocalMapping mapping, CancellationToken cancellationToken)
     {
-        var replica = mapping.Local;
-
-        if (replica.RootFolderId != 0)
-        {
-            // Already set up
-            return null;
-        }
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (!_localFolderService.TryGetFolderInfo(replica.Path, FileShare.ReadWrite, out var rootFolder))
-        {
-            _logger.LogWarning("Failed to access local sync folder");
-            return MappingErrorCode.LocalFileSystemAccessFailed;
-        }
-
-        if (rootFolder == null)
-        {
-            _logger.LogWarning("The local sync folder does not exist");
-            return MappingErrorCode.LocalFolderDoesNotExist;
-        }
-
-        var result = _localFolderIdentityValidator.ValidateFolderIdentity(rootFolder, replica, mapping.Remote.RootItemType);
-        if (result is not null)
-        {
-            return result;
-        }
-
-        replica.RootFolderId = rootFolder.Id;
-        replica.VolumeSerialNumber = rootFolder.VolumeInfo.VolumeSerialNumber;
-        replica.InternalVolumeId = _volumeIdentityProvider.GetLocalVolumeId(replica.VolumeSerialNumber);
-
-        return null;
+        return _localFolderSetupAssistant.SetUpLocalFolder(mapping, cancellationToken);
     }
 
     private async Task<MappingErrorCode?> SetUpRemoteFolderAsync(RemoteToLocalMapping mapping, CancellationToken cancellationToken)
     {
         var replica = mapping.Remote;
 
-        if (!string.IsNullOrEmpty(replica.RootLinkId) && !string.IsNullOrEmpty(replica.ShareId))
+        if (replica.IsSetUp())
         {
-            // Already set up
             return null;
         }
 

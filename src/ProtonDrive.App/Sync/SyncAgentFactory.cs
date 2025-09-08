@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -51,6 +52,7 @@ internal sealed class SyncAgentFactory
     private readonly FileSanitizationProvider _fileSanitizerProvider;
     private readonly ILocalVolumeInfoProvider _localVolumeInfoProvider;
     private readonly IThumbnailGenerator _thumbnailGenerator;
+    private readonly IFileMetadataGenerator _fileMetadataGenerator;
     private readonly IRootDeletionHandler _syncRootDeletionHandler;
     private readonly ISyncFolderStructureProtector _folderStructureProtector;
     private readonly IScheduler _scheduler;
@@ -65,6 +67,7 @@ internal sealed class SyncAgentFactory
         LocalRootMapForDeletionDetectionFactory localSyncRootMapForDeletionDetectionFactory,
         FileSanitizationProvider fileSanitizerProvider,
         ILocalVolumeInfoProvider localVolumeInfoProvider,
+        IFileMetadataGenerator fileMetadataGenerator,
         IThumbnailGenerator thumbnailGenerator,
         IRootDeletionHandler syncRootDeletionHandler,
         ISyncFolderStructureProtector folderStructureProtector,
@@ -79,6 +82,7 @@ internal sealed class SyncAgentFactory
         _localSyncRootMapForDeletionDetectionFactory = localSyncRootMapForDeletionDetectionFactory;
         _fileSanitizerProvider = fileSanitizerProvider;
         _localVolumeInfoProvider = localVolumeInfoProvider;
+        _fileMetadataGenerator = fileMetadataGenerator;
         _thumbnailGenerator = thumbnailGenerator;
         _syncRootDeletionHandler = syncRootDeletionHandler;
         _folderStructureProtector = folderStructureProtector;
@@ -138,7 +142,7 @@ internal sealed class SyncAgentFactory
             specialFolderNames,
             _appConfig.MaxRemoteFileAccessRetryInterval,
             _appConfig.MaxFileRevisionCreationInterval,
-            minDelayBeforeFileUpload: default,
+            minDelayBeforeFileUpload: TimeSpan.Zero,
             remoteFileSystemClient,
             remoteEventLogClient,
             _clock,
@@ -147,8 +151,8 @@ internal sealed class SyncAgentFactory
         var localFileSystemClient = new LocalDecoratedFileSystemClientFactory(
                 _localVolumeInfoProvider,
                 _loggerFactory,
-                () => new ClassicFileSystemClient(_thumbnailGenerator),
-                () => new OnDemandHydrationFileSystemClient(_thumbnailGenerator, _loggerFactory),
+                () => new ClassicFileSystemClient(_thumbnailGenerator, _fileMetadataGenerator),
+                () => new OnDemandHydrationFileSystemClient(_thumbnailGenerator, _fileMetadataGenerator, _loggerFactory),
                 fileUploadAbortionStrategy,
                 _folderStructureProtector)
             .GetClient(mappings, localAdapterSettings);
@@ -179,7 +183,7 @@ internal sealed class SyncAgentFactory
             new FileNameFactory<long>(TempFileNamePattern),
             specialFolderNames,
             _appConfig.MaxLocalFileAccessRetryInterval,
-            maxFileRevisionCreationInterval: default,
+            maxFileRevisionCreationInterval: TimeSpan.Zero,
             _appConfig.MinDelayBeforeFileUpload,
             localFileSystemClient,
             localEventLogClient,

@@ -6,6 +6,7 @@ namespace ProtonDrive.Client.Contracts;
 public sealed record BlockRequestResponse : ApiResponse
 {
     private IImmutableList<UploadUrl>? _uploadUrls;
+    private IImmutableList<ThumbnailUploadUrl>? _thumbnailUploadUrls;
 
     [JsonPropertyName("UploadLinks")]
     public IImmutableList<UploadUrl> UploadUrls
@@ -14,6 +15,10 @@ public sealed record BlockRequestResponse : ApiResponse
         init => _uploadUrls = value;
     }
 
-    [JsonPropertyName("ThumbnailLink")]
-    public UploadUrl? ThumbnailUrl { get; init; }
+    [JsonPropertyName("ThumbnailLinks")]
+    public IImmutableList<ThumbnailUploadUrl> ThumbnailUrls
+    {
+        get => _thumbnailUploadUrls ??= ImmutableList<ThumbnailUploadUrl>.Empty;
+        init => _thumbnailUploadUrls = value;
+    }
 }

@@ -13,6 +13,15 @@ public static class LoggerExtensions
         return logger.IsEnabled(LogLevel.Debug) ? sensitiveValue : "<private>";
     }
 
+    public static CoalescingAction GetCoalescingActionWithExceptionsLogging(this ILogger logger, Action origin, string componentName)
+    {
+        return new CoalescingAction(
+            () => logger.WithLoggedException(
+                origin,
+                $"{componentName} operation failed",
+                includeStackTrace: true));
+    }
+
     public static CoalescingAction GetCoalescingActionWithExceptionsLoggingAndCancellationHandling(this ILogger logger, Func<CancellationToken, Task> origin, string componentName)
     {
         return new CoalescingAction(

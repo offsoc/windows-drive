@@ -64,18 +64,39 @@ internal sealed class RemoteNodeService : IRemoteNodeService
 
     public async Task<RemoteNode> GetRemoteNodeAsync(string shareId, Link link, CancellationToken cancellationToken)
     {
+        IPrivateKeyHolder parentKeyHolder;
+
         // If the link to be decrypted is the shared one, we use the share for decryption instead of
         // looking for the parent.
-        var parentKeyHolder = link.ParentId is not null && link.SharingDetails?.ShareId != shareId
-            ? await GetRemoteNodeAsync(shareId, link.ParentId, cancellationToken).ConfigureAwait(false)
-            : (IPrivateKeyHolder)await GetShareAsync(shareId, cancellationToken).ConfigureAwait(false);
+        if (link.SharingDetails?.ShareId == shareId)
+        {
+            parentKeyHolder = await GetShareAsync(shareId, cancellationToken).ConfigureAwait(false);
+        }
+
+        // If the link to be decrypted has no parent, we use the context share for decryption
+        else if (link.ParentId is null && link.SharingDetails?.ShareId is { } contextShareId)
+        {
+            parentKeyHolder = await GetShareAsync(contextShareId, cancellationToken).ConfigureAwait(false);
+        }
+
+        // If the link to be decrypted has a parent, we look for the parent
+        else if (link.ParentId is not null)
+        {
+            parentKeyHolder = await GetRemoteNodeAsync(shareId, link.ParentId, cancellationToken).ConfigureAwait(false);
+        }
+
+        // Otherwise, we attempt decryption using the share
+        else
+        {
+            parentKeyHolder = await GetShareAsync(shareId, cancellationToken).ConfigureAwait(false);
+        }
 
         return await GetRemoteNodeAsync(parentKeyHolder, link, cancellationToken).ConfigureAwait(false);
     }
 
     public Task<RemoteNode> GetRemoteNodeAsync(IPrivateKeyHolder parent, Link link, CancellationToken cancellationToken)
     {
-        return GetRemoteNodeAsync(parent, link, default, cancellationToken);
+        return GetRemoteNodeAsync(parent, link, parentPath: null, cancellationToken);
     }
 
     public async Task<RemoteNode> GetRemoteNodeFromHierarchyAsync(
@@ -360,5 +381,5 @@ internal sealed class RemoteNodeService : IRemoteNodeService
 
     private record struct RemoteNodeCacheKey(string LinkId);
 
-    private record struct ShareCacheKey(string LinkId);
+    private record struct ShareCacheKey(string ShareId);
 }

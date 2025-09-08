@@ -63,9 +63,10 @@ internal class RootedFileSystemClientDecorator : FileSystemClientDecoratorBase<l
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
-        => base.CreateFile(ToAbsolute(info), tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        => base.CreateFile(ToAbsolute(info), tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
 
     public override async Task<IRevisionCreationProcess<long>> CreateRevision(
         NodeInfo<long> info,
@@ -73,10 +74,19 @@ internal class RootedFileSystemClientDecorator : FileSystemClientDecoratorBase<l
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
         => new RootedFileWriteProcess(
-            await base.CreateRevision(ToAbsolute(info), size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken)
+            await base.CreateRevision(
+                    ToAbsolute(info),
+                    size,
+                    lastWriteTime,
+                    tempFileName,
+                    thumbnailProvider,
+                    fileMetadataProvider,
+                    progressCallback,
+                    cancellationToken)
                 .ConfigureAwait(false),
             this);
 

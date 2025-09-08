@@ -65,8 +65,15 @@ public class TransactedScheduler : ITransactedScheduler
 
     protected virtual void RollbackTransaction()
     {
-        _transaction!.Rollback();
-        _logger.LogTrace("Transaction rolled back");
+        try
+        {
+            _transaction!.Rollback();
+            _logger.LogWarning("Transaction rolled back");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Rolling back transaction failed");
+        }
     }
 
     private async Task<T> Transacted<T>(Func<Task<T>> function)

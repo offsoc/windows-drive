@@ -47,10 +47,9 @@ internal sealed class SharedWithMeRootFolderMappingFoldersSetupStep
 
     private MappingErrorCode? SetUpLocalFolder(LocalReplica replica, LinkType remoteRootType, CancellationToken cancellationToken)
     {
-        if (replica.RootFolderId != default)
+        if (replica.IsSetUp())
         {
-            // Already set up
-            return default;
+            return null;
         }
 
         cancellationToken.ThrowIfCancellationRequested();

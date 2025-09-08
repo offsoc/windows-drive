@@ -49,4 +49,21 @@ internal static class MappingExtensions
 
         return !string.IsNullOrEmpty(path);
     }
+
+    public static bool IsSetUp(this RemoteReplica replica)
+    {
+        // VolumeId was missing in earlier versions. For backward compatibility, we do not check it.
+        return !string.IsNullOrEmpty(replica.ShareId)
+            && !string.IsNullOrEmpty(replica.RootLinkId);
+    }
+
+    public static bool IsSetUp(this LocalReplica replica)
+    {
+        return replica.RootFolderId != 0;
+    }
+
+    public static bool IsPhotoFolderMapping(this RemoteToLocalMapping mapping)
+    {
+        return mapping.Type is MappingType.PhotoImport or MappingType.PhotoBackup;
+    }
 }

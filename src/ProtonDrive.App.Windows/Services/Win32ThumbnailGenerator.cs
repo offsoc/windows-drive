@@ -9,34 +9,21 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using ProtonDrive.App.Windows.Interop;
 using ProtonDrive.Sync.Shared.FileSystem;
+using Gdi32 = ProtonDrive.App.Windows.Interop.Gdi32;
+using Shell32 = ProtonDrive.App.Windows.Interop.Shell32;
 
 namespace ProtonDrive.App.Windows.Services;
 
 public class Win32ThumbnailGenerator : IThumbnailGenerator
 {
+    private const int MinHdPreviewNumberOfPixelsOnLargestSide = 768;
+
     // Below 15 it will start becoming unrecognizable and maybe even so ugly that using an icon rather than a thumbnail is likely to be more acceptable.
     private static readonly ImmutableArray<int> QualityLevels = [80, 70, 60, 45, 30, 15, 10, 5];
 
-    private static readonly FrozenSet<string> SupportedExtensions = new HashSet<string>
+    private static readonly FrozenSet<string> SupportedNonImageExtensions = new HashSet<string>
     {
-        // Images
-        ".apng",
-        ".bmp",
-        ".gif",
-        ".ico",
-        ".vdnMicrosoftIcon",
-        ".png",
-        ".svg",
-        ".jpg",
-        ".jpeg",
-        ".jpe",
-        ".jif",
-        ".jfif",
-        ".tif",
-        ".tiff",
-
         // Videos
         ".3gp",
         ".3gpp",
@@ -101,6 +88,41 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
         ".smv",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
+    private static readonly FrozenSet<string> SupportedImageExtensions = new HashSet<string>
+    {
+        ".apng",
+        ".bmp",
+        ".gif",
+        ".ico",
+        ".vdnMicrosoftIcon",
+        ".png",
+        ".svg",
+        ".jpg",
+        ".jpeg",
+        ".jpe",
+        ".jif",
+        ".jfif",
+        ".tif",
+        ".tiff",
+        ".heic",
+        ".dng",
+        ".erf",
+        ".nrw",
+        ".raf",
+        ".rw2",
+        ".arw",
+        ".webp",
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+    private static readonly FrozenSet<string> JpegExtensions = new HashSet<string>
+    {
+        ".jpg",
+        ".jpeg",
+        ".jpe",
+        ".jif",
+        ".jfif",
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
     private readonly ILogger<IThumbnailGenerator> _logger;
 
     public Win32ThumbnailGenerator(ILogger<IThumbnailGenerator> logger)
@@ -110,7 +132,9 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
 
     public bool TryGenerateThumbnail(string filePath, int numberOfPixelsOnLargestSide, int maxNumberOfBytes, out ReadOnlyMemory<byte> thumbnailBytes)
     {
-        if (!SupportedExtensions.Contains(Path.GetExtension(filePath)))
+        var extension = Path.GetExtension(filePath);
+
+        if (!SupportedImageExtensions.Contains(extension) && !SupportedNonImageExtensions.Contains(extension))
         {
             _logger.LogInformation("Thumbnail generation skipped: file extension not supported");
             thumbnailBytes = ReadOnlyMemory<byte>.Empty;
@@ -128,6 +152,19 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
 
         try
         {
+            var isHdPreview = IsRequestingHdPreview(numberOfPixelsOnLargestSide);
+
+            if (isHdPreview)
+            {
+                var validator = new HdPreviewGenerationValidator(filePath, extension, _logger);
+
+                if (!validator.IsHdPreviewAllowed())
+                {
+                    thumbnailBytes = ReadOnlyMemory<byte>.Empty;
+                    return false;
+                }
+            }
+
             hBitmap = GetNativeBitmapHandle(filePath, numberOfPixelsOnLargestSide);
 
             if (hBitmap == IntPtr.Zero)
@@ -137,6 +174,7 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
             }
 
             var bitmap = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
             var nonTransparentBitmap = GetNonTransparentBitmap(bitmap);
 
             var qualityLevelIndex = 0;
@@ -151,7 +189,13 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
                 throw new ThumbnailGenerationException($"Could not generate thumbnail of less than {maxNumberOfBytes} bytes.");
             }
 
-            _logger.LogInformation("Thumbnail generation succeeded");
+            _logger.LogDebug(
+                "{ThumbnailType} generation succeeded for file \"{FileName}\": {Width}x{Height} pixels, {Size} bytes",
+                isHdPreview ? "HD preview" : "Thumbnail",
+                Path.GetFileName(filePath),
+                bitmap.PixelWidth,
+                bitmap.PixelHeight,
+                thumbnailBytes.Length);
 
             return true;
         }
@@ -173,7 +217,12 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
         }
     }
 
-    private static BitmapSource GetNonTransparentBitmap(BitmapSource bitmap)
+    private static bool IsRequestingHdPreview(int numberOfPixelsOnLargestSide)
+    {
+        return numberOfPixelsOnLargestSide > IThumbnailGenerator.MaxThumbnailNumberOfPixelsOnLargestSide;
+    }
+
+    private static RenderTargetBitmap GetNonTransparentBitmap(BitmapSource bitmap)
     {
         var rect = new Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
         var visual = new DrawingVisual();
@@ -186,14 +235,14 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
         return render;
     }
 
-    private static byte[] EncodeToJpeg(BitmapSource thumbnail, int qualityLevel)
+    private static byte[] EncodeToJpeg(BitmapSource source, int qualityLevel)
     {
         using var stream = new MemoryStream();
 
         var encoder = new JpegBitmapEncoder
         {
             QualityLevel = qualityLevel,
-            Frames = { BitmapFrame.Create(thumbnail) },
+            Frames = { BitmapFrame.Create(source) },
         };
 
         encoder.Save(stream);
@@ -227,7 +276,7 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
 
                 if (resultHandle.Failed)
                 {
-                    _logger.LogWarning("Thumbnail generation failed: {ErrorCode}", resultHandle.AsInt32);
+                    _logger.LogWarning("Thumbnail generation failed: 0x{ErrorCode:x8}", resultHandle.AsInt32);
 
                     return IntPtr.Zero;
                 }
@@ -245,6 +294,76 @@ public class Win32ThumbnailGenerator : IThumbnailGenerator
         finally
         {
             Marshal.ReleaseComObject(item);
+        }
+    }
+
+    private sealed class HdPreviewGenerationValidator
+    {
+        private readonly string _filePath;
+        private readonly string _extension;
+        private readonly ILogger _logger;
+
+        public HdPreviewGenerationValidator(string filePath, string extension, ILogger logger)
+        {
+            _filePath = filePath;
+            _extension = extension;
+            _logger = logger;
+        }
+
+        public bool IsHdPreviewAllowed()
+        {
+            if (!SupportedImageExtensions.Contains(_extension))
+            {
+                _logger.LogInformation("HD preview generation skipped: file extension not supported");
+                return false;
+            }
+
+            if (!TryGetNumberOfPixelsOnLargestSide(out var imageNumberOfPixelsOnLargestSide))
+            {
+                return false;
+            }
+
+            if (JpegExtensions.Contains(_extension))
+            {
+                if (imageNumberOfPixelsOnLargestSide <= IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide)
+                {
+                    _logger.LogInformation(
+                        "HD preview generation skipped: JPEG image too small (largest side smaller or equal than {RequiredSize}",
+                        IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide);
+
+                    return false;
+                }
+
+                return true;
+            }
+
+            if (imageNumberOfPixelsOnLargestSide < MinHdPreviewNumberOfPixelsOnLargestSide)
+            {
+                _logger.LogInformation(
+                    "HD preview generation skipped: non JPEG image too small (largest side smaller than {RequiredSize}",
+                    MinHdPreviewNumberOfPixelsOnLargestSide);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryGetNumberOfPixelsOnLargestSide(out int numberOfPixelsOnLargestSide)
+        {
+            try
+            {
+                using var stream = File.OpenRead(_filePath);
+                var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.IgnoreColorProfile | BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+                numberOfPixelsOnLargestSide = Math.Max(decoder.Frames[0].PixelWidth, decoder.Frames[0].PixelHeight);
+                return true;
+            }
+            catch (NotSupportedException)
+            {
+                _logger.LogWarning("HD preview generation failed: file format not supported");
+                numberOfPixelsOnLargestSide = 0;
+                return false;
+            }
         }
     }
 }

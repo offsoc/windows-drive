@@ -10,4 +10,5 @@ public sealed record OnboardingSettings
     public bool IsOnboardingCompleted { get; init; }
     public bool IsSharedWithMeOnboardingCompleted { get; init; }
     public StorageOptimizationOnboardingStep StorageOptimizationOnboardingStep { get; init; }
+    public bool IsPhotosOnboardingCompleted { get; init; }
 }

@@ -150,9 +150,9 @@ internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, 
                     AccountStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
                     AccountStatus.Succeeded => _volumeState.Status switch
                     {
-                        VolumeServiceStatus.Idle => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
-                        VolumeServiceStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
-                        VolumeServiceStatus.Succeeded => _mappingsSetupState.Status switch
+                        VolumeStatus.Idle => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
+                        VolumeStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
+                        VolumeStatus.Ready => _mappingsSetupState.Status switch
                         {
                             MappingSetupStatus.None => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
                             MappingSetupStatus.SettingUp => (AppIconStatus.Active, AppDisplayStatus.SettingUp),
@@ -178,7 +178,7 @@ internal sealed class AppStateViewModel : ObservableObject, ISessionStateAware, 
                             MappingSetupStatus.Failed => (AppIconStatus.Error, AppDisplayStatus.SyncFolderError),
                             _ => throw new ArgumentOutOfRangeException(),
                         },
-                        VolumeServiceStatus.Failed => (AppIconStatus.Error, AppDisplayStatus.AccountError),
+                        VolumeStatus.Failed => (AppIconStatus.Error, AppDisplayStatus.AccountError),
                         _ => throw new ArgumentOutOfRangeException(),
                     },
                     AccountStatus.Failed => (AppIconStatus.Error, AppDisplayStatus.AccountError),

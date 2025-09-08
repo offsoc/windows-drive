@@ -121,7 +121,7 @@
     <value></value>
   </data>
   <data name="AccountDisplayStatus_Value_SessionError">
-    <value>Falha ao fazer o início de sessão</value>
+    <value>Erro ao fazer o início de sessão</value>
   </data>
   <data name="AccountDisplayStatus_Value_SettingUp">
     <value>Configurando...</value>
@@ -454,6 +454,9 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Algo deu errado.</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>O nome contem um carácter inválido</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>O nome está vazio.</value>
   </data>
@@ -463,17 +466,14 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>O nome termina com um espaço.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>O nome contém um carácter não válido.</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>O nome não é suportado pelo Windows.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>O nome é muito longo.</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Verificando atualizações...</value>
@@ -524,7 +524,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Gerenciar _conta</value>
   </data>
   <data name="Main_Account_Account_HelpText">
-    <value>Gerencie sua conta</value>
+    <value>Gerenciar sua conta</value>
   </data>
   <data name="Main_Account_Account_Info_UnknownUser">
     <value>Usuário desconhecido</value>
@@ -699,11 +699,11 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>O nome já está em uso.</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>O nome contém caracteres inválidos</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Algo deu errado.</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>O nome contém caracteres não válidos.</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>O nome é obrigatório.</value>
@@ -864,7 +864,7 @@ desative a otimização de armazenamento a qualquer momento.</value>
     <value>Alguns arquivos na pasta «{0}» podem ser armazenados somente na nuvem. Remover esta pasta interromperá a sincronização e a moverá para a lixeira no Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_2">
-    <value>Para manter uma cópia local de todos os arquivos no seu computador, primeiro desative Otimizar armazenamento para esta pasta. Se a otimização de armazenamento já estiver desativada, ative-a e desative-a. Aguarde a conclusão do download (você pode verificar o status no explorador de arquivos) e remova a pasta da sincronização na seção Meu Computador.</value>
+    <value>Para manter uma cópia local de todos os arquivos no seu computador, primeiro desative Otimizar armazenamento para esta pasta. Se a otimização de armazenamento já estiver desativada, ative-a e desative-a. Aguarde a conclusão do download (você pode verificar o status no Explorador de Arquivos) e remova a pasta da sincronização na seção Meu Computador.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_Item_1">
     <value>Os arquivos que já foram transferidos permanecerão no seu dispositivo.</value>
@@ -907,10 +907,10 @@ desative a otimização de armazenamento a qualquer momento.</value>
     <comment>"Always keep on this device" is the exact text displayed in Windows' context menu when right-clicking a file within an online storage provider like OneDrive.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page1_Title">
-    <value>Otimize o armazenamento</value>
+    <value>Otimizar armazenamento</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Button_GetStarted">
-    <value>Comece</value>
+    <value>Começar</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1">
@@ -927,10 +927,61 @@ desative a otimização de armazenamento a qualquer momento.</value>
     <value>2.</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Title">
-    <value>Gerenciar armazenamento</value>
+    <value>Gestão de armazenamento</value>
   </data>
   <data name="Main_MyComputer_Title">
     <value>Meu computador</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Importação: {0} of {1} itens</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>itens</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>remover</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>Sem foto/vídeo</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Guia passo a passo de como exportar suas fotos do Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Exporta suas fotos do Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>Deve ser a pasta descompactada contendo suas fotos e vídeos exportados.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Importa a pasta do Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Selecionar a pasta</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Importar do Google Fotos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>Como funciona a importação de fotos?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Importar uma pasta local do seu computador</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Importar uma pasta</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Importar fotos do Google do Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Importar do Google Fotos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Importar fotos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Fotos</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Alterar</value>
@@ -1093,6 +1144,12 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Item do menu: Meu computador</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Fotos</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Item de menu: Fotos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Configurações</value>
   </data>
@@ -1211,11 +1268,17 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>O registro da pasta de sincronização foi cancelado inesperadamente. Configure uma nova pasta de sincronização.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>Não é possível acessar o arquivo ou a pasta compartilhada do Proton Drive. Verifique se ela ainda está compartilhada com você.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Fotos não disponível</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>As permissões do arquivo ou pasta compartilhada do Proton Drive foram alteradas. Desative e ative novamente a sincronização para resolver.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>O recurso de fotos não está pronto.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>Não é possível acessar o arquivo ou pasta do Proton Drive compartilhado. Verifique se ainda está compartilhado com você.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>As permissões do arquivo ou pasta compartilhado no Proton Drive mudaram. Desative e ative a sincronização novamente para corrigir o problema.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Compartilhamento está temporariamente indisponível</value>

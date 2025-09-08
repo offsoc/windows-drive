@@ -27,6 +27,7 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
         NodeInfo<string> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -34,7 +35,8 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
 
         try
         {
-            var creationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+            var creationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken)
+                .ConfigureAwait(false);
             return new StorageReservingRevisionCreationProcessDecorator(creationProcess, storageReservation, _userService);
         }
         catch
@@ -50,6 +52,7 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -57,7 +60,15 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
 
         try
         {
-            var creationProcess = await base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken)
+            var creationProcess = await base.CreateRevision(
+                    info,
+                    size,
+                    lastWriteTime,
+                    tempFileName,
+                    thumbnailProvider,
+                    fileMetadataProvider,
+                    progressCallback,
+                    cancellationToken)
                 .ConfigureAwait(false);
             return new StorageReservingRevisionCreationProcessDecorator(creationProcess, storageReservation, _userService);
         }

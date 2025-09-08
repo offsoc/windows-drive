@@ -22,6 +22,7 @@
 
     <Icon Id="ProtonDrive.ico" SourceFile="../../assets/ProtonDrive.ico" />
     <Icon Id="ProtonDocs.ico" SourceFile="../../assets/ProtonDocs.ico" />
+    <Icon Id="ProtonSheets.ico" SourceFile="../../assets/ProtonSheets.ico" />
 
     <Property Id="DISABLEADVTSHORTCUTS" Value="1" />
     
@@ -36,6 +37,16 @@
     <Launch
       Condition="NOT ALLUSERS"
       Message="!(loc.AllUsersPropertyError)" />
+
+    <!--
+    Action that triggers a rollback if the WIXFAILWHENDEFERRED=1 argument is passed to the installation.
+    Warning: There is a bug on rollback, where the product publishing fails to roll back, leaving an entry in the add/remove programs list, and
+    preventing any reinstallation of the product. 
+    See https://github.com/wixtoolset/issues/issues/8574
+    This can be fixed using a Microsoft-provided troubleshooter:
+    https://support.microsoft.com/en-us/topic/fix-problems-that-block-programs-from-being-installed-or-removed-cca7d1b6-65a9-3d98-426b-e9f927e1eb4d
+    -->
+    <util:FailWhenDeferred />
 
     <Property Id="WINDOWSBUILDNUMBER">
       <RegistrySearch Id="WindowsBuildNumberSearch" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Name="CurrentBuildNumber" Type="raw"/>

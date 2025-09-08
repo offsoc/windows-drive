@@ -12,4 +12,10 @@ public sealed record SharedWithMeItem
 
     [JsonPropertyName("LinkID")]
     public required string LinkId { get; init; }
+
+    /// <summary>
+    /// The target type of the share that is corresponding to the share's invitation.
+    /// This should not be used as source of information to know what node type the targeted share is.
+    /// </summary>
+    public ShareTargetType? ShareTargetType { get; set; }
 }

@@ -33,6 +33,7 @@ internal sealed record RemoteFile(
     private static readonly ReadOnlyDictionary<string, string> MediaTypeToLocalExtensionMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
         { "application/vnd.proton.doc", ".protondoc" },
+        { "application/vnd.proton.sheet", ".protonsheet" },
     }.AsReadOnly();
 
     public long SizeOnStorage => Link.FileProperties?.ActiveRevision?.Size ?? 0;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,17 +38,18 @@ internal sealed class SharedWithMeClient : ISharedWithMeClient
 
     public async IAsyncEnumerable<SharedWithMeItem?> GetSharedWithMeItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        string? anchorId = default;
+        string? anchorId = null;
 
         do
         {
             var response = await _shareApiClient.GetSharedWithMeItemsAsync(anchorId, cancellationToken).ThrowOnFailure().ConfigureAwait(false);
 
-            anchorId = response.HasMoreData ? response.AnchorId : default;
+            anchorId = response.HasMoreData ? response.AnchorId : null;
 
-            var getItemsBlock = new TransformManyBlock<SharedWithMeItemListResponse, Contracts.SharedWithMeItem>(x => x.Items);
+            var getItemsBlock = new TransformManyBlock<SharedWithMeItemListResponse, ProtonDrive.Client.Contracts.SharedWithMeItem>(x =>
+                x.Items.Where(item => item.ShareTargetType is null or ShareTargetType.File or ShareTargetType.Folder or ShareTargetType.ProtonVendor));
 
-            var transformItemsBlock = new TransformBlock<Contracts.SharedWithMeItem, SharedWithMeItem?>(
+            var transformItemsBlock = new TransformBlock<ProtonDrive.Client.Contracts.SharedWithMeItem, SharedWithMeItem?>(
                 async x =>
                 {
                     try
@@ -69,7 +71,7 @@ internal sealed class SharedWithMeClient : ISharedWithMeClient
             getItemsBlock.Post(response);
             getItemsBlock.Complete();
 
-            await foreach (var item in transformItemsBlock.ReceiveAllAsync(cancellationToken))
+            await foreach (var item in transformItemsBlock.ReceiveAllAsync(cancellationToken).ConfigureAwait(false))
             {
                 yield return item;
             }
@@ -118,7 +120,7 @@ internal sealed class SharedWithMeClient : ISharedWithMeClient
 
         var inviterDisplayName = membership.InviterEmailAddress is not null
             ? await _contactService.GetDisplayNameByEmailAddressAsync(membership.InviterEmailAddress, cancellationToken).ConfigureAwait(false)
-            : default;
+            : null;
 
         return new SharedWithMeItem
         {

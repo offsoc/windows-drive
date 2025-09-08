@@ -34,6 +34,11 @@
             <Verb Id="open" Argument='"%1"' />
           </Extension>
         </ProgId>
+        <ProgId Id="Proton.Drive.protonsheet" Description="Proton Sheets" Advertise="yes" Icon="ProtonSheets.ico">
+          <Extension Id="protonsheet">
+            <Verb Id="open" Argument='"%1"' />
+          </Extension>
+        </ProgId>
       </Component>
     </ComponentGroup>
   </Fragment>

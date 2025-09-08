@@ -30,6 +30,7 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
 
     private bool _syncFoldersSaved;
     private bool _isSaving;
+    private bool _isInitializingSelection;
     private SyncFolderValidationResult _folderValidationResult;
     private string? _errorMessage;
     private bool _newFolderSelected;
@@ -117,6 +118,8 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
 
     public void InitializeSelection()
     {
+        _isInitializingSelection = true;
+
         var arbitraryFoldersToRemove = new List<SelectableFolderViewModel>();
 
         foreach (var syncedFolder in SyncFolders)
@@ -135,10 +138,16 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
         {
             SyncFolders.Remove(folderToRemove);
         }
+
+        _isInitializingSelection = false;
+
+        ValidateFolderSelection();
     }
 
     public void RefreshSyncedFolders(HashSet<string> syncedFolderPaths)
     {
+        _isInitializingSelection = true;
+
         foreach (var folder in SyncFolders.Where(x => syncedFolderPaths.Contains(x.Path)))
         {
             folder.IsChecked = true;
@@ -146,6 +155,8 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
         }
 
         NewFolderSelected = false;
+
+        _isInitializingSelection = false;
     }
 
     private bool CanSelectArbitraryFolder() => !IsSaving;
@@ -154,7 +165,7 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
     {
         if (e.PropertyName == nameof(SelectableFolderViewModel.IsChecked))
         {
-            FolderValidationResult = ValidateFolderSelection();
+            ValidateFolderSelection();
         }
     }
 
@@ -182,7 +193,7 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
 
         if (TryAddFolder(folderPickingDialog.FolderName, isChecked: true))
         {
-            FolderValidationResult = ValidateFolderSelection();
+            ValidateFolderSelection();
         }
     }
 
@@ -222,20 +233,25 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
 
     private void OnSyncFoldersCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        FolderValidationResult = ValidateFolderSelection();
+        ValidateFolderSelection();
     }
 
-    private SyncFolderValidationResult ValidateFolderSelection()
+    private void ValidateFolderSelection()
     {
-        NewFolderSelected = SyncFolders.Any(x => x is { IsChecked: true, IsDisabled: false });
+        if (_isInitializingSelection)
+        {
+            return;
+        }
 
-        var selectedFolders = SyncFolders.Where(x => x.IsChecked).ToList();
+        var selectedFolders = SyncFolders.Where(x => x is { IsChecked: true, IsDisabled: false }).ToList();
+
+        NewFolderSelected = selectedFolders.Count != 0;
 
         var result = SyncFolderValidationResult.Succeeded;
 
         foreach (var (index, folder) in selectedFolders.Select((x, i) => (i, x)))
         {
-            var otherPaths = selectedFolders.Select(x => x.Path).Where((_, i) => i != index).ToHashSet();
+            var otherPaths = selectedFolders.Select(x => x.Path).Where((_, i) => i != index);
 
             folder.ValidationResult = _syncFolderService.ValidateSyncFolder(folder.Path, otherPaths);
 
@@ -252,6 +268,6 @@ internal sealed class AddFoldersViewModel : ObservableObject, IDialogViewModel
             _logger.LogWarning("Folder selection validation failed due to {ErrorType}: {Message}", result, ErrorMessage);
         }
 
-        return result;
+        FolderValidationResult = result;
     }
 }

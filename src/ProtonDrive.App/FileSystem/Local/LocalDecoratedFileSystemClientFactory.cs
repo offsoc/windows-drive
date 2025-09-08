@@ -44,9 +44,6 @@ internal sealed class LocalDecoratedFileSystemClientFactory
 
     public IFileSystemClient<long> GetClient(IReadOnlyCollection<RemoteToLocalMapping> mappings, LocalAdapterSettings settings)
     {
-        int lastMoveScope = 0;
-        var shareIdToMoveScopeMap = new Dictionary<string, int>();
-
         var cloudFilesMapping = mappings.FirstOrDefault(m => m.Type is MappingType.CloudFiles);
 
         // A local file system client is created per sync folder mapping
@@ -85,7 +82,7 @@ internal sealed class LocalDecoratedFileSystemClientFactory
             var volumeId = mapping.Local.InternalVolumeId;
 
             var rootFolderId = mapping.Type is MappingType.SharedWithMeItem && mapping.Remote.RootItemType is LinkType.File
-                ? parentMapping?.Local.RootFolderId ?? 0
+                ? parentMapping?.Local.RootFolderId ?? throw new InvalidOperationException()
                 : mapping.Local.RootFolderId;
 
             return new RootInfo<long>(
@@ -94,7 +91,7 @@ internal sealed class LocalDecoratedFileSystemClientFactory
                 NodeId: rootFolderId)
             {
                 EventScope = GetEventScope(mapping),
-                MoveScope = GetMoveScope(mapping.Remote.ShareId),
+                MoveScope = GetMoveScope(mapping.Remote),
                 IsOnDemand = mapping.SyncMethod is SyncMethod.OnDemand,
                 LocalPath = GetLocalPath(mapping),
                 IsEnabled = mapping.HasSetupSucceeded,
@@ -113,20 +110,11 @@ internal sealed class LocalDecoratedFileSystemClientFactory
             return (cloudFilesMapping?.Id ?? 0).ToString();
         }
 
-        int GetMoveScope(string? shareId)
+        int GetMoveScope(RemoteReplica replica)
         {
-            Ensure.NotNull(shareId, nameof(shareId));
-
-            // Moving between remote shares is not supported
-            if (shareIdToMoveScopeMap.TryGetValue(shareId, out var moveScope))
-            {
-                return moveScope;
-            }
-
-            moveScope = ++lastMoveScope;
-            shareIdToMoveScopeMap.Add(shareId, moveScope);
-
-            return moveScope;
+            // Moving between remote shares is supported by the API without requiring to provide the destination Share ID.
+            // Moving between remote volumes is not supported.
+            return replica.InternalVolumeId;
         }
 
         string GetLocalPath(RemoteToLocalMapping mapping)

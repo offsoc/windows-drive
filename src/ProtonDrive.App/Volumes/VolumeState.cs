@@ -1,6 +1,6 @@
 ﻿namespace ProtonDrive.App.Volumes;
 
-public sealed record VolumeState(VolumeServiceStatus Status, VolumeInfo? Volume, string? ErrorMessage = default)
+public sealed record VolumeState(VolumeStatus Status, VolumeInfo? Volume, string? ErrorMessage = null)
 {
-    public static VolumeState Idle { get; } = new(VolumeServiceStatus.Idle, default);
+    public static VolumeState Idle { get; } = new(VolumeStatus.Idle, Volume: null);
 }

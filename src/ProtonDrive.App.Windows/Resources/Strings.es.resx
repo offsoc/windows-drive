@@ -142,7 +142,7 @@
     <value>No se ha podido cambiar de cuenta. Reinicia la aplicación.</value>
   </data>
   <data name="AccountErrorCode_Value_Delinquent">
-    <value>Tu cuenta tiene facturas pendientes de pago. Accede a tu panel de control para pagarlas o informa a tu administrador.</value>
+    <value>La cuenta tiene facturas impagadas. Ve a tu panel de control para pagar o informa a tu administrador.</value>
   </data>
   <data name="AccountErrorCode_Value_DriveAccessFailed">
     <value>No se puede conectar a Proton Drive. Comprueba tu conexión a internet.</value>
@@ -162,7 +162,7 @@
     <comment>Indicates the local file or folder being deleted. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_InProgress_SyncActivityType_Value_Download">
-    <value>Descargando de Proton Drive</value>
+    <value>Descargando desde Proton Drive</value>
     <comment>Indicates a file being downloaded. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_InProgress_SyncActivityType_Value_FetchUpdates">
@@ -178,7 +178,7 @@
     <comment>Indicates the local file or folder being renamed. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_InProgress_SyncActivityType_Value_Upload">
-    <value>Cargando a Proton Drive</value>
+    <value>Cargando en Proton Drive</value>
     <comment>Indicates a  file being uploaded to Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_Succeeded_SyncActivityType_Value_Create">
@@ -206,7 +206,7 @@
     <comment>Indicates a local file or folder has been renamed. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_Succeeded_SyncActivityType_Value_Upload">
-    <value>Cargado a Proton Drive</value>
+    <value>Cargado en Proton Drive</value>
     <comment>Indicates a file has been uploaded to Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_Create">
@@ -218,7 +218,7 @@
     <comment>Indicates the file or folder is being deleted from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_Download">
-    <value>Descargando de Proton Drive</value>
+    <value>Descargando desde Proton Drive</value>
     <comment>Indicates a file is being downloaded from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_FetchUpdates">
@@ -234,7 +234,7 @@
     <comment>Indicates the file or folder is being renamed on Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_Upload">
-    <value>Cargando a Proton Drive</value>
+    <value>Cargando en Proton Drive</value>
     <comment>Indicates the file is being uploaded to Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_Succeeded_SyncActivityType_Value_Create">
@@ -258,15 +258,15 @@
     <comment>Indicates the file or folder has been moved on Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_Succeeded_SyncActivityType_Value_Rename">
-    <value>Renombrado en Proton Drive</value>
+    <value>Nombre cambiado en Proton Drive</value>
     <comment>Indicates the file or folder has been renamed on Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_Succeeded_SyncActivityType_Value_Upload">
-    <value>Cargado a Proton Drive</value>
+    <value>Cargado en Proton Drive</value>
     <comment>Indicates the file has been uploaded to Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="AppDisplayStatus_Value_AccountError">
-    <value>No se ha podido configurar una cuenta.</value>
+    <value>Error al configurar una cuenta</value>
   </data>
   <data name="AppDisplayStatus_Value_FinishingUp">
     <value>Finalizando...</value>
@@ -290,7 +290,7 @@
     <value>Cerrando sesión...</value>
   </data>
   <data name="AppDisplayStatus_Value_SyncFolderError">
-    <value>No se han podido configurar las carpetas de sincronización.</value>
+    <value>Error al configurar las carpetas de sincronización</value>
   </data>
   <data name="AppDisplayStatus_Value_SynchronizationError">
     <value>Error de sincronización</value>
@@ -385,7 +385,7 @@
     <value>Error de datos (verificación de redundancia cíclica). Verifica tu unidad (USB, disco, etc.) para detectar errores del sistema de archivos y sectores defectuosos.</value>
   </data>
   <data name="FileSystemErrorCode_Value_DirectoryNotFound">
-    <value>No se ha podido encontrar una parte de la ruta.</value>
+    <value>No se ha encontrado una parte de la ruta.</value>
   </data>
   <data name="FileSystemErrorCode_Value_DuplicateName">
     <value>El nombre ya está en uso.</value>
@@ -403,13 +403,13 @@
     <value>El nombre contiene caracteres que Windows no admite. Elimina los siguientes caracteres para permitir la sincronización: \ / : * ? " &lt; &gt; |</value>
   </data>
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
-    <value>Se ha omitido el archivo porque ha cambiado demasiado recientemente. La aplicación volverá a intentarlo automáticamente</value>
+    <value>Se ha omitido el archivo porque ha cambiado demasiado recientemente. La aplicación volverá a intentarlo automáticamente.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Se ha modificado el archivo o la carpeta.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MissingIndividuallySharedFile">
-    <value>El archivo original compartido contigo se ha eliminado, movido o renombrado.
+    <value>El archivo original compartido contigo se ha eliminado, movido o ha cambiado de nombre.
 Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar este error.</value>
   </data>
   <data name="FileSystemErrorCode_Value_NetworkError">
@@ -440,7 +440,7 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
     <value>Se ha producido un error.</value>
   </data>
   <data name="FileSystemErrorCode_Value_SharingViolation">
-    <value>Otra aplicación está utilizando la carpeta o el archivo.</value>
+    <value>Otra aplicación está usando la carpeta o el archivo.</value>
   </data>
   <data name="FileSystemErrorCode_Value_TimedOut">
     <value>Tiempo agotado</value>
@@ -454,6 +454,9 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Se ha producido un error.</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>El nombre contiene un carácter no válido.</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>El nombre está vacío.</value>
   </data>
@@ -463,17 +466,14 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>El nombre termina con un espacio.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>El nombre contiene un carácter no válido.</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>El nombre no es compatible con Windows.</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>El nombre es demasiado largo.</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Buscando actualizaciones...</value>
@@ -509,7 +509,7 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
     <value>Versión actual</value>
   </data>
   <data name="Main_About_Label_ReleaseDate">
-    <value>Fecha de lanzamiento</value>
+    <value>Fecha de publicación</value>
   </data>
   <data name="Main_About_ReleaseHistory_Label_New">
     <value>NUEVO</value>
@@ -699,11 +699,11 @@ Desactiva y activa la sincronización nuevamente para restaurarlo y eliminar est
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>El nombre ya está en uso.</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>El nombre contiene caracteres no válidos.</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Se ha producido un error.</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>El nombre contiene caracteres no válidos.</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>El nombre es obligatorio.</value>
@@ -903,7 +903,7 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page1_Description">
-    <value>Activa la sincronización a pedido para ahorrar espacio en el disco duro. Los archivos solo ocupan el almacenamiento local cuando los abres o los marcas como «Mantener siempre en este dispositivo».</value>
+    <value>Activa la sincronización bajo demanda para ahorrar espacio en el disco duro. Los archivos solo ocupan el almacenamiento local cuando los abres o los marcas como «Mantener siempre en este dispositivo».</value>
     <comment>"Always keep on this device" is the exact text displayed in Windows' context menu when right-clicking a file within an online storage provider like OneDrive.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page1_Title">
@@ -931,6 +931,57 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
   </data>
   <data name="Main_MyComputer_Title">
     <value>Mi ordenador</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Importación: {0} de {1} elementos</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>elementos</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>eliminar</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>Sin fotos/vídeos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Guía paso a paso sobre cómo exportar tus fotos desde Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Exporta desde tus fotos desde Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>Debe ser la carpeta descomprimida que contiene tus fotos y vídeos exportados.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Importar carpeta de Google Fotos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Seleccionar la carpeta</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Importar desde Google Fotos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>¿Cómo funciona importar fotos?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Importar una carpeta local desde tu ordenador</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Importar una carpeta</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Importar fotos de Google desde Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Importar desde Google Fotos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Importar fotos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Fotos</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Cambiar</value>
@@ -1093,6 +1144,12 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Elemento del menú: Mi ordenador</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Fotos</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Elemento del menú: Fotos</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Ajustes</value>
   </data>
@@ -1143,7 +1200,7 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
     <value>Almacenamiento</value>
   </data>
   <data name="Main_Sidebar_Storage_Tooltip">
-    <value>Gestionar el almacenamiento</value>
+    <value>Administrar el almacenamiento</value>
   </data>
   <data name="Main_Window_Title">
     <value>Proton Drive</value>
@@ -1211,11 +1268,17 @@ El contenido de los archivos se descargará solo cuando lo necesites.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>El registro de la carpeta de sincronización se ha cancelado inesperadamente. Configura una nueva carpeta de sincronización.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>No se puede acceder al archivo o carpeta compartidos de Proton Drive. Verifica si aún están compartidos contigo.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Fotos no disponible</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>Los permisos de un archivo o carpeta compartidos de Proton Drive han cambiado. Desactiva y activa nuevamente la sincronización para resolver el problema.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>La función de Fotos no está lista</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>No puedes acceder al archivo o carpeta compartidos de Proton Drive. Comprueba si todavía se ha compartido contigo.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>Los permisos del archivo o carpeta compartido de Proton Drive han cambiado. Desactiva y activa de nuevo su sincronización para resolverlo.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>El uso compartido no está disponible temporalmente.</value>

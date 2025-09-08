@@ -34,13 +34,22 @@ internal sealed class BackingUpFileSystemClientDecorator<TId> : FileSystemClient
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         // Archive attribute indicates the file should be backed up before overwriting
         var backup = info.Attributes.HasFlag(FileAttributes.Archive);
 
-        var result = await base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+        var result = await base.CreateRevision(
+            info,
+            size,
+            lastWriteTime,
+            tempFileName,
+            thumbnailProvider,
+            fileMetadataProvider,
+            progressCallback,
+            cancellationToken).ConfigureAwait(false);
 
         return backup ? CreateRevisionWithBackup(info, result) : result;
     }

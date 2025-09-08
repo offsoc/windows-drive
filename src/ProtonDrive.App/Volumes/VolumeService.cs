@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Services;
 using ProtonDrive.Client;
+using ProtonDrive.Client.Volumes.Contracts;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Threading;
 
@@ -77,7 +78,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
         }
         else
         {
-            if (State.Status != VolumeServiceStatus.Idle)
+            if (State.Status != VolumeStatus.Idle)
             {
                 _logger.LogDebug("Scheduling cancellation of user volume set up");
             }
@@ -89,22 +90,28 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
 
     async Task IStoppableService.StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"{nameof(VolumeService)} is stopping");
+        _logger.LogDebug($"{nameof(VolumeService)} is stopping");
 
         _stopping = true;
         _cancellationHandle.Cancel();
 
         // Wait for all scheduled tasks to complete
-        await _scheduler.Schedule(() => false).ConfigureAwait(false);
+        await WaitForCompletionAsync().ConfigureAwait(false);
 
-        _logger.LogInformation($"{nameof(VolumeService)} stopped");
+        _logger.LogDebug($"{nameof(VolumeService)} stopped");
+    }
+
+    internal Task WaitForCompletionAsync()
+    {
+        // Wait for all currently scheduled tasks to complete
+        return _scheduler.Schedule(() => { });
     }
 
     private VolumeInfo? GetCachedVolume()
     {
         var (status, volume, _) = State;
 
-        return status is VolumeServiceStatus.Succeeded ? volume : null;
+        return status is VolumeStatus.Ready ? volume : null;
     }
 
     private async Task<VolumeInfo?> GetVolumeAsync()
@@ -118,14 +125,16 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
     {
         if (_stopping ||
             _accountStatus is not AccountStatus.Succeeded ||
-            State.Status is VolumeServiceStatus.Succeeded)
+            State.Status is VolumeStatus.Ready)
         {
             return;
         }
 
-        SetStatus(VolumeServiceStatus.SettingUp);
+        SetStatus(VolumeStatus.SettingUp);
 
-        var (volume, errorMessage) = await SafeGetActiveVolumeAsync(cancellationToken).ConfigureAwait(false);
+        var (volume, errorMessage) =
+            (await GetVolumeAsync(cancellationToken).ConfigureAwait(false)) ??
+            await CreateVolumeAsync(cancellationToken).ConfigureAwait(false);
 
         if (volume != null)
         {
@@ -133,7 +142,7 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
         }
         else
         {
-            SetStatus(VolumeServiceStatus.Failed, errorMessage);
+            SetStatus(VolumeStatus.Failed, errorMessage);
         }
     }
 
@@ -144,38 +153,59 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
             return Task.CompletedTask;
         }
 
-        if (State.Status != VolumeServiceStatus.Idle)
+        if (State.Status != VolumeStatus.Idle)
         {
             _logger.LogInformation("Setting up user volume has been cancelled");
         }
 
-        SetStatus(VolumeServiceStatus.Idle);
+        SetStatus(VolumeStatus.Idle);
 
         return Task.CompletedTask;
     }
 
-    private async Task<(VolumeInfo? Volume, string? ErrorMessage)> SafeGetActiveVolumeAsync(CancellationToken cancellationToken)
+    private async Task<(VolumeInfo? Volume, string? ErrorMessage)?> GetVolumeAsync(CancellationToken cancellationToken)
     {
         try
         {
-            return (await _activeVolumeService.GetActiveVolumeAsync(cancellationToken).ConfigureAwait(false), default);
+            var volume = await _activeVolumeService.GetMainVolumeAsync(cancellationToken).ConfigureAwait(false);
+
+            if (volume is null)
+            {
+                return null;
+            }
+
+            return (volume, ErrorMessage: null);
         }
         catch (Exception ex) when (ex.IsDriveClientException())
         {
-            _logger.LogInformation("Failed to get or create active volume: {Message}", ex.CombinedMessage());
+            _logger.LogInformation("Failed to get {Type} volume: {Message}", VolumeType.Main, ex.CombinedMessage());
 
-            return (default, ex.Message);
+            return (Volume: null, ex.Message);
         }
     }
 
-    private void SetStatus(VolumeServiceStatus status, string? errorMessage = default)
+    private async Task<(VolumeInfo? Volume, string? ErrorMessage)> CreateVolumeAsync(CancellationToken cancellationToken)
     {
-        State = new VolumeState(status, status is not VolumeServiceStatus.Idle ? State.Volume : null, errorMessage);
+        try
+        {
+            return (await _activeVolumeService.GetMainVolumeAsync(cancellationToken).ConfigureAwait(false), ErrorMessage: null);
+        }
+        catch (Exception ex) when (ex.IsDriveClientException())
+        {
+            _logger.LogError("Failed to create {Type} volume: {Message}", VolumeType.Main, ex.CombinedMessage());
+
+            return (Volume: null, ex.Message);
+        }
+    }
+
+    private void SetStatus(VolumeStatus status, string? errorMessage = null)
+    {
+        State = new VolumeState(status, status is not VolumeStatus.Idle ? State.Volume : null, errorMessage);
     }
 
     private void SetSuccess(VolumeInfo volume)
     {
-        State = new VolumeState(VolumeServiceStatus.Succeeded, volume);
+        State = new VolumeState(VolumeStatus.Ready, volume);
     }
 
     private void OnStateChanged(VolumeState value)
@@ -195,13 +225,6 @@ internal sealed class VolumeService : IAccountStateAware, IVolumeService, IStopp
             return Task.CompletedTask;
         }
 
-        var cancellationToken = _cancellationHandle.Token;
-
-        return _scheduler.Schedule(() =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return action(cancellationToken);
-        });
+        return _scheduler.Schedule(action, _cancellationHandle.Token);
     }
 }

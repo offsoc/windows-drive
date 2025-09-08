@@ -48,7 +48,7 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
 
         if (node is null || !node.Model.Status.HasFlag(AdapterNodeStatus.DirtyCopiedTo))
         {
-            return default;
+            return null;
         }
 
         return GetSourceNode(destinationNodeId);
@@ -58,16 +58,21 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
     {
         if (destinationNode.Model.Status.HasFlag(AdapterNodeStatus.Synced))
         {
-            throw new TreeException($"Adapter Tree node with ID={destinationNode.Id} has Synced flag set and cannot be destination in a Copy link");
+            throw new TreeException($"Adapter Tree node with ID {destinationNode.Id} has Synced flag set and cannot be destination in a {NodeLinkType.Copied} link");
         }
 
         if (sourceNode.Model.Status.HasFlag(AdapterNodeStatus.DirtyCopiedTo))
         {
+            _logger.LogInformation(
+                "Node with ID {SourceNodeId} is a destination in the {LinkType} link",
+                sourceNode.Id,
+                NodeLinkType.Copied);
+
             sourceNode = GetSourceNode(sourceNode.Id);
             RemoveLinkToDestination(sourceNode.Model, removeStatusFlag: false);
         }
 
-        _nodeLinkRepository.Add(NodeLinkType.Copied, sourceNode.Id, destinationNode.Id);
+        AddLink(sourceNode, destinationNode);
 
         AppendSourceStatusFlag(sourceNode.Model);
         AppendDestinationStatusFlag(destinationNode.Model);
@@ -107,6 +112,9 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
     private void HandleUpdatingToSynced(FileSystemTreeOperationExecutingEventArgs<AdapterTreeNodeModel<TId, TAltId>, TId> eventArgs)
     {
         RemoveLinkToSource(eventArgs.NewModel!, removeStatusFlag: false);
+
+        _logger.LogDebug("Updating Adapter Tree node with ID {Id} to clear status flag {Flag}", eventArgs.NewModel!.Id, AdapterNodeStatus.DirtyCopiedTo);
+
         eventArgs.NewModel = eventArgs.NewModel!.Copy().WithRemovedFlags(AdapterNodeStatus.DirtyCopiedTo);
     }
 
@@ -135,6 +143,11 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
         {
             return;
         }
+
+        _logger.LogInformation(
+            "Removing {LinkType} links in a branch starting at the node with ID {Id}",
+            NodeLinkType.Copied,
+            nodeId);
 
         var copiedNodes =
             _dirtyTreeTraversal
@@ -183,8 +196,24 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
         }
     }
 
+    private void AddLink(AdapterTreeNode<TId, TAltId> sourceNode, AdapterTreeNode<TId, TAltId> destinationNode)
+    {
+        _logger.LogInformation(
+            "Adding {LinkType} link from source node with ID {SourceNodeId} to destination node with ID {DestinationNodeId}",
+            NodeLinkType.Copied,
+            sourceNode.Id,
+            destinationNode.Id);
+
+        _nodeLinkRepository.Add(NodeLinkType.Copied, sourceNode.Id, destinationNode.Id);
+    }
+
     private void RemoveLink(AdapterTreeNodeModel<TId, TAltId> sourceNodeModel)
     {
+        _logger.LogInformation(
+            "Removing {LinkType} link from source node with ID {SourceNodeId}",
+            NodeLinkType.Copied,
+            sourceNodeModel.Id);
+
         _nodeLinkRepository.Delete(NodeLinkType.Copied, sourceNodeModel.Id);
     }
 
@@ -205,7 +234,7 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
             return;
         }
 
-        _logger.LogDebug("Updating Adapter Tree node with Id={Id} to set status flag(s) ({Flags})", nodeModel.Id, statusFlag);
+        _logger.LogDebug("Updating Adapter Tree node with ID {Id} to set status flag(s) ({Flags})", nodeModel.Id, statusFlag);
 
         _adapterTree.Operations.Execute(
             new Operation<AdapterTreeNodeModel<TId, TAltId>>(
@@ -230,7 +259,7 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
             return;
         }
 
-        _logger.LogDebug("Updating Adapter Tree node with Id={Id} to clear status flag(s) ({Flags})", nodeModel.Id, statusFlag);
+        _logger.LogDebug("Updating Adapter Tree node with ID {Id} to clear status flag(s) ({Flags})", nodeModel.Id, statusFlag);
 
         _adapterTree.Operations.Execute(
             new Operation<AdapterTreeNodeModel<TId, TAltId>>(
@@ -244,7 +273,7 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
 
         if (IsDefault(nodeId))
         {
-            throw new TreeException($"Adapter Tree node with Id={destinationNodeId} has no link to the copy source node");
+            throw new TreeException($"Adapter Tree node with ID {destinationNodeId} has no link to the copy source node");
         }
 
         return _adapterTree.NodeById(nodeId);
@@ -256,7 +285,7 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
 
         if (IsDefault(nodeId))
         {
-            throw new TreeException($"Adapter Tree node with Id={sourceNodeId} has no link to the copy destination node");
+            throw new TreeException($"Adapter Tree node with ID {sourceNodeId} has no link to the copy destination node");
         }
 
         return _adapterTree.FileById(nodeId);
@@ -265,6 +294,6 @@ internal sealed class CopiedNodesHandler<TId, TAltId> : ICopiedNodes<TId, TAltId
     private AdapterTreeNode<TId, TAltId> AdapterTreeNode(DirtyTreeNode<TId> node)
     {
         return _adapterTree.NodeByIdOrDefault(node.Id) ??
-            throw new TreeException($"Adapter Tree node with Id={node.Id} does not exist");
+            throw new TreeException($"Adapter Tree node with ID {node.Id} does not exist");
     }
 }

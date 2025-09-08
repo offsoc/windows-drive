@@ -454,6 +454,9 @@
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Что-то пошло не так</value>
   </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>Имя содержит некорректный символ</value>
+  </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>Имя не указано</value>
   </data>
@@ -463,17 +466,14 @@
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>Имя заканчивается недействительным символом</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>Имя содержит недопустимый символ</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>Имя не поддерживается Windows</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>Имя слишком длинное</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Проверка наличия обновления...</value>
@@ -699,11 +699,11 @@
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>Имя уже используется</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>Имя содержит некорректные символы</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Что-то пошло не так</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>Название содержит недопустимые символы</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>Требуется имя</value>
@@ -727,7 +727,7 @@
     <value>Установка...</value>
   </data>
   <data name="Main_Activity_Status_Value_SettingUpFormat">
-    <value>Setting up... ({0} items prepared for sync)</value>
+    <value>Подготовка... ({0} подготовлены для синхронизации)</value>
   </data>
   <data name="Main_Activity_TimeElapsed_DaysAgoFormat">
     <value>{0} дней назад</value>
@@ -786,28 +786,28 @@
     <value>Добавить папки</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because included in a folder already synced to Proton Drive</value>
+    <value>{0} папка(ок) не могут быть синхронизированы так как она уже синхронизирована в Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because have a subfolder already synced to Proton Drive</value>
+    <value>{0} папка (папки, папок) не может быть синхронизирована (синхронизированы), так как содержит (содержат) подпапку, уже синхронизированную с Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
-    <value>{0} folder(s) cannot be accessed</value>
+    <value>Невозможно получить доступ к {0} папке/папкам</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFolderDoesNotExistFormat">
-    <value>{0} folder(s) cannot be found or cannot be opened</value>
+    <value>Не удается найти или открыть {0} папку (папки, папок).</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} folder(s) cannot be synced because located on a non-supported drive</value>
+    <value>{0} папка (папки, папок) не может (могут) быть синхронизирована (синхронизированы), поскольку находится (находятся) на неподдерживаемом диске</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
-    <value>{0} folder(s) cannot be synced because network folders are not supported</value>
+    <value>{0} папка (папки, папок) не может (могут) быть синхронизирована (синхронизированы), так как сетевые папки не поддерживаются.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NonSyncableFolderFormat">
     <value>Невозможно синхронизировать {0} папок, поскольку они являются системными папками.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_UnableToAddFoldersFormat">
-    <value>Unable to add {0} folder(s)</value>
+    <value>Невозможно добавить {0} папку/папки/папок</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_UnableToAddOneFolder">
     <value>Невозможно добавить 1 папку</value>
@@ -864,7 +864,7 @@
     <value>Некоторые файлы в папке «{0}» могут храниться только в облаке. Удаление этой папки приведет к прекращению синхронизации и перемещению ее в Корзину в Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_2">
-    <value>To keep a local copy of all files on your computer, first turn off Optimize storage for this folder. If storage optimization is already turned off, toggle it on and off. Wait for the download to complete (you can check the status in File Explorer), then remove the folder from syncing under the My Computer section.</value>
+    <value>Чтобы сохранить локальную копию всех файлов на компьютере, сначала отключите оптимизацию хранилища для этой папки. Если оптимизация хранилища уже отключена, включите и выключите ее. Дождитесь завершения загрузки (состояние можно проверить в Проводнике), а затем удалите папку из синхронизации в разделе «Мой компьютер».</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_Item_1">
     <value>Файлы, которые уже были загружены, останутся на вашем устройстве.</value>
@@ -876,7 +876,7 @@
     <value>Удалить папку?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Files within "{0}" folder will now always be available on device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>Теперь файлы из папки «{0}» будут всегда доступны на устройстве. Загрузка всех файлов может занять несколько минут ( состояние можно проверить в Проводнике).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -914,7 +914,7 @@
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1">
-    <value>Right-click on any file or folder synced using Proton Drive</value>
+    <value>Нажмите правой клавишей мыши на любом файле или папке, которые синхронизируются с помощью Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1_Label">
     <value>1.</value>
@@ -931,6 +931,57 @@
   </data>
   <data name="Main_MyComputer_Title">
     <value>Мой компьютер</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Imported {0} of {1} items</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>item(s)</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>remove</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>No photos/videos found</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Step-by-step guide of how to export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Import Google Photos folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Select Folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>How does photo import work?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Import a local folder from your computer</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Import a folder</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Import Google photos from Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Import photos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Фото</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Изменить</value>
@@ -998,10 +1049,10 @@
     <value>Не удалось загрузить данные</value>
   </data>
   <data name="Main_SharedWithMe_Error_FailedToLoad_Items_Plural">
-    <value>{0} items failed to be loaded</value>
+    <value>Не удалось загрузить {0} элементов</value>
   </data>
   <data name="Main_SharedWithMe_Error_FailedToLoad_Items_Singular">
-    <value>{0} item failed to be loaded</value>
+    <value>Не удалось загрузить {0} элемент</value>
   </data>
   <data name="Main_SharedWithMe_Intro_Description">
     <value>Файлы и папки, которыми с вами поделились, появятся здесь</value>
@@ -1046,10 +1097,10 @@
     <value>3.</value>
   </data>
   <data name="Main_SharedWithMe_Status_ItemsSynced_Plural">
-    <value>{0} of {1} items synced</value>
+    <value>Синхронизировано {0} из {1} элементов</value>
   </data>
   <data name="Main_SharedWithMe_Status_ItemsSynced_Singular">
-    <value>{0} of {1} item synced</value>
+    <value>Синхронизировано {0} из {1} элемента</value>
   </data>
   <data name="Main_SharedWithMe_Title">
     <value>Доступные мне</value>
@@ -1058,7 +1109,7 @@
     <value>Чтобы добавить новые элементы, прекратите синхронизацию некоторых старых.</value>
   </data>
   <data name="Main_SharedWithMe_Warning_MaxNumberOfSyncedItems_Limit">
-    <value>You can only sync {0} items at once.</value>
+    <value>Вы можете синхронизировать только {0} элементов одновременно.</value>
   </data>
   <data name="Main_SharedWithMe_Warning_SharingUnavailable">
     <value>Обмен файлами временно недоступен</value>
@@ -1092,6 +1143,12 @@
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Пункт меню: Мой компьютер</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Фото</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Элемент меню: Фото</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Настройки</value>
@@ -1191,7 +1248,7 @@
     <value>Папка синхронизации не найдена. Возможно, она была удалена, переименована или перемещена. Восстановите её или настройте новую папку для синхронизации.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderIncludedByAnAlreadySyncedFolder">
-    <value>The selected folder is already included within another synced folder</value>
+    <value>Выбранная папка уже включена в другую синхронизированную папку</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderIncludesAnAlreadySyncedFolder">
     <value>Выбранная папка содержит папку, уже синхронизируемую</value>
@@ -1211,11 +1268,17 @@
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Папка синхронизации была неожиданно отменена. Настройте новую папку для синхронизации.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>Невозможно получить доступ к общему файлу или папке Proton Drive. Проверьте, доступен ли он вам по-прежнему.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Photos unavailable</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>Права доступа к общему файлу или папке Proton Drive изменены. Отключите и снова включите синхронизацию, чтобы устранить проблему.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>Photos feature not ready</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Обмен файлами временно недоступен</value>

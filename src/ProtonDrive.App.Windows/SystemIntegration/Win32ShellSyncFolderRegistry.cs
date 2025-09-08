@@ -45,7 +45,7 @@ internal sealed class Win32ShellSyncFolderRegistry : IShellSyncFolderRegistry
     private static RegistryKey GetOrCreateSubKey(RegistryKey registryKey, string subKey)
     {
         return registryKey.CreateSubKey(subKey, true)
-               ?? throw new InvalidOperationException($"Registry key '{registryKey.Name}\\{subKey}' not found.");
+               ?? throw new InvalidOperationException($"Registry key '{registryKey.Name}\\{subKey}' not found");
     }
 
     private static bool Safe(Action action)
@@ -87,12 +87,12 @@ internal sealed class Win32ShellSyncFolderRegistry : IShellSyncFolderRegistry
 
         if (classIdRegistryKey == null)
         {
-            throw new InvalidOperationException($"Registry key '{ClassIdKey}' not found.");
+            throw new InvalidOperationException($"Registry key '{ClassIdKey}' not found");
         }
 
         var protonDriveClassIdRegistryKey = GetOrCreateSubKey(classIdRegistryKey, ProtonDriveGuid);
 
-        protonDriveClassIdRegistryKey.SetValue(default, "Proton Drive", RegistryValueKind.String);
+        protonDriveClassIdRegistryKey.SetValue(null, "Proton Drive", RegistryValueKind.String);
 
         protonDriveClassIdRegistryKey.SetValue("System.IsPinnedToNameSpaceTree", 0x1, RegistryValueKind.DWord);
 
@@ -100,11 +100,11 @@ internal sealed class Win32ShellSyncFolderRegistry : IShellSyncFolderRegistry
 
         var defaultIconKey = GetOrCreateSubKey(protonDriveClassIdRegistryKey, "DefaultIcon");
 
-        defaultIconKey.SetValue(default, _appConfig.AppLaunchPath, RegistryValueKind.ExpandString);
+        defaultIconKey.SetValue(null, _appConfig.AppLaunchPath, RegistryValueKind.ExpandString);
 
         var inProcServerKey = GetOrCreateSubKey(protonDriveClassIdRegistryKey, "InProcServer32");
 
-        inProcServerKey.SetValue(default, "%SystemRoot%\\System32\\shell32.dll", RegistryValueKind.ExpandString);
+        inProcServerKey.SetValue(null, "%SystemRoot%\\System32\\shell32.dll", RegistryValueKind.ExpandString);
 
         var instanceKey = GetOrCreateSubKey(protonDriveClassIdRegistryKey, "Instance");
 
@@ -123,14 +123,14 @@ internal sealed class Win32ShellSyncFolderRegistry : IShellSyncFolderRegistry
         shellFolderKey.SetValue("Attributes", unchecked((int)0xF080004D), RegistryValueKind.DWord); // we need to use a signed int.
 
         var nameSpaceKey = Registry.CurrentUser.OpenSubKey($"{ExplorerKey}\\Desktop\\NameSpace", true)
-                           ?? throw new InvalidOperationException($"Registry key '{ExplorerKey}\\Desktop\\NameSpace' not found.");
+                           ?? throw new InvalidOperationException($"Registry key '{ExplorerKey}\\Desktop\\NameSpace' not found");
 
         var protonDriveNameSpaceKey = GetOrCreateSubKey(nameSpaceKey, ProtonDriveGuid);
 
-        protonDriveNameSpaceKey.SetValue(default, "Proton Drive", RegistryValueKind.String);
+        protonDriveNameSpaceKey.SetValue(null, "Proton Drive", RegistryValueKind.String);
 
         var newStartPanelKey = Registry.CurrentUser.OpenSubKey($"{ExplorerKey}\\HideDesktopIcons\\NewStartPanel", true)
-            ?? throw new InvalidOperationException($"Registry {ExplorerKey}\\HideDesktopIcons\\NewStartPanel not found.");
+            ?? throw new InvalidOperationException($"Registry key '{ExplorerKey}\\HideDesktopIcons\\NewStartPanel' not found");
 
         newStartPanelKey.SetValue(ProtonDriveGuid, 0x1, RegistryValueKind.DWord);
     }

@@ -101,7 +101,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
     {
         _volumeState = value;
 
-        if (value.Status is VolumeServiceStatus.Succeeded)
+        if (value.Status is VolumeStatus.Ready)
         {
             _logger.LogDebug("Scheduling devices set up");
             Schedule(InternalSetUpDevicesAsync);
@@ -135,7 +135,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
 
     private async Task InternalSetUpDevicesAsync(CancellationToken cancellationToken)
     {
-        if (_volumeState.Status is not VolumeServiceStatus.Succeeded ||
+        if (_volumeState.Status is not VolumeStatus.Ready ||
             _status is DeviceServiceStatus.Succeeded)
         {
             return;
@@ -204,7 +204,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
 
             if (unprocessedDevice.Type is DeviceType.Host)
             {
-                // The host device does not exist on remote, clear and persist device Id value in settings
+                // The host device does not exist on remote, clear and persist device ID value in settings
                 SaveHostDevice(ResetAndGetHostDevice());
             }
             else
@@ -228,7 +228,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
         }
 
         var volumeState = _volumeState;
-        if (volumeState.Status is not VolumeServiceStatus.Succeeded || volumeState.Volume is null)
+        if (volumeState.Status is not VolumeStatus.Ready || volumeState.Volume is null)
         {
             _logger.LogWarning("Remote volume is not available");
             return DeviceSetupResult.Failure;
@@ -291,7 +291,7 @@ internal sealed class DeviceService : IDeviceService, IStartableService, IStoppa
     {
         hostDevice = GetOrCreateHostDevice();
 
-        // An empty device Id value indicates the remote device does not exist or is not yet retrieved
+        // An empty device ID value indicates the remote device does not exist or is not yet retrieved
         return !string.IsNullOrEmpty(hostDevice.Id);
     }
 

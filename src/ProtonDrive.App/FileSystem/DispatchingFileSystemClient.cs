@@ -70,12 +70,14 @@ internal sealed class DispatchingFileSystemClient<TId> : IFileSystemClient<TId>
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         var client = GetClient(info);
 
-        var result = await client.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+        var result = await client.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken)
+            .ConfigureAwait(false);
 
         return new DispatchingRevisionCreationProcess(this, result, info.Root!);
     }
@@ -93,12 +95,21 @@ internal sealed class DispatchingFileSystemClient<TId> : IFileSystemClient<TId>
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         var client = GetClient(info);
 
-        var result = await client.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken)
+        var result = await client.CreateRevision(
+                info,
+                size,
+                lastWriteTime,
+                tempFileName,
+                thumbnailProvider,
+                fileMetadataProvider,
+                progressCallback,
+                cancellationToken)
             .ConfigureAwait(false);
 
         return new DispatchingRevisionCreationProcess(this, result, info.Root!);

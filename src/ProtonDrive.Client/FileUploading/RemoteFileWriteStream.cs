@@ -17,7 +17,6 @@ using ProtonDrive.BlockVerification;
 using ProtonDrive.Client.Configuration;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
-using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -26,19 +25,19 @@ namespace ProtonDrive.Client.FileUploading;
 // If any cancellation occurs, the instance must be discarded as it is not fit to carry out any other operation
 internal sealed class RemoteFileWriteStream : Stream
 {
-    public const int ThumbnailBlockIndex = 0;
-    public const int DefaultBlockSize = 1 << 22;
+    public const int HdPreviewBlockIndex = 0;
+    public const int ThumbnailBlockIndex = -1;
+    public const int DefaultBlockSize = 4 * 1024 * 1024; // 4MiB
 
     private const int UploadDegreeOfParallelism = 3; // Max number of blocks uploaded concurrently
+    private const int MarginForEncryptionOverhead = 512;
 
     private readonly IFileApiClient _fileApiClient;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICryptographyService _cryptographyService;
     private readonly TransientMemoryPool<byte> _bufferPool;
 
-    private readonly string _shareId;
-    private readonly string _fileId;
-    private readonly string _revisionId;
+    private readonly FileIdentity _fileIdentity;
     private readonly Address _address;
     private readonly ISigningCapablePgpDataPacketProducer _encrypter;
     private readonly IThumbnailProvider _thumbnailProvider;
@@ -54,6 +53,7 @@ internal sealed class RemoteFileWriteStream : Stream
 
     private bool _isDisposed;
     private int _thumbnailUploaded;
+    private int _hdPreviewUploaded;
     private long? _length;
     private long _position;
     private int _greatestContextBlockIndexUsed;
@@ -68,9 +68,7 @@ internal sealed class RemoteFileWriteStream : Stream
         IHttpClientFactory httpClientFactory,
         ICryptographyService cryptographyService,
         BlockingArrayMemoryPool<byte> bufferPool,
-        string shareId,
-        string fileId,
-        string revisionId,
+        FileIdentity fileIdentity,
         Address address,
         ISigningCapablePgpDataPacketProducer encrypter,
         IThumbnailProvider thumbnailProvider,
@@ -84,9 +82,7 @@ internal sealed class RemoteFileWriteStream : Stream
         _cryptographyService = cryptographyService;
         _bufferPool = new TransientMemoryPool<byte>(bufferPool);
 
-        _shareId = shareId;
-        _fileId = fileId;
-        _revisionId = revisionId;
+        _fileIdentity = fileIdentity;
         _address = address;
         _encrypter = encrypter;
         _thumbnailProvider = thumbnailProvider;
@@ -103,6 +99,7 @@ internal sealed class RemoteFileWriteStream : Stream
     {
         Content,
         Thumbnail,
+        HdPreview,
     }
 
     public int BlockSize { get; }
@@ -148,7 +145,7 @@ internal sealed class RemoteFileWriteStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        WriteAsync(buffer.AsMemory(offset, count), CancellationToken.None).GetAwaiter().GetResult();
+        WriteAsync(buffer.AsMemory(offset, count), CancellationToken.None).AsTask().GetAwaiter().GetResult();
     }
 
     public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
@@ -176,11 +173,16 @@ internal sealed class RemoteFileWriteStream : Stream
             throw;
         }
 
+        return;
+
         async ValueTask FinishWriteAsync()
         {
             await _pipeline.ThrowIfCompletedAsync().ConfigureAwait(false);
 
-            await SendThumbnailToPipelineIfApplicableAsync(cancellationToken).ConfigureAwait(false);
+            if (await SendToPipelineIfApplicableAsync(ThumbnailType.Preview, cancellationToken).ConfigureAwait(false))
+            {
+                await SendToPipelineIfApplicableAsync(ThumbnailType.HdPreview, cancellationToken).ConfigureAwait(false);
+            }
 
             if (_position + buffer.Length > Length)
             {
@@ -259,6 +261,17 @@ internal sealed class RemoteFileWriteStream : Stream
         _isDisposed = true;
     }
 
+    private static ThumbnailType ToThumbnailType(UploadTarget target)
+    {
+        return target switch
+        {
+            UploadTarget.Content => throw new ArgumentOutOfRangeException(nameof(target), target, null),
+            UploadTarget.Thumbnail => ThumbnailType.Preview,
+            UploadTarget.HdPreview => ThumbnailType.HdPreview,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null),
+        };
+    }
+
     private async Task SendCurrentContentBufferToPipelineAsync(CancellationToken cancellationToken)
     {
         var buffer = _currentContentBuffer;
@@ -271,31 +284,49 @@ internal sealed class RemoteFileWriteStream : Stream
         _currentContentBuffer = null;
         _currentContentBufferPosition = 0;
 
-        await SendBufferToPipelineAsync(++_greatestContextBlockIndexUsed, buffer, dataLength, UploadTarget.Content, cancellationToken)
-            .ConfigureAwait(false);
+        await SendBufferToPipelineAsync(++_greatestContextBlockIndexUsed, buffer, dataLength, UploadTarget.Content, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendThumbnailToPipelineIfApplicableAsync(CancellationToken cancellationToken)
+    private async Task<bool> SendToPipelineIfApplicableAsync(ThumbnailType thumbnailType, CancellationToken cancellationToken)
     {
         if (_position != 0)
         {
-            return;
+            return false;
         }
 
-        var thumbnailUploaded = Interlocked.Exchange(ref _thumbnailUploaded, 1);
-        if (thumbnailUploaded != 0)
+        switch (thumbnailType)
         {
-            return;
+            case ThumbnailType.Preview:
+                var thumbnailUploaded = Interlocked.Exchange(ref _thumbnailUploaded, 1);
+                if (thumbnailUploaded != 0)
+                {
+                    return false;
+                }
+
+                return await SendThumbnailToPipelineIfApplicableAsync(cancellationToken).ConfigureAwait(false);
+
+            case ThumbnailType.HdPreview:
+                var hdPreviewUploaded = Interlocked.Exchange(ref _hdPreviewUploaded, 1);
+                if (hdPreviewUploaded != 0)
+                {
+                    return false;
+                }
+
+                return await SendHdPreviewToPipelineIfApplicableAsync(cancellationToken).ConfigureAwait(false);
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(thumbnailType), thumbnailType, null);
         }
+    }
 
-        const int numberOfPixelsOnLargestSide = 512;
-        const int marginForEncryptionOverhead = 1 << 9;
-        const int maxNumberOfBytesOnRemote = 60 * (1 << 10); // 60 KiB = 61440 B
-        const int maxNumberOfBytes = maxNumberOfBytesOnRemote - marginForEncryptionOverhead;
+    private async Task<bool> SendThumbnailToPipelineIfApplicableAsync(CancellationToken cancellationToken)
+    {
+        const int maxNumberOfBytesOnRemote = 60 * 1024; // 60 KiB
+        const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
 
-        if (!_thumbnailProvider.TryGetThumbnail(numberOfPixelsOnLargestSide, maxNumberOfBytes, out var thumbnail))
+        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailGenerator.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var thumbnail))
         {
-            return;
+            return false;
         }
 
         var thumbnailMemoryOwner = new ThumbnailMemoryOwner(thumbnail);
@@ -306,6 +337,30 @@ internal sealed class RemoteFileWriteStream : Stream
             thumbnailMemoryOwner.Memory.Length,
             UploadTarget.Thumbnail,
             cancellationToken).ConfigureAwait(false);
+
+        return true;
+    }
+
+    private async Task<bool> SendHdPreviewToPipelineIfApplicableAsync(CancellationToken cancellationToken)
+    {
+        const int maxNumberOfBytesOnRemote = 1024 * 1024; // 1 MiB
+        const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
+
+        if (!_thumbnailProvider.TryGetThumbnail(IThumbnailGenerator.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, out var hdPreview))
+        {
+            return false;
+        }
+
+        var hdPreviewMemoryOwner = new ThumbnailMemoryOwner(hdPreview);
+
+        await SendBufferToPipelineAsync(
+            HdPreviewBlockIndex,
+            hdPreviewMemoryOwner,
+            hdPreviewMemoryOwner.Memory.Length,
+            UploadTarget.HdPreview,
+            cancellationToken).ConfigureAwait(false);
+
+        return true;
     }
 
     private async Task SendBufferToPipelineAsync(
@@ -317,7 +372,7 @@ internal sealed class RemoteFileWriteStream : Stream
     {
         await DisposePipelineCancellationRegistrationAsync().ConfigureAwait(false);
 
-        _latestCancellationTokenRegistration = cancellationToken.Register(() => _pipeline.Cancel());
+        _latestCancellationTokenRegistration = cancellationToken.Register(_pipeline.Cancel);
 
         var command = new UploadCommand(index, buffer, dataLength, target);
         await _pipelineStart.SendAsync(command, _pipeline.CancellationToken).ConfigureAwait(false);
@@ -414,25 +469,36 @@ internal sealed class RemoteFileWriteStream : Stream
 
     private async Task RequestUploadAsync(IReadOnlyCollection<UploadJob> jobs, CancellationToken cancellationToken)
     {
-        var jobsByTarget = jobs.ToLookup(job => job.Target);
-        var thumbnailJob = jobsByTarget[UploadTarget.Thumbnail].SingleOrDefault();
-        var contentJobs = jobsByTarget[UploadTarget.Content].AsReadOnlyCollection(jobs.Count - (thumbnailJob is not null ? 1 : 0));
+        var contentJobs = new List<UploadJob>(jobs.Count);
+        var blockCreationParameters = new List<BlockCreationParameters>(jobs.Count);
+        var thumbnailJobs = new List<UploadJob>(2);
+        var thumbnailCreationParameters = new List<ThumbnailCreationParameters>(2);
+
+        foreach (var job in jobs)
+        {
+            switch (job.Target)
+            {
+                case UploadTarget.Content:
+                    contentJobs.Add(job);
+                    blockCreationParameters.Add(job.BlockCreationParameters);
+                    break;
+
+                case UploadTarget.Thumbnail or UploadTarget.HdPreview:
+                    thumbnailJobs.Add(job);
+                    thumbnailCreationParameters.Add(job.GetThumbnailCreationParameters());
+                    break;
+            }
+        }
 
         var blockUploadRequestParameters = new BlockUploadRequestParameters
         {
-            ShareId = _shareId,
-            LinkId = _fileId,
-            RevisionId = _revisionId,
+            VolumeId = _fileIdentity.VolumeId,
+            LinkId = _fileIdentity.LinkId,
+            RevisionId = _fileIdentity.RevisionId,
             AddressId = _address.Id,
-            Blocks = contentJobs.Select(job => job.BlockCreationParameters),
+            Blocks = blockCreationParameters,
+            Thumbnails = thumbnailCreationParameters,
         };
-
-        if (thumbnailJob is not null)
-        {
-            blockUploadRequestParameters.IncludesThumbnail = true;
-            blockUploadRequestParameters.ThumbnailHash = thumbnailJob.BlockCreationParameters.Hash;
-            blockUploadRequestParameters.ThumbnailSize = thumbnailJob.BlockCreationParameters.Size;
-        }
 
         var response = await _fileApiClient.RequestBlockUploadAsync(blockUploadRequestParameters, cancellationToken)
             .ThrowOnFailure()
@@ -451,14 +517,16 @@ internal sealed class RemoteFileWriteStream : Stream
             job.UploadUrl = response.UploadUrls[i++];
         }
 
-        if (thumbnailJob is not null)
+        if (response.ThumbnailUrls.Count != thumbnailJobs.Count)
         {
-            if (response.ThumbnailUrl is not { } thumbnailUrl)
-            {
-                throw new ApiException(ResponseCode.InvalidValue, "No thumbnail URL was returned despite the request for one.");
-            }
+            throw new ApiException(
+                ResponseCode.InvalidValue,
+                $"Block upload request returned wrong number of thumbnail links ({response.ThumbnailUrls.Count} instead of {thumbnailJobs.Count})");
+        }
 
-            thumbnailJob.UploadUrl = thumbnailUrl;
+        foreach (var job in thumbnailJobs)
+        {
+            job.UploadUrl = response.ThumbnailUrls.Single(u => u.Type == ToThumbnailType(job.Target));
         }
     }
 
@@ -470,9 +538,12 @@ internal sealed class RemoteFileWriteStream : Stream
             blobContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data") { Name = "Block", FileName = "blob" };
             blobContent.Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Octet);
 
-            using var multipartContent = new MultipartFormDataContent("-----------------------------" + Guid.NewGuid().ToString("N")) { blobContent };
+            using var multipartContent = new MultipartFormDataContent("-----------------------------" + Guid.NewGuid().ToString("N"));
+            multipartContent.Add(blobContent);
 
-            await PostBlockAsync(job.UploadUrl.Value, multipartContent, cancellationToken).ConfigureAwait(false);
+            var thumbnailUrl = Path.Join(job.UploadUrl.BareUrl, "/", job.UploadUrl.Token);
+
+            await PostBlockAsync(thumbnailUrl, multipartContent, cancellationToken).ConfigureAwait(false);
 
             var uploadedBlock = new UploadedBlock(
                 job.BlockCreationParameters.Index,
@@ -480,7 +551,7 @@ internal sealed class RemoteFileWriteStream : Stream
                 job.PlainDataLength,
                 job.BlockCreationParameters.Hash,
                 job.UploadUrl,
-                IsThumbnail: job.Target == UploadTarget.Thumbnail);
+                IsThumbnail: job.Target is UploadTarget.Thumbnail or UploadTarget.HdPreview);
 
             lock (_uploadedBlocks)
             {
@@ -528,19 +599,18 @@ internal sealed class RemoteFileWriteStream : Stream
 
     private (Stream EncryptingStream, Stream SignatureStream) GetEncryptingAndSignatureStreams(UploadCommand uploadCommand)
     {
+        return uploadCommand.Target switch
+        {
+            UploadTarget.Content => _encrypter.GetEncryptingAndSignatureStreams(GetPlainDataSource(), DetachedSignatureParameters.ArmoredEncrypted),
+            UploadTarget.Thumbnail => (_encrypter.GetEncryptingAndSigningStream(GetPlainDataSource()), Null),
+            UploadTarget.HdPreview => (_encrypter.GetEncryptingAndSigningStream(GetPlainDataSource()), Null),
+            _ => throw new NotSupportedException($"Unsupported upload target \"{uploadCommand.Target}\""),
+        };
+
         PlainDataSource GetPlainDataSource()
         {
             return new PlainDataSource(uploadCommand.PlainBuffer.Memory[..uploadCommand.PlainDataLength].AsStream());
         }
-
-        return uploadCommand.Target switch
-        {
-            UploadTarget.Content => _encrypter.GetEncryptingAndSignatureStreams(GetPlainDataSource(), DetachedSignatureParameters.ArmoredEncrypted),
-
-            UploadTarget.Thumbnail => (_encrypter.GetEncryptingAndSigningStream(GetPlainDataSource()), Null),
-
-            _ => throw new NotSupportedException($"Unsupported upload target \"{uploadCommand.Target}\""),
-        };
     }
 
     private VerificationToken? GetVerificationToken(ReadOnlySpan<byte> blockDataPacket, ReadOnlySpan<byte> plainData, int blockIndex, UploadTarget target)
@@ -555,7 +625,7 @@ internal sealed class RemoteFileWriteStream : Stream
             }
             catch (SessionKeyAndDataPacketMismatchException ex)
             {
-                throw new BlockVerificationFailedException(_shareId, _fileId, _revisionId, blockIndex, ex);
+                throw new BlockVerificationFailedException(_fileIdentity.ShareId, _fileIdentity.LinkId, _fileIdentity.RevisionId, blockIndex, ex);
             }
         }
         catch (BlockVerificationFailedException ex)
@@ -605,5 +675,11 @@ internal sealed class RemoteFileWriteStream : Stream
         }
 
         public UploadTarget Target { get; }
+
+        public ThumbnailCreationParameters GetThumbnailCreationParameters()
+        {
+            var thumbnailType = ToThumbnailType(Target);
+            return new ThumbnailCreationParameters(BlockCreationParameters.Size, thumbnailType, BlockCreationParameters.Hash);
+        }
     }
 }

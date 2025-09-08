@@ -37,7 +37,7 @@
   "ContactsCacheGraceInterval": "00:10:00",
   "PeriodicTelemetryReportInterval": "00:30:00",
   "DelayBeforeDisplayingSyncInitializationProgress": "00:00:20",
-  "NumberOfMonthsBeforeRemovingInstallationLogFiles": 3,
+  "NumberOfDaysBeforeRemovingInstallationLogFiles": 90,
   "PeriodicObservabilityReportInterval": "00:00:10",
   "ActivityQueryInterval": "06:00:00",
   "FolderNames": {
@@ -63,6 +63,7 @@
     "UpgradePlanFromSidebar": "https://account.proton.me/drive/upgrade?ref=upgrade-drive-windows-app-sidebar",
     "ChangePassword": "https://account.proton.me/drive/account-password",
     "ManageSessions": "https://account.proton.me/drive/security#sessions",
+    "ImportPhotosSupport": "https://proton.me/support/import-files-google-drive",
     "Trash": "https://drive.proton.me/trash",
     "Docs": "https://docs.proton.me"
   },

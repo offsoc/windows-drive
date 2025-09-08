@@ -29,12 +29,13 @@ internal sealed class LocalSpaceCheckingFileSystemClientDecorator<TId> : FileSys
         NodeInfo<TId> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         ThrowIfNotEnoughAvailableSpace(info, _rootDirectoryPath);
 
-        return _fileSystemClient.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return _fileSystemClient.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken);
     }
 
     public override Task<IRevisionCreationProcess<TId>> CreateRevision(
@@ -43,12 +44,21 @@ internal sealed class LocalSpaceCheckingFileSystemClientDecorator<TId> : FileSys
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
         ThrowIfNotEnoughAvailableSpace(info, size, _rootDirectoryPath);
 
-        return _fileSystemClient.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken);
+        return _fileSystemClient.CreateRevision(
+            info,
+            size,
+            lastWriteTime,
+            tempFileName,
+            thumbnailProvider,
+            fileMetadataProvider,
+            progressCallback,
+            cancellationToken);
     }
 
     private void ThrowIfNotEnoughAvailableSpace(NodeInfo<TId> info, string rootDirectoryPath)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Windows.Interop;
 using ProtonDrive.Shared.Extensions;
@@ -16,7 +17,7 @@ internal sealed class KnownFolders : IKnownFolders
     private const string DownloadsGuidString = "374DE290-123F-4565-9164-39C4925E467B";
     private const string DesktopGuidString = "B4BFCC3A-DB2C-424C-B029-7FE99A87C641";
 
-    public KnownFolders()
+    public KnownFolders(ILogger<KnownFolders> logger)
     {
         Desktop = Guid.Parse(DesktopGuidString);
         Documents = Guid.Parse(DocumentsGuidString);
@@ -31,6 +32,11 @@ internal sealed class KnownFolders : IKnownFolders
             .Select(id => (Id: id, Path: GetPath(id)))
             .Where(folder => folder.Path is not null)
             .ToLookup(folder => folder.Path!, folder => folder.Id);
+
+        foreach (var path in IdsByPath.Select(x => x.Key))
+        {
+            logger.LogDebug("Known folder path: {Path}", path);
+        }
     }
 
     public Guid Documents { get; }

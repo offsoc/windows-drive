@@ -20,6 +20,7 @@ internal sealed class MappingRegistry : IStartableService, IStoppableService, IM
     private readonly List<RemoteToLocalMapping> _activeMappings = [];
     private readonly List<RemoteToLocalMapping> _deletedMappings = [];
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly Lazy<Task> _initialization;
 
     private int _latestId;
     private volatile bool _stopping;
@@ -32,10 +33,14 @@ internal sealed class MappingRegistry : IStartableService, IStoppableService, IM
         _repository = mappingRepository;
         _mappingAwareObjects = mappingAwareObjects;
         _logger = logger;
+
+        _initialization = new Lazy<Task>(() => Schedule(LoadData, CancellationToken.None));
     }
 
     public async Task<IUpdatableMappings> GetMappingsAsync(CancellationToken cancellationToken)
     {
+        await InitializeAsync().ConfigureAwait(false);
+
         var disposable = await _semaphore.LockAsync(cancellationToken).ConfigureAwait(false);
 
         return new UpdatableMappings(this, disposable);
@@ -43,27 +48,24 @@ internal sealed class MappingRegistry : IStartableService, IStoppableService, IM
 
     public Task SaveAsync(CancellationToken cancellationToken)
     {
+        if (!_initialization.Value.IsCompletedSuccessfully)
+        {
+            throw new InvalidOperationException("Mappings not loaded");
+        }
+
         return Schedule(SaveMappings, cancellationToken);
     }
 
     Task IStartableService.StartAsync(CancellationToken cancellationToken)
     {
-        return Schedule(InternalStart, cancellationToken);
+        InitializeAsync();
 
-        void InternalStart()
-        {
-            _logger.LogInformation("Loading mappings");
-
-            LoadMappings();
-            NotifyMappingsChanged();
-
-            _logger.LogInformation("Mappings loaded");
-        }
+        return Task.CompletedTask;
     }
 
     async Task IStoppableService.StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"{nameof(MappingRegistry)} is stopping");
+        _logger.LogDebug($"{nameof(MappingRegistry)} is stopping");
         _stopping = true;
 
         await WaitForCompletionAsync().ConfigureAwait(false);
@@ -77,6 +79,21 @@ internal sealed class MappingRegistry : IStartableService, IStoppableService, IM
         using (await _semaphore.LockAsync(CancellationToken.None).ConfigureAwait(false))
         {
         }
+    }
+
+    private Task InitializeAsync()
+    {
+        return _initialization.Value;
+    }
+
+    private void LoadData()
+    {
+        _logger.LogDebug("Loading mappings");
+
+        LoadMappings();
+        NotifyMappingsChanged();
+
+        _logger.LogInformation("Mappings loaded");
     }
 
     private void LoadMappings()

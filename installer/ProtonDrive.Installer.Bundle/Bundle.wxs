@@ -18,13 +18,17 @@
 
     <Variable Name="NoAutoLaunch" Type="numeric" Value="0" bal:Overridable="yes"/>
     <Variable Name="NoDesktopShortcut" Type="numeric" Value="0" bal:Overridable="yes"/>
+    <Variable Name="NoAppDataCleanup" Type="numeric" Value="0" bal:Overridable="yes"/>
+    <Variable Name="FailMsi" Type="numeric" Value="0" bal:Overridable="yes"/>
     <Variable Name="Source" Type="string" Value="" bal:Overridable="yes"/>
 
-    <Chain>
+    <Chain DisableRollback="yes">
       <MsiPackage SourceFile="$(ProtonDrive.Installer.Package.TargetFileName)">
         <MsiProperty Name="LIMITUI" Value="1" Condition="WixBundleUILevel = 3" />
         <MsiProperty Name="NOAUTOLAUNCH" Value="1" Condition="NoAutoLaunch &lt;&gt; 0" />
         <MsiProperty Name="NODESKTOPSHORTCUT" Value="1" Condition="NoDesktopShortcut &lt;&gt; 0" />
+        <MsiProperty Name="CLEANUPAPPDATAONREMOVE" Value="0" Condition="NoAppDataCleanup &lt;&gt; 0" />
+        <MsiProperty Name="WIXFAILWHENDEFERRED" Value="1" Condition="FailMsi = 1" />
         <MsiProperty Name="INITIATOR" Value="[Source]" />
       </MsiPackage>
     </Chain>

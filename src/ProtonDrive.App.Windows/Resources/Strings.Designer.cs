@@ -2328,11 +2328,164 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My Computer.
+        ///   Looks up a localized string similar to My computer.
         /// </summary>
         internal static string Main_MyComputer_Title {
             get {
                 return ResourceManager.GetString("Main_MyComputer_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imported {0} of {1} items.
+        /// </summary>
+        internal static string Main_Photos_Folders_ImportedItemsFormat {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_ImportedItemsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to item(s).
+        /// </summary>
+        internal static string Main_Photos_Folders_Items_Label {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_Items_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string Main_Photos_Folders_Menu_Item_Remove {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_Menu_Item_Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No photos/videos found.
+        /// </summary>
+        internal static string Main_Photos_Folders_NoItemsFound_Label {
+            get {
+                return ResourceManager.GetString("Main_Photos_Folders_NoItemsFound_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How does photo import work?.
+        /// </summary>
+        internal static string Main_Photos_Import_HowImportWorks_Label {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_HowImportWorks_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import a local folder from your computer.
+        /// </summary>
+        internal static string Main_Photos_Import_ImportFolder_Description {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_ImportFolder_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import a folder.
+        /// </summary>
+        internal static string Main_Photos_Import_ImportFolder_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_ImportFolder_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Google photos from Google Takeout.
+        /// </summary>
+        internal static string Main_Photos_Import_ImportFromGoogle_Description {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_ImportFromGoogle_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import from Google Photos.
+        /// </summary>
+        internal static string Main_Photos_Import_ImportFromGoogle_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_ImportFromGoogle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import photos.
+        /// </summary>
+        internal static string Main_Photos_Import_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_Import_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step-by-step guide of how to export your Google Photos.
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_Export_Description {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_Export_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1. Export your Google Photos.
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_Export_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_Export_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It must be the unzipped folder containing your exported photos and videos..
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_Import_Description {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_Import_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2. Import Google Photos folder.
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_Import_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_Import_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Folder.
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_SelectFolder_Button {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_SelectFolder_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import from Google Photos.
+        /// </summary>
+        internal static string Main_Photos_ImportFromGoogle_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_ImportFromGoogle_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Photos.
+        /// </summary>
+        internal static string Main_Photos_Title {
+            get {
+                return ResourceManager.GetString("Main_Photos_Title", resourceCulture);
             }
         }
         
@@ -2806,6 +2959,24 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Photos.
+        /// </summary>
+        internal static string Main_Sidebar_NavigationMenu_Item_Photos {
+            get {
+                return ResourceManager.GetString("Main_Sidebar_NavigationMenu_Item_Photos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu item: Photos.
+        /// </summary>
+        internal static string Main_Sidebar_NavigationMenu_Item_Photos_HelpText {
+            get {
+                return ResourceManager.GetString("Main_Sidebar_NavigationMenu_Item_Photos_HelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         internal static string Main_Sidebar_NavigationMenu_Item_Settings {
@@ -3157,20 +3328,38 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Proton Photos unavailable.
+        /// </summary>
+        internal static string MappingErrorCode_Value_PhotosDisabled {
+            get {
+                return ResourceManager.GetString("MappingErrorCode_Value_PhotosDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Photos feature not ready.
+        /// </summary>
+        internal static string MappingErrorCode_Value_PhotosNotReady {
+            get {
+                return ResourceManager.GetString("MappingErrorCode_Value_PhotosNotReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can’t access shared Proton Drive file or folder. Check if it is still shared with you..
         /// </summary>
-        internal static string MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist {
+        internal static string MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist {
             get {
-                return ResourceManager.GetString("MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist", resourceCulture);
+                return ResourceManager.GetString("MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve..
         /// </summary>
-        internal static string MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged {
+        internal static string MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged {
             get {
-                return ResourceManager.GetString("MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged", resourceCulture);
+                return ResourceManager.GetString("MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged", resourceCulture);
             }
         }
         

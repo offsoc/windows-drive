@@ -23,10 +23,12 @@ internal sealed class ProtectingFileFileSystemClientDecorator : FileSystemClient
         NodeInfo<long> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        var revisionCreationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+        var revisionCreationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken)
+            .ConfigureAwait(false);
 
         return new ProtectingRevisionCreationProcess(this, revisionCreationProcess);
     }
@@ -37,6 +39,7 @@ internal sealed class ProtectingFileFileSystemClientDecorator : FileSystemClient
         DateTime lastWriteTime,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
+        IFileMetadataProvider fileMetadataProvider,
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
@@ -44,7 +47,15 @@ internal sealed class ProtectingFileFileSystemClientDecorator : FileSystemClient
 
         try
         {
-            var revisionCreationProcess = await base.CreateRevision(info, size, lastWriteTime, tempFileName, thumbnailProvider, progressCallback, cancellationToken).ConfigureAwait(false);
+            var revisionCreationProcess = await base.CreateRevision(
+                info,
+                size,
+                lastWriteTime,
+                tempFileName,
+                thumbnailProvider,
+                fileMetadataProvider,
+                progressCallback,
+                cancellationToken).ConfigureAwait(false);
 
             return new ProtectingRevisionCreationProcess(this, revisionCreationProcess);
         }

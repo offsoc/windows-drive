@@ -10,8 +10,8 @@ public interface ISyncFolderService
     /// Validates account root folder candidate.
     /// </summary>
     /// <remarks>
-    /// Account root folder contains cloud files folder ("My files") and foreign devices
-    /// folder ("Other computers").
+    /// Account root folder contains cloud files folder ("My files"), foreign devices
+    /// folder ("Other computers"), and shared with me root folder ("Shared with me").
     /// </remarks>
     /// <param name="path">Account root folder path.</param>
     /// <returns>The result of the validation.</returns>
@@ -19,21 +19,28 @@ public interface ISyncFolderService
 
     /// <summary>
     /// Validates local folder applicability for syncing.
-    /// Checks if a folder path does not overlap with a provided set of other paths,
-    /// whether the folder is on a supported volume.
     /// </summary>
+    /// <remarks>
+    /// It checks whether:
+    /// <list type="bullet">
+    /// <item>The folder exists</item>
+    /// <item>The folder path does not overlap with already synced folders</item>
+    /// <item>The folder path does not overlap with the provided set of other paths</item>
+    /// <item>The folder is on a supported volume</item>
+    /// </list>
+    /// </remarks>
     /// <param name="path">The path of a folder to validate</param>
-    /// <param name="otherPaths">List of folder paths to be validated against</param>
+    /// <param name="otherPaths">List of additional folder paths to be validated against</param>
     /// <returns>The result of the validation.</returns>
-    SyncFolderValidationResult ValidateSyncFolder(string path, IReadOnlySet<string> otherPaths);
+    SyncFolderValidationResult ValidateSyncFolder(string path, IEnumerable<string> otherPaths);
 
     /// <summary>
     /// Changes account root folder to the new one.
+    /// </summary>
     /// <remarks>
     /// The old cloud files mapping is deleted and the new one is created.
     /// No validation of local folder is attempted, it will be performed by sync folder mapping setup.
     /// </remarks>
-    /// </summary>
     /// <param name="localPath">New account root folder paths.</param>
     /// <returns>
     /// A task that represents the asynchronous account root folder change operation.

@@ -1,4 +1,4 @@
-﻿namespace ProtonDrive.Client.Contracts;
+﻿namespace ProtonDrive.Client.Volumes.Contracts;
 
 public sealed record VolumeResponse : ApiResponse
 {

@@ -34,7 +34,7 @@ public sealed class AppConfig
     public TimeSpan DelayBeforeDisplayingSyncInitializationProgress { get; internal set; }
     public TimeSpan PeriodicObservabilityReportInterval { get; internal set; }
     public TimeSpan ActivityQueryInterval { get; internal set; }
-    public int NumberOfMonthsBeforeRemovingInstallationLogFiles { get; internal set; }
+    public int NumberOfDaysBeforeRemovingInstallationLogFiles { get; internal set; }
 
     public bool TlsPinningEnabled { get; internal set; } = DefaultTlsPinningEnabled;
 

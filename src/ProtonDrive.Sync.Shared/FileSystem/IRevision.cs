@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ProtonDrive.Sync.Shared.FileSystem;
 
-public interface IRevision : IThumbnailProvider, IDisposable, IAsyncDisposable
+public interface IRevision : IThumbnailProvider, IFileMetadataProvider, IDisposable, IAsyncDisposable
 {
     long Size { get; }
     DateTime LastWriteTimeUtc { get; }

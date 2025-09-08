@@ -9,8 +9,8 @@ public enum MappingErrorCode
     DriveHostDeviceDiverged,
     DriveFolderDoesNotExist,
     DriveFolderDiverged,
-    RemoteShareWithMeItemDoesNotExist,
-    RemoteShareWithMeItemPermissionsDiverged,
+    RemoteSharedWithMeItemDoesNotExist,
+    RemoteSharedWithMeItemPermissionsDiverged,
     LocalFileSystemAccessFailed,
     LocalVolumeNotSupported,
     LocalFolderDoesNotExist,
@@ -26,4 +26,6 @@ public enum MappingErrorCode
     InsufficientLocalFreeSpace,
     InsufficientDeviceQuota,
     SharingDisabled,
+    PhotosNotReady,
+    PhotosDisabled,
 }

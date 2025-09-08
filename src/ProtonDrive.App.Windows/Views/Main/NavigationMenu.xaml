@@ -67,17 +67,59 @@
 
                 <ContentControl
                     Grid.Column="2"
-                    Content="{Binding MyComputerNotificationBadge}"
+                    Content="{Binding NotificationBadges.MyComputerNotificationBadge}"
                     ContentTemplate="{StaticResource NotificationBadgeTemplate}"
-                    Visibility="{Binding MyComputerNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Visibility="{Binding NotificationBadges.MyComputerNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="8,0,0,0" />
 
                 <ContentControl
                     Grid.Column="3"
-                    Content="{Binding StorageOptimizationOnboardingBadge}"
-                    ContentTemplate="{StaticResource StorageOptimizationOnboardingBadgeTemplate}"
-                    Visibility="{Binding StorageOptimizationOnboardingBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Content="{Binding NotificationBadges.MyComputerNewFeatureBadge}"
+                    ContentTemplate="{StaticResource NewFeatureBadgeTemplate}"
+                    Visibility="{Binding NotificationBadges.MyComputerNewFeatureBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    VerticalAlignment="Center"
+                    Margin="8,0,0,0" />
+            </Grid>
+        </RadioButton>
+
+        <RadioButton
+            AutomationProperties.AutomationId="PhotosMenuItem"
+            AutomationProperties.HelpText="{loc:Resource Main_Sidebar_NavigationMenu_Item_Photos_HelpText}"
+            IsChecked="{Binding CurrentMenuItem, ConverterParameter={x:Static main:ApplicationPage.Photos}, Converter={x:Static conv:ObjectEqualityToBooleanConverter.EqualIsTrue}}"
+            Style="{StaticResource MenuToggleButtonWithIndicatorStyle}"
+            Visibility="{Binding PhotosFeatureIsVisible, Converter={x:Static conv:BooleanToVisibilityConverter.FalseIsCollapsed}}"
+            Margin="0,2,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image
+                    Grid.Column="0"
+                    Source="{StaticResource Icon.NavigationMenu.Image}"
+                    Width="16"
+                    VerticalAlignment="Center" />
+
+                <TextBlock
+                    Grid.Column="1"
+                    Text="{loc:Resource Main_Sidebar_NavigationMenu_Item_Photos}"
+                    TextTrimming="CharacterEllipsis"
+                    ToolTip="{loc:Resource Main_Sidebar_NavigationMenu_Item_Photos}"
+                    VerticalAlignment="Center"
+                    Margin="10,0,0,0">
+                    <b:Interaction.Behaviors>
+                        <behaviors:TextBlockAutoToolTipBehavior />
+                    </b:Interaction.Behaviors>
+                </TextBlock>
+
+                <ContentControl
+                    Grid.Column="2"
+                    Content="{Binding NotificationBadges.PhotosNewFeatureBadge}"
+                    ContentTemplate="{StaticResource NewFeatureBadgeTemplate}"
+                    Visibility="{Binding NotificationBadges.PhotosNewFeatureBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="8,0,0,0" />
             </Grid>
@@ -116,9 +158,9 @@
 
                 <ContentControl
                     Grid.Column="2"
-                    Content="{Binding SharedWithMeNotificationBadge}"
+                    Content="{Binding NotificationBadges.SharedWithMeNotificationBadge}"
                     ContentTemplate="{StaticResource NotificationBadgeTemplate}"
-                    Visibility="{Binding SharedWithMeNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Visibility="{Binding NotificationBadges.SharedWithMeNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="8,0,0,0" />
             </Grid>
@@ -156,9 +198,9 @@
 
                 <ContentControl
                     Grid.Column="2"
-                    Content="{Binding SettingsNotificationBadge}"
+                    Content="{Binding NotificationBadges.SettingsNotificationBadge}"
                     ContentTemplate="{StaticResource NotificationBadgeTemplate}"
-                    Visibility="{Binding SettingsNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Visibility="{Binding NotificationBadges.SettingsNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="8,2,0,0" />
             </Grid>
@@ -196,9 +238,9 @@
 
                 <ContentControl
                     Grid.Column="2"
-                    Content="{Binding QuotaNotificationBadge}"
+                    Content="{Binding NotificationBadges.QuotaNotificationBadge}"
                     ContentTemplate="{StaticResource NotificationBadgeTemplate}"
-                    Visibility="{Binding QuotaNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Visibility="{Binding NotificationBadges.QuotaNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="10,2,0,0" />
             </Grid>
@@ -236,9 +278,9 @@
 
                 <ContentControl
                     Grid.Column="2"
-                    Content="{Binding UpdateNotificationBadge}"
+                    Content="{Binding NotificationBadges.UpdateNotificationBadge}"
                     ContentTemplate="{StaticResource NotificationBadgeTemplate}"
-                    Visibility="{Binding UpdateNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
+                    Visibility="{Binding NotificationBadges.UpdateNotificationBadge, Converter={x:Static conv:ObjectEqualityToVisibilityConverter.EqualIsCollapsed}, ConverterParameter={x:Null}}"
                     VerticalAlignment="Center"
                     Margin="10,2,0,0" />
             </Grid>

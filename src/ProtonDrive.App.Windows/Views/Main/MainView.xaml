@@ -11,6 +11,7 @@
     xmlns:main="clr-namespace:ProtonDrive.App.Windows.Views.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:myComputer="clr-namespace:ProtonDrive.App.Windows.Views.Main.MyComputer"
+    xmlns:photos="clr-namespace:ProtonDrive.App.Windows.Views.Main.Photos"
     xmlns:settings="clr-namespace:ProtonDrive.App.Windows.Views.Main.Settings"
     xmlns:sharedWithMe="clr-namespace:ProtonDrive.App.Windows.Views.Main.SharedWithMe"
     mc:Ignorable="d"
@@ -22,6 +23,10 @@
 
         <DataTemplate DataType="{x:Type myComputer:MyComputerViewModel}">
             <myComputer:MyComputerView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type photos:PhotosViewModel}">
+            <photos:PhotosView />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type sharedWithMe:SharedWithMeViewModel}">

@@ -26,7 +26,7 @@ internal sealed class InstallationLogFilesCollector : IStartableService
         _logger = logger;
         var logFolderPath = Path.Combine(appConfig.AppDataPath, "Logs");
         _installationLogFolderPath = Path.Combine(logFolderPath, "Installation");
-        _recentThresholdTimeUtc = DateTime.UtcNow.AddMonths(-appConfig.NumberOfMonthsBeforeRemovingInstallationLogFiles);
+        _recentThresholdTimeUtc = DateTime.UtcNow.AddDays(-appConfig.NumberOfDaysBeforeRemovingInstallationLogFiles);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -57,8 +57,8 @@ internal sealed class InstallationLogFilesCollector : IStartableService
             using var fileStream = File.Open(filePath, FileMode.Open);
             using var streamReader = new StreamReader(fileStream, detectEncodingFromByteOrderMarks: true);
 
-            Span<char> chars = stackalloc char[1024];
-            return streamReader.ReadBlock(chars) > 0 && chars.IndexOfAny(ProtonSearchValues) > -1;
+            Span<char> chars = stackalloc char[2048];
+            return streamReader.ReadBlock(chars) is var numberOfCharsRead and > 0 && chars[..numberOfCharsRead].IndexOfAny(ProtonSearchValues) >= 0;
         }
         catch (Exception ex) when (ex.IsFileAccessException())
         {

@@ -24,6 +24,8 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
     private readonly ICollection<SyncFolder> _syncFolders = [];
     private readonly IScheduler _scheduler = new SerialScheduler();
 
+    private IReadOnlyCollection<RemoteToLocalMapping> _activeMappings = [];
+
     public SyncFolderService(
         AppConfig appConfig,
         IMappingRegistry mappingRegistry,
@@ -50,9 +52,11 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
         return _localSyncFolderValidator.ValidateFolder(path, shouldBeEmpty: true);
     }
 
-    public SyncFolderValidationResult ValidateSyncFolder(string path, IReadOnlySet<string> otherPaths)
+    public SyncFolderValidationResult ValidateSyncFolder(string path, IEnumerable<string> otherPaths)
     {
-        var pathValidationResult = _localSyncFolderValidator.ValidatePathAndDrive(path, otherPaths);
+        var allPaths = GetSyncedFolderPaths().Concat(otherPaths).ToHashSet();
+
+        var pathValidationResult = _localSyncFolderValidator.ValidatePathAndDrive(path, allPaths);
 
         if (pathValidationResult is not SyncFolderValidationResult.Succeeded)
         {
@@ -240,6 +244,8 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
         IReadOnlyCollection<RemoteToLocalMapping> activeMappings,
         IReadOnlyCollection<RemoteToLocalMapping> deletedMappings)
     {
+        _activeMappings = activeMappings;
+
         Schedule(HandleMappingsChange);
 
         return;
@@ -317,6 +323,15 @@ internal sealed class SyncFolderService : ISyncFolderService, IMappingsAware, IM
     {
         // Wait for all previously scheduled internal tasks to complete
         return _scheduler.Schedule(() => false);
+    }
+
+    private IEnumerable<string> GetSyncedFolderPaths()
+    {
+        // We don't use _syncFolders collection here, because access to it must be scheduled.
+        // Shared with me items are skipped, it is enough to include the shared with me root folder.
+        return _activeMappings
+            .Where(x => x.Type is not MappingType.SharedWithMeItem)
+            .Select(x => x.Local.Path);
     }
 
     private void AddSyncFolder(SyncFolder syncFolder)

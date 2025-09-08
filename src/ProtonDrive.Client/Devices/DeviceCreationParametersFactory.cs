@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Proton.Security.Cryptography.Abstractions;
-using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Client.Devices.Contracts;
 using ProtonDrive.Client.Shares;
+using ProtonDrive.Client.Shares.Contracts;
 using ProtonDrive.Client.Volumes;
+using ProtonDrive.Client.Volumes.Contracts;
 
 namespace ProtonDrive.Client.Devices;
 
@@ -34,21 +35,21 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
             IsSynchronizationEnabled = true,
         };
 
-        var (shareEncrypter, addressId, addressKey) = await GetShareKeyPassphraseEncrypterAsync(volumeId, cancellationToken).ConfigureAwait(false);
+        var (shareEncrypter, address) = await GetShareKeyPassphraseEncrypterAsync(volumeId, cancellationToken).ConfigureAwait(false);
 
-        var (shareKey, shareParameters) = GetShareCreationParameters(shareEncrypter, addressId);
+        var (shareKey, shareParameters) = GetRootShareCreationParameters(shareEncrypter, address);
 
-        var linkParameters = GetLinkParameters(name, shareKey.PublicKey, addressKey);
+        var folderParameters = GetRootFolderCreationParameters(name, shareKey.PublicKey, address.GetPrimaryKey().PrivateKey);
 
         return new DeviceCreationParameters
         {
             Device = deviceParameters,
             Share = shareParameters,
-            Link = linkParameters,
+            Link = folderParameters,
         };
     }
 
-    private DeviceLinkCreationParameters GetLinkParameters(string name, PublicPgpKey shareKey, PrivatePgpKey signatureKey)
+    private LinkCreationParameters GetRootFolderCreationParameters(string name, PublicPgpKey shareKey, PrivatePgpKey signatureKey)
     {
         var encrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(shareKey, signatureKey);
 
@@ -58,7 +59,7 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
         var folderHashKey = _cryptographyService.GenerateHashKey();
         var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.PublicKey, folderKey);
 
-        return new DeviceLinkCreationParameters
+        return new LinkCreationParameters
         {
             Name = encrypter.EncryptNodeName(name),
             NodeKey = folderKey.ToString(),
@@ -68,25 +69,26 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
         };
     }
 
-    private (PrivatePgpKey PrivateKey, DeviceShareCreationParameters DeviceParameters) GetShareCreationParameters(
+    private (PrivatePgpKey PrivateKey, ShareCreationParameters DeviceParameters) GetRootShareCreationParameters(
         ISigningCapablePgpMessageProducer encrypter,
-        string addressId)
+        Address address)
     {
         var shareKeyPassphrase = _cryptographyService.GeneratePassphrase();
         var shareKey = _cryptographyService.GenerateShareOrNodeKey(shareKeyPassphrase);
 
         var (encryptedShareKeyPassphrase, shareKeyPassphraseSignature, _) = encrypter.EncryptShareOrNodeKeyPassphrase(shareKeyPassphrase);
 
-        return (shareKey, new DeviceShareCreationParameters
+        return (shareKey, new ShareCreationParameters
         {
-            AddressId = addressId,
+            AddressId = address.Id,
+            AddressKeyId = address.GetPrimaryKey().Id,
             Key = shareKey.ToString(),
             Passphrase = encryptedShareKeyPassphrase,
             PassphraseSignature = shareKeyPassphraseSignature,
         });
     }
 
-    private async Task<(ISigningCapablePgpMessageProducer Encrypter, string AddressId, PrivatePgpKey AddressKey)> GetShareKeyPassphraseEncrypterAsync(
+    private async Task<(ISigningCapablePgpMessageProducer Encrypter, Address Address)> GetShareKeyPassphraseEncrypterAsync(
         string volumeId,
         CancellationToken cancellationToken)
     {
@@ -110,6 +112,6 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
         var (encrypter, address) = await _cryptographyService.CreateShareKeyPassphraseEncrypterAsync(shareResponse.AddressId, cancellationToken)
             .ConfigureAwait(false);
 
-        return (encrypter, shareResponse.AddressId, address.GetPrimaryKey().PrivateKey);
+        return (encrypter, address);
     }
 }

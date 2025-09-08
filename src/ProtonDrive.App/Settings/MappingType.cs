@@ -25,7 +25,7 @@ public enum MappingType
     ForeignDevice = 3,
 
     /// <summary>
-    /// Maps local shared with me items (folder or file) to remote ones.
+    /// Maps local shared with me item (folder or file) to remote one.
     /// <para>Local item (folder or file) is the child of the "Shared with me" folder, which is a subfolder of the account root folder.</para>
     /// <para>Remote counterpart is an item (folder or file) on a foreign volume, that another user shared with me.</para>
     /// </summary>
@@ -37,4 +37,14 @@ public enum MappingType
     /// <para>Local folder is the subfolder of the account root folder.</para>
     /// </summary>
     SharedWithMeRootFolder = 102,
+
+    /// <summary>
+    /// Maps local folder, that the user added to import photos from, to remote Photo volume.
+    /// </summary>
+    PhotoImport = 5,
+
+    /// <summary>
+    /// Maps local folder, that the user added to back up photos from, to remote Photo volume.
+    /// </summary>
+    PhotoBackup = 6,
 }

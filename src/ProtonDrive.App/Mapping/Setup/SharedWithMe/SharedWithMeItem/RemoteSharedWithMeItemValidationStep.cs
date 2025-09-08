@@ -61,7 +61,7 @@ internal class RemoteSharedWithMeItemValidationStep : IRemoteSharedWithMeItemVal
         if (sharedWithMeItem is null)
         {
             _logger.LogError("Remote shared with me item does not exist");
-            return MappingErrorCode.RemoteShareWithMeItemDoesNotExist;
+            return MappingErrorCode.RemoteSharedWithMeItemDoesNotExist;
         }
 
         var itemType = GetLinkType(sharedWithMeItem);
@@ -69,14 +69,14 @@ internal class RemoteSharedWithMeItemValidationStep : IRemoteSharedWithMeItemVal
         if (replica.RootItemType != itemType)
         {
             _logger.LogError("Remote shared with me item type is not expected: {ItemType}", itemType);
-            return MappingErrorCode.RemoteShareWithMeItemDoesNotExist;
+            return MappingErrorCode.RemoteSharedWithMeItemDoesNotExist;
         }
 
         if (sharedWithMeItem.VolumeId != replica.VolumeId
             || sharedWithMeItem.LinkId != replica.RootLinkId)
         {
             _logger.LogError("Remote shared with me item has diverged: Remote Volume ID or Link ID is not expected");
-            return MappingErrorCode.RemoteShareWithMeItemDoesNotExist;
+            return MappingErrorCode.RemoteSharedWithMeItemDoesNotExist;
         }
 
         if (sharedWithMeItem.IsReadOnly != replica.IsReadOnly)
@@ -86,7 +86,7 @@ internal class RemoteSharedWithMeItemValidationStep : IRemoteSharedWithMeItemVal
                 replica.IsReadOnly,
                 sharedWithMeItem.IsReadOnly);
 
-            return MappingErrorCode.RemoteShareWithMeItemPermissionsDiverged;
+            return MappingErrorCode.RemoteSharedWithMeItemPermissionsDiverged;
         }
 
         replica.RootItemName = sharedWithMeItem.Name;

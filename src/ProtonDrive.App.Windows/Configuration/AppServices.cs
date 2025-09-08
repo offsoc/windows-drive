@@ -16,6 +16,7 @@ using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Notifications;
 using ProtonDrive.App.Notifications.Offers;
 using ProtonDrive.App.Onboarding;
+using ProtonDrive.App.Photos;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;
@@ -33,6 +34,7 @@ using ProtonDrive.App.Windows.Views.Main.About;
 using ProtonDrive.App.Windows.Views.Main.Account;
 using ProtonDrive.App.Windows.Views.Main.Activity;
 using ProtonDrive.App.Windows.Views.Main.MyComputer;
+using ProtonDrive.App.Windows.Views.Main.Photos;
 using ProtonDrive.App.Windows.Views.Main.Settings;
 using ProtonDrive.App.Windows.Views.Main.SharedWithMe;
 using ProtonDrive.App.Windows.Views.Offer;
@@ -158,14 +160,20 @@ internal static class AppServices
             .AddSingleton<UpgradeStorageStepViewModel>()
             .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<UpgradeStorageStepViewModel>())
 
+            .AddSingleton<NotificationBadgeProvider>()
+            .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<NotificationBadgeProvider>())
+            .AddSingleton<ISyncFoldersAware>(provider => provider.GetRequiredService<NotificationBadgeProvider>())
+            .AddSingleton<IFeatureFlagsAware>(provider => provider.GetRequiredService<NotificationBadgeProvider>())
+            .AddSingleton<IStorageOptimizationOnboardingStateAware>(provider => provider.GetRequiredService<NotificationBadgeProvider>())
+            .AddSingleton<IPhotosFeatureStateAware>(provider => provider.GetRequiredService<NotificationBadgeProvider>())
+
             .AddSingleton<MainViewModel>()
             .AddSingleton<IApplicationPages>(provider => provider.GetRequiredService<MainViewModel>())
-            .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<MainViewModel>())
             .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<MainViewModel>())
-            .AddSingleton<ISyncFoldersAware>(provider => provider.GetRequiredService<MainViewModel>())
-            .AddSingleton<IFeatureFlagsAware>(provider => provider.GetRequiredService<MainViewModel>())
-            .AddSingleton<IStorageOptimizationOnboardingStateAware>(provider => provider.GetRequiredService<MainViewModel>())
+            .AddSingleton<ISessionStateAware>(provider => provider.GetRequiredService<MainViewModel>())
+            .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<MainViewModel>())
             .AddSingleton<IOffersAware>(provider => provider.GetRequiredService<MainViewModel>())
+            .AddSingleton<IPhotosFeatureStateAware>(provider => provider.GetRequiredService<MainViewModel>())
 
             .AddTransient<AddFoldersValidationResultMessageBuilder>()
             .AddTransient<AddFoldersViewModel>()
@@ -203,6 +211,11 @@ internal static class AppServices
             .AddSingleton<ISyncStateAware>(provider => provider.GetRequiredService<SharedWithMeListViewModel>())
             .AddSingleton<SharedWithMeItemViewModelFactory>()
 
+            .AddSingleton<PhotosViewModel>()
+            .AddSingleton<PhotosImportViewModel>()
+            .AddSingleton<ISyncFoldersAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
+            .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<PhotosImportViewModel>())
+
             .AddSingleton<SettingsViewModel>()
             .AddSingleton<AboutViewModel>()
             .AddTransient<BugReportViewModel>()
@@ -235,7 +248,11 @@ internal static class AppServices
             .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<NamedPipeBasedIpcServer>())
 
             .AddSingleton<IThumbnailGenerator, Win32ThumbnailGenerator>()
-            .AddSingleton<IFileSystemClient<long>>(provider => new ClassicFileSystemClient(provider.GetRequiredService<IThumbnailGenerator>()))
+            .AddSingleton<IFileMetadataGenerator, WinRtFileMetadataGenerator>()
+
+            .AddSingleton<IFileSystemClient<long>>(provider => new ClassicFileSystemClient(
+                provider.GetRequiredService<IThumbnailGenerator>(),
+                provider.GetRequiredService<IFileMetadataGenerator>()))
 
             .AddSingleton<IFileSystemIdentityProvider<long>, FileSystemIdentityProvider>()
             ;

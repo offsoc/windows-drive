@@ -46,7 +46,7 @@ internal class RemoteFolderValidationStep : IRemoteFolderValidationStep
     {
         if (string.IsNullOrEmpty(replica.VolumeId) && string.IsNullOrEmpty(replica.ShareId))
         {
-            return default;
+            return null;
         }
 
         var volume = await _volumeService.GetActiveVolumeAsync().ConfigureAwait(false);
@@ -73,7 +73,7 @@ internal class RemoteFolderValidationStep : IRemoteFolderValidationStep
 
         if (string.IsNullOrEmpty(replica.ShareId) || string.IsNullOrEmpty(replica.RootLinkId))
         {
-            return default;
+            return null;
         }
 
         var folderExist = await _remoteFolderService.FolderExistsAsync(replica.ShareId, replica.RootLinkId, cancellationToken).ConfigureAwait(false);
@@ -86,12 +86,12 @@ internal class RemoteFolderValidationStep : IRemoteFolderValidationStep
 
         AddMissingVolumeInfo(replica);
 
-        return default;
+        return null;
     }
 
     private void AddMissingVolumeInfo(RemoteReplica replica)
     {
-        if (replica.InternalVolumeId != default || string.IsNullOrEmpty(replica.VolumeId))
+        if (replica.InternalVolumeId != 0 || string.IsNullOrEmpty(replica.VolumeId))
         {
             return;
         }

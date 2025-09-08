@@ -145,7 +145,7 @@
     <value>Konto ma nieopłacone faktury. Przejdź do swojego pulpitu, aby zapłacić lub poinformuj administratora.</value>
   </data>
   <data name="AccountErrorCode_Value_DriveAccessFailed">
-    <value>Nie można połączyć się z Proton Drive. Spróbuj sprawdzić swoje połączenie internetowe.</value>
+    <value>Nie można połączyć się z Proton Drive. Sprawdź swoje połączenie internetowe.</value>
   </data>
   <data name="AccountErrorCode_Value_NoDriveAccess">
     <value>Ulepsz plan, aby uzyskać dostęp do Proton Drive</value>
@@ -330,7 +330,7 @@
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="BugReport_CheckBox_IncludeLogs_Tooltip">
-    <value>Raport będzie zawierał najnowsze pliki dziennika aplikacji i pliki dziennika instalacji</value>
+    <value>Raport będzie zawierał najnowsze logi aplikacji i instalacji</value>
   </data>
   <data name="BugReport_Text_Description_HelpText">
     <value>Opis. Co poszło nie tak? Jakie dokładnie kroki wykonałeś? (wpisz minimum 10 znaków)</value>
@@ -379,10 +379,10 @@
     <value>Przerwano</value>
   </data>
   <data name="FileSystemErrorCode_Value_CloudFileProviderNotRunning">
-    <value>Upewnij się, że Twój dostawca chmury (np. OneDrive) działa i jest połączony.</value>
+    <value>Upewnij się, że dostawca chmury (np. OneDrive) działa i jest połączony.</value>
   </data>
   <data name="FileSystemErrorCode_Value_CyclicRedundancyCheck">
-    <value>Błąd danych (sprawdzenie nadmiarowości cyklicznej). Sprawdź swój dysk (USB, dysk itp...) pod kątem błędów systemu plików i uszkodzonych sektorów.</value>
+    <value>Wystąpił błąd danych (błąd nadmiarowości cyklicznej). Sprawdź dysk (USB, dysk twardy itp...) pod kątem błędów systemu plików i uszkodzonych sektorów.</value>
   </data>
   <data name="FileSystemErrorCode_Value_DirectoryNotFound">
     <value>Nie można znaleźć części ścieżki</value>
@@ -400,17 +400,17 @@
     <value>Weryfikacja danych nie powiodła się</value>
   </data>
   <data name="FileSystemErrorCode_Value_InvalidName">
-    <value>Nazwa zawiera znaki, które nie są obsługiwane przez Windows. Usuń następujące znaki, aby umożliwić synchronizację: \ / : * ? " &lt; &gt; |</value>
+    <value>Nazwa zawiera znaki, które nie są obsługiwane przez system Windows. Usuń następujące znaki, aby umożliwić synchronizację: \ / : * ? " &lt; &gt; |</value>
   </data>
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
-    <value>Plik został pominięty, ponieważ zmienił się zbyt niedawno. Aplikacja spróbuje ponownie automatycznie</value>
+    <value>Plik został pominięty, ponieważ został ostatnio zmieniony. Aplikacja spróbuje ponownie rozwiązać problem</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Plik lub folder uległ rozbieżności</value>
   </data>
   <data name="FileSystemErrorCode_Value_MissingIndividuallySharedFile">
-    <value>Oryginalny plik, który został z Tobą udostępniony, został usunięty, przeniesiony lub zmieniono jego nazwę.
-Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</value>
+    <value>Oryginalny plik, który został Ci udostępniony, został usunięty, przeniesiony lub jego nazwa uległa zmianie.
+Włącz ponownie synchronizację, aby go przywrócić i usunąć błąd.</value>
   </data>
   <data name="FileSystemErrorCode_Value_NetworkError">
     <value>Nie można połączyć się z Proton Drive. Spróbuj sprawdzić swoje połączenie internetowe.</value>
@@ -422,7 +422,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Jesteś w trybie offline</value>
   </data>
   <data name="FileSystemErrorCode_Value_Partial">
-    <value>Ten plik nie jest dostępny lokalnie i nie można go przesłać. Aby rozwiązać problem, usuń go i przywróć kopię z Kosza w Proton Drive, jeśli jest dostępna.</value>
+    <value>Plik nie jest dostępny lokalnie i nie można go przesłać. Aby rozwiązać problem, usuń go i przywróć kopię z kosza w Proton Drive, jeśli jest dostępny.</value>
   </data>
   <data name="FileSystemErrorCode_Value_PathNotFound">
     <value>Plik lub folder nie istnieje</value>
@@ -434,7 +434,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Plik jest tylko do odczytu</value>
   </data>
   <data name="FileSystemErrorCode_Value_ReadOnlyRoot">
-    <value>Pliki i foldery tylko do podglądu nie mogą być modyfikowane. Wyłącz i włącz synchronizację w sekcji "Shared with me", aby rozwiązać problem.</value>
+    <value>Pliki i foldery tylko do odczytu nie mogą zostać zmodyfikowane. Włącz ponownie synchronizację w sekcji "Udostępnione dla mnie", aby rozwiązać problem.</value>
   </data>
   <data name="FileSystemErrorCode_Value_ServerError">
     <value>Coś poszło nie tak</value>
@@ -446,13 +446,16 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Nie powiodło się. Upłynął limit czasu żądania</value>
   </data>
   <data name="FileSystemErrorCode_Value_TransferAbortedDueToFileChange">
-    <value>Przesyłanie zostało przerwane, ponieważ plik zmienił się podczas synchronizacji. Aplikacja spróbuje ponownie automatycznie</value>
+    <value>Przesyłanie zostało przerwane, ponieważ plik zmienił się podczas synchronizacji. Aplikacja spróbuje ponownie rozwiązać problem</value>
   </data>
   <data name="FileSystemErrorCode_Value_UnauthorizedAccess">
     <value>Brak wymaganych uprawnień</value>
   </data>
   <data name="FileSystemErrorCode_Value_Unknown">
     <value>Coś poszło nie tak</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
+    <value>Nazwa zawiera nieprawidłowe znaki</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>Nazwa jest pusta</value>
@@ -463,17 +466,14 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
     <value>Nazwa kończy się spacją</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_InvalidCharacters">
-    <value>Nazwa zawiera nieprawidłowe znaki</value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
     <value>Nazwa nie jest obsługiwana w systemie Windows</value>
   </data>
-  <data name="FileSystemNameValidationResult_Value_Success">
-    <value></value>
-  </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>Nazwa jest zbyt długa</value>
+  </data>
+  <data name="FileSystemNameValidationResult_Value_Valid">
+    <value></value>
   </data>
   <data name="Main_About_AppUpdateStatus_Value_CheckingForUpdate">
     <value>Sprawdzanie aktualizacji...</value>
@@ -503,7 +503,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_About_Button_UpdateNow_HelpText">
-    <value>Dostępna jest nowa wersja Proton Drive, zaktualizuj ją teraz.</value>
+    <value>Dostępna jest nowa wersja aplikacji Proton Drive. Zaktualizuj ją teraz.</value>
   </data>
   <data name="Main_About_Label_CurrentVersion">
     <value>Obecna wersja</value>
@@ -584,7 +584,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Ulepsz plan</value>
   </data>
   <data name="Main_Account_Storage_Info_EnsureMoreStorage">
-    <value>Aby zapewnić nieprzerwany proces synchronizacji, uzyskaj teraz więcej przestrzeni dyskowej.</value>
+    <value>Aby zapewnić nieprzerwany proces synchronizacji, uzyskaj więcej przestrzeni dyskowej.</value>
   </data>
   <data name="Main_Account_Storage_Info_UsedSpaceFormat">
     <value>Wykorzystano: {0} z {1}</value>
@@ -593,10 +593,10 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Przestrzeń dyskowa</value>
   </data>
   <data name="Main_Account_Storage_Warning_StorageExceeded">
-    <value>Synchronizacja została zatrzymana. Twoje konto przekroczyło przestrzeń dyskową.</value>
+    <value>Synchronizacja została zatrzymana. Przestrzeń dyskowa konta jest pełna.</value>
   </data>
   <data name="Main_Account_Storage_Warning_StorageLimit">
-    <value>Zaraz osiągniesz swój limit przestrzeni dyskowej.</value>
+    <value>Zaraz osiągniesz limit przestrzeni dyskowej.</value>
   </data>
   <data name="Main_Account_Title">
     <value>Konto</value>
@@ -699,11 +699,11 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
   <data name="Main_Activity_Rename_NewName_Error_AlreadyExists">
     <value>Nazwa jest już używana</value>
   </data>
+  <data name="Main_Activity_Rename_NewName_Error_ContainsInvalidCharacter">
+    <value>Nazwa zawiera nieprawidłowe znaki</value>
+  </data>
   <data name="Main_Activity_Rename_NewName_Error_Failed">
     <value>Coś poszło nie tak</value>
-  </data>
-  <data name="Main_Activity_Rename_NewName_Error_InvalidCharacters">
-    <value>Nazwa zawiera nieprawidłowe znaki</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
     <value>Nazwa jest wymagana</value>
@@ -767,7 +767,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Zapisz nazwę urządzenia</value>
   </data>
   <data name="Main_MyComputer_Device_Rename_Error_Tooltip">
-    <value>Nieprawidłowa nazwa urządzenia: nowa nazwa nie może być pusta i nie może przekraczać 255 znaków.</value>
+    <value>Nazwa urządzenia jest nieprawidłowa: nowa nazwa nie może być pusta i nie może przekraczać 255 znaków.</value>
   </data>
   <data name="Main_MyComputer_Device_Rename_HelpText">
     <value>Zmień nazwę urządzenia</value>
@@ -777,7 +777,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_Description">
-    <value>Dodanie folderu spowoduje utworzenie kopii zapasowej wszystkich danych w Proton Drive.</value>
+    <value>Dodanie folderu spowoduje utworzenie jego kopii zapasowej w Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_Info_Saving">
     <value>Zapisywanie folderów...</value>
@@ -804,7 +804,7 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>{0} folder(s) cannot be synced because network folders are not supported</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NonSyncableFolderFormat">
-    <value>Nie można synchronizować {0} folder(ów), ponieważ są to folder(y) systemowe.</value>
+    <value>{0} folder(s) cannot be synced because they are system folder(s)</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_UnableToAddFoldersFormat">
     <value>Unable to add {0} folder(s)</value>
@@ -826,12 +826,12 @@ Wyłącz i włącz synchronizację, aby go przywrócić i usunąć ten błąd.</
     <value>Nazwa</value>
   </data>
   <data name="Main_MyComputer_Folders_Column_StorageOptimization">
-    <value>Optymalizacja przestrzeni dyskowej</value>
+    <value>Optymalizuj przestrzeń dyskową</value>
   </data>
   <data name="Main_MyComputer_Folders_Column_StorageOptimization_Info_Tooltip">
-    <value>Optymalizuj przestrzeń dyskową, włączając synchronizację na żądanie.
-Pliki zajmują miejsce lokalnie tylko wtedy, gdy je otworzysz lub
-wybierzesz opcję „Zawsze zachowuj na tym urządzeniu”. Możesz
+    <value>Optymalizacja przestrzeni dyskowej poprzez włączenie synchronizacji na żądanie.
+Pliki zajmują miejsce lokalne tylko wtedy, gdy je otworzysz lub
+wybierzesz opcję, aby były zawsze przechowywane na urządzeniu. Możesz
 wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
   </data>
   <data name="Main_MyComputer_Folders_Intro_Description">
@@ -855,16 +855,16 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
     <value>Usuń folder</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_Classic_Message_1">
-    <value>Wszystkie pliki dodane do "{0}" nie będą już synchronizowane, a folder zostanie przeniesiony do Kosza w Proton Drive.</value>
+    <value>Wszystkie pliki dodane do folderu "{0}" nie będą już synchronizowane, a folder zostanie przeniesiony do kosza w Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_Classic_Message_2">
-    <value>Istniejące pliki pozostaną na twoim komputerze.</value>
+    <value>Obecne pliki pozostaną na Twoim urządzeniu.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_1">
-    <value>Niektóre pliki w folderze „{0}” mogą być przechowywane tylko w chmurze. Usunięcie tego folderu spowoduje zatrzymanie synchronizacji i przeniesienie go do Kosza w Proton Drive.</value>
+    <value>Niektóre pliki w folderze "{0}" mogą być przechowywane tylko w chmurze. Usunięcie folderu spowoduje zatrzymanie synchronizacji i przeniesienie go do kosza w Proton Drive.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_2">
-    <value>To keep a local copy of all files on your computer, first turn off Optimize storage for this folder. If storage optimization is already turned off, toggle it on and off. Wait for the download to complete (you can check the status in File Explorer), then remove the folder from syncing under the My Computer section.</value>
+    <value>Aby zachować lokalną kopię wszystkich plików na urządzeniu, wyłącz opcję "Optymalizuj przestrzeń dyskową" dla tego folderu. Jeśli optymalizacja jest wyłączona, włącz ją i ponownie wyłącz. Poczekaj na zakończenie pobierania (status możesz sprawdzić w Eksploratorze plików), a następnie usuń folder z synchronizacji w sekcji Moje urządzenie.</value>
   </data>
   <data name="Main_MyComputer_Folders_RemoveConfirmation_OnDemand_Message_Item_1">
     <value>Pliki, które zostały już pobrane, pozostaną na urządzeniu.</value>
@@ -876,11 +876,11 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
     <value>Usunąć folder?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Files within "{0}" folder will now always be available on device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>Pliki w folderze "{0}" będą zawsze dostępne na urządzeniu. Pobieranie wszystkich plików może potrwać kilka minut (status możesz sprawdzić w Eksploratorze plików).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
-    <value>Wciąż możesz ręcznie zwolnić miejsce dla poszczególnych plików w ich ustawieniach.</value>
+    <value>Nadal możesz ręcznie zwolnić miejsce dla poszczególnych plików w ich ustawieniach.</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Title">
     <value>Wszystkie pliki są zawsze dostępne na tym urządzeniu</value>
@@ -890,16 +890,16 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
     <comment>Placeholder {0}: folder name. Placeholder {1}: the reason text, one of resources with "StorageOptimizationErrorCode_Value_..." key.</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationUnavailableNotification_Message_2">
-    <value>Twoje pliki nadal będą synchronizowane z Proton Drive i pozostaną dostępne zarówno na Twoim komputerze, jak i w chmurze.</value>
+    <value>Pliki będą nadal synchronizowane z Proton Drive i pozostaną dostępne zarówno na urządzeniu, jak i w chmurze.</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationUnavailableNotification_Title">
-    <value>Optymalizacja przestrzeni dyskowej niedostępna</value>
+    <value>Optymalizacja przestrzeni dyskowej jest niedostępna</value>
   </data>
   <data name="Main_MyComputer_OnboardingPage_Button_Close_HelpText">
-    <value>Odrzuć przewodnik konfiguracji komputera</value>
+    <value>Odrzuć przewodnik konfiguracji urządzenia</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page1_Button_Next">
-    <value>_Dalej</value>
+    <value>Dalej</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page1_Description">
@@ -914,13 +914,13 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1">
-    <value>Right-click on any file or folder synced using Proton Drive</value>
+    <value>Kliknij prawym przyciskiem na plik lub folder zsynchronizowany z Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1_Label">
     <value>1.</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_2">
-    <value>Wybierz „Zawsze zachowuj na tym urządzeniu”, aby przechowywać go offline, lub „Zwolnij miejsce”, aby przechowywać go wyłącznie w chmurze.</value>
+    <value>Aby zachować offline, wybierz opcję "Zawsze zachowuj na tym urządzeniu". Aby przechowywać tylko w chmurze, wybierz opcję "Zwolnij miejsce".</value>
     <comment>"Always keep on this device" and "Free up space" are the exact texts displayed in Windows' context menu when right-clicking a file within an online storage provider like OneDrive.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_2_Label">
@@ -931,6 +931,57 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
   </data>
   <data name="Main_MyComputer_Title">
     <value>Moje urządzenie</value>
+  </data>
+  <data name="Main_Photos_Folders_ImportedItemsFormat">
+    <value>Imported {0} of {1} items</value>
+  </data>
+  <data name="Main_Photos_Folders_Items_Label">
+    <value>item(s)</value>
+  </data>
+  <data name="Main_Photos_Folders_Menu_Item_Remove">
+    <value>remove</value>
+  </data>
+  <data name="Main_Photos_Folders_NoItemsFound_Label">
+    <value>No photos/videos found</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Description">
+    <value>Step-by-step guide of how to export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Export_Title">
+    <value>1. Export your Google Photos</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Description">
+    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Import_Title">
+    <value>2. Import Google Photos folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
+    <value>Select Folder</value>
+  </data>
+  <data name="Main_Photos_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_HowImportWorks_Label">
+    <value>How does photo import work?</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Description">
+    <value>Import a local folder from your computer</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFolder_Title">
+    <value>Import a folder</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Description">
+    <value>Import Google photos from Google Takeout</value>
+  </data>
+  <data name="Main_Photos_Import_ImportFromGoogle_Title">
+    <value>Import from Google Photos</value>
+  </data>
+  <data name="Main_Photos_Import_Title">
+    <value>Import photos</value>
+  </data>
+  <data name="Main_Photos_Title">
+    <value>Zdjęcia</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>Zmień</value>
@@ -988,7 +1039,7 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
     <value>Udostępnione</value>
   </data>
   <data name="Main_SharedWithMe_Column_Sync">
-    <value>Synchronizuj</value>
+    <value>Synchronizacja</value>
   </data>
   <data name="Main_SharedWithMe_Column_Sync_Info_Tooltip">
     <value>Włącz, aby udostępniony plik lub folder był dostępny na urządzeniu.
@@ -1025,7 +1076,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Description">
-    <value>Łatwo zsynchronizuj pliki i foldery udostępnione Ci na komputer.</value>
+    <value>Łatwa synchronizacja plików i folderów udostępnionych Ci na urządzeniu.</value>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Point_1">
     <value>Wybierz pliki lub foldery do synchronizacji.</value>
@@ -1055,7 +1106,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Udostępnione dla mnie</value>
   </data>
   <data name="Main_SharedWithMe_Warning_MaxNumberOfSyncedItems_Advice">
-    <value>Aby dodać nowe elementy, przestań synchronizować niektóre ze starych.</value>
+    <value>Aby dodać nowe elementy, zatrzymaj synchronizację innych elementów.</value>
   </data>
   <data name="Main_SharedWithMe_Warning_MaxNumberOfSyncedItems_Limit">
     <value>Dozwolona jest synchronizacja {0} elementów jednocześnie.</value>
@@ -1093,6 +1144,12 @@ Zawartość plików będzie pobierana na żądanie.</value>
   <data name="Main_Sidebar_NavigationMenu_Item_MyComputer_HelpText">
     <value>Element menu: Moje urządzenie</value>
   </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos">
+    <value>Zdjęcia</value>
+  </data>
+  <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
+    <value>Element menu: Zdjęcia</value>
+  </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Settings">
     <value>Ustawienia</value>
   </data>
@@ -1106,7 +1163,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Element menu: Udostępnione dla mnie</value>
   </data>
   <data name="Main_Sidebar_Notification_ExceededQuota_Description">
-    <value>Synchronizacja zatrzymana: Twoje konto przekroczyło dostępną przestrzeń dyskową</value>
+    <value>Synchronizacja została zatrzymana: Twoje konto przekroczyło dostępną przestrzeń dyskową</value>
   </data>
   <data name="Main_Sidebar_Notification_ExceedingQuota_Description">
     <value>Zaraz osiągniesz limit przestrzeni dyskowej</value>
@@ -1124,7 +1181,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Nie udało się zsynchronizować folderu</value>
   </data>
   <data name="Main_Sidebar_Notification_UpdateRequired_Description">
-    <value>Aby dalej korzystać z Proton Drive, musisz zaktualizować do najnowszej wersji</value>
+    <value>Aby dalej korzystać z Proton Drive, musisz zaktualizować aplikację do najnowszej wersji</value>
   </data>
   <data name="Main_Sidebar_Offer_Button_GetDeal">
     <value>Skorzystaj z oferty</value>
@@ -1152,7 +1209,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Ten folder zawiera podfolder synchronizowany na żądanie. Skonfiguruj nowy folder synchronizacji.</value>
   </data>
   <data name="MappingErrorCode_Value_ConflictingOnDemandSyncRootExists">
-    <value>Ten folder jest już synchronizowany na żądanie. Skonfiguruj nowy folder synchronizacji.</value>
+    <value>Folder jest już synchronizowany na żądanie. Skonfiguruj nowy folder synchronizacji.</value>
   </data>
   <data name="MappingErrorCode_Value_DriveAccessFailed">
     <value>Nie można połączyć się z Proton Drive. Spróbuj sprawdzić swoje połączenie internetowe.</value>
@@ -1173,10 +1230,10 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Nie można uzyskać dostępu do plików Proton Drive, prawdopodobnie z powodu zresetowania hasła. Skonfiguruj nowy folder synchronizacji.</value>
   </data>
   <data name="MappingErrorCode_Value_InsufficientDeviceQuota">
-    <value>Osiągnięto maksymalną liczbę zsynchronizowanych komputerów. Usuń niepotrzebne komputery z Proton Drive w sieci.</value>
+    <value>Osiągnięto maksymalną liczbę zsynchronizowanych urządzeń. Usuń niepotrzebne urządzenia z aplikacji internetowej Proton Drive.</value>
   </data>
   <data name="MappingErrorCode_Value_InsufficientLocalFreeSpace">
-    <value>Zwolnij miejsce lub odznacz zaznaczenie</value>
+    <value>Zwolnij miejsce lub usuń zaznaczenie</value>
   </data>
   <data name="MappingErrorCode_Value_LocalAndRemoteFoldersNotEmpty">
     <value>Konfiguracja folderu synchronizacji wymaga pustego folderu w systemie Windows lub w Proton Drive. Wyczyść go i spróbuj ponownie.</value>
@@ -1188,10 +1245,10 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Folder synchronizacji został zastąpiony nowym folderem w ścieżce. Przywróć poprzedni folder synchronizacji lub skonfiguruj nowy folder synchronizacji.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderDoesNotExist">
-    <value>Folder synchronizacji nie został znaleziony. Może został usunięty, zmieniono jego nazwę lub przeniesiono. Przywróć go lub skonfiguruj nowy folder synchronizacji.</value>
+    <value>Folder synchronizacji nie został znaleziony. Możliwe, że został usunięty, przeniesiony lub zmieniono jego nazwę. Przywróć go lub skonfiguruj nowy folder synchronizacji.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderIncludedByAnAlreadySyncedFolder">
-    <value>The selected folder is already included within another synced folder</value>
+    <value>Folder zawiera już zsynchronizowany folder</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderIncludesAnAlreadySyncedFolder">
     <value>Folder zawiera już zsynchronizowany folder</value>
@@ -1211,11 +1268,17 @@ Zawartość plików będzie pobierana na żądanie.</value>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Folder synchronizacji został niespodziewanie wyrejestrowany. Skonfiguruj nowy folder synchronizacji.</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemDoesNotExist">
-    <value>Nie można uzyskać dostępu do udostępnionego pliku lub folderu Proton Drive. Sprawdź, czy nadal jest on z Tobą udostępniany.</value>
+  <data name="MappingErrorCode_Value_PhotosDisabled">
+    <value>Proton Photos unavailable</value>
   </data>
-  <data name="MappingErrorCode_Value_RemoteShareWithMeItemPermissionsDiverged">
-    <value>Uprawnienia udostępnionego pliku lub folderu Proton Drive uległy zmianie. Wyłącz i włącz synchronizację, aby rozwiązać problem.</value>
+  <data name="MappingErrorCode_Value_PhotosNotReady">
+    <value>Photos feature not ready</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
+    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+  </data>
+  <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
+    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Udostępnianie jest tymczasowo niedostępne</value>
@@ -1314,7 +1377,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Wylogowywanie...</value>
   </data>
   <data name="SessionStatus_Value_Failed">
-    <value>Logowanie nie powiodło się. Sprawdź połączenie internetowe.</value>
+    <value>Logowanie się nie powiodło. Sprawdź połączenie internetowe.</value>
   </data>
   <data name="SessionStatus_Value_NotStarted">
     <value>Wylogowano</value>
@@ -1414,7 +1477,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>typ lokalnego dysku nie jest obsługiwany</value>
   </data>
   <data name="SyncFolderValidationResult_Title_InsufficientLocalFreeSpace">
-    <value>Na tym urządzeniu brakuje wolnego miejsca</value>
+    <value>Brak miejsca na urządzeniu</value>
   </data>
   <data name="SyncFolderValidationResult_Value_FolderIncludedByAnAlreadySyncedFolder">
     <value>Folder zawiera już zsynchronizowany folder</value>
@@ -1423,7 +1486,7 @@ Zawartość plików będzie pobierana na żądanie.</value>
     <value>Folder zawiera już zsynchronizowany folder</value>
   </data>
   <data name="SyncFolderValidationResult_Value_InsufficientLocalFreeSpace">
-    <value>Zwolnij miejsce lub odznacz zaznaczenie.</value>
+    <value>Zwolnij miejsce lub usuń zaznaczenie.</value>
   </data>
   <data name="SyncFolderValidationResult_Value_LocalFileSystemAccessFailed">
     <value>Nie można uzyskać dostępu do folderu</value>

@@ -50,8 +50,10 @@ internal sealed class MappingSetupFinalizationDispatcher
     {
         return mapping.Type switch
         {
-            MappingType.HostDeviceFolder => _hostDeviceFolderMappingStep.FinishSetupAsync(mapping, cancellationToken),
             MappingType.CloudFiles => _cloudFilesMappingStep.FinishSetupAsync(mapping, cancellationToken),
+            MappingType.HostDeviceFolder => _hostDeviceFolderMappingStep.FinishSetupAsync(mapping, cancellationToken),
+            MappingType.PhotoImport => Task.FromResult(MappingErrorCode.None),
+            MappingType.PhotoBackup => Task.FromResult(MappingErrorCode.None),
             MappingType.ForeignDevice => _foreignDeviceMappingStep.FinishSetupAsync(mapping, cancellationToken),
             MappingType.SharedWithMeRootFolder => _sharedWithMeRootFolderMappingStep.FinishSetupAsync(mapping, cancellationToken),
             MappingType.SharedWithMeItem => _sharedWithMeItemMappingStep.FinishSetupAsync(mapping, cancellationToken),

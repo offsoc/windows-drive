@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,6 +16,12 @@ namespace ProtonDrive.App.Docs;
 
 public sealed class DocumentOpener
 {
+    private static readonly IReadOnlyDictionary<string, string> FileExtensionToUrlPathMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { ".protondoc", "doc" },
+        { ".protonsheet", "sheet" },
+    };
+
     private readonly UrlConfig _config;
     private readonly IRemoteIdsFromLocalPathProvider _remoteIdsFromLocalPathProvider;
     private readonly IOsProcesses _osProcesses;
@@ -42,6 +50,16 @@ public sealed class DocumentOpener
 
     public async Task TryOpenAsync(string documentPath, CancellationToken cancellationToken)
     {
+        var fileExtension = Path.GetExtension(documentPath);
+
+        if (!FileExtensionToUrlPathMap.TryGetValue(fileExtension, out var urlPath))
+        {
+            _counters.IncrementFailures(documentPath);
+
+            _logger.LogWarning("Failed to open document: Unknown file extension");
+            return;
+        }
+
         try
         {
             var remoteIds = await _remoteIdsFromLocalPathProvider.GetRemoteIdsOrDefaultAsync(documentPath, cancellationToken).ConfigureAwait(false);
@@ -50,7 +68,7 @@ public sealed class DocumentOpener
             {
                 _counters.IncrementFailures(documentPath);
 
-                _logger.LogWarning("Failed to open document: could not get remote identity from local path");
+                _logger.LogWarning("Failed to open document: Could not get remote identity from local path");
                 return;
             }
 
@@ -58,7 +76,7 @@ public sealed class DocumentOpener
 
             var uriBuilder = new UriBuilder(_config.Docs)
             {
-                Path = "doc",
+                Path = urlPath,
                 Query = $"volumeId={remoteIds.Value.VolumeId}&linkId={remoteIds.Value.LinkId}&email={userDefaultAddress.EmailAddress}",
             };
 

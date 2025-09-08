@@ -2,10 +2,10 @@
 
 namespace ProtonDrive.Client.Contracts;
 
-public sealed record UploadUrl
+public record UploadUrl
 {
     public string Token { get; init; } = string.Empty;
 
-    [JsonPropertyName("URL")]
-    public string Value { get; init; } = string.Empty;
+    [JsonPropertyName("BareURL")]
+    public string BareUrl { get; init; } = string.Empty;
 }
