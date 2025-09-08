@@ -8,7 +8,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ProtonDrive.App.Windows.Interop;
-using ProtonDrive.Shared;
+using ProtonDrive.Shared.IO;
 
 namespace ProtonDrive.App.Windows.SystemIntegration;
 
@@ -67,23 +67,9 @@ internal sealed class Win32FileSystemDisplayNameAndIconProvider : IFileSystemDis
 
     public string? GetDisplayNameWithoutAccess(string path)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            return null;
-        }
+        var displayName = PathExtensions.GetDisplayNameWithoutAccess(path);
 
-        var displayName = Path.GetFileName(path);
-
-        if (!string.IsNullOrEmpty(displayName))
-        {
-            return displayName;
-        }
-
-        // The path is the root of the volume
-        var rootName = Path.GetPathRoot(path) ?? string.Empty;
-
-        // Stripping the ending path separator from the drive letter ("X:\")
-        return Path.EndsInDirectorySeparator(rootName) ? rootName[..^1] : rootName;
+        return displayName.IsEmpty ? null : displayName.ToString();
     }
 
     private static Shell32.SHGFI GetIconSizeFlags(ShellIconSize iconSize)

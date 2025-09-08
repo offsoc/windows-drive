@@ -21,7 +21,7 @@ internal sealed class PhotoAlbumImporter
     private readonly IPhotoFileUploader _photoFileUploader;
     private readonly IPhotoAlbumService _photoAlbumService;
     private readonly IPhotoDuplicateService _duplicateService;
-    private readonly IPhotoAlbumNameProvider _photoAlbumNameProvider;
+    private readonly IPhotoAlbumNameProvider _albumNameProvider;
     private readonly ImportProgress _progress;
     private readonly ILogger _logger;
 
@@ -35,7 +35,7 @@ internal sealed class PhotoAlbumImporter
         IPhotoFileUploader photoFileUploader,
         IPhotoAlbumService photoAlbumService,
         IPhotoDuplicateService duplicateService,
-        IPhotoAlbumNameProvider photoAlbumNameProvider,
+        IPhotoAlbumNameProvider albumNameProvider,
         ImportProgress progress,
         ILogger logger)
     {
@@ -43,7 +43,7 @@ internal sealed class PhotoAlbumImporter
         _localFileSystemClient = localFileSystemClient;
         _photoFileUploader = photoFileUploader;
         _photoAlbumService = photoAlbumService;
-        _photoAlbumNameProvider = photoAlbumNameProvider;
+        _albumNameProvider = albumNameProvider;
         _duplicateService = duplicateService;
         _progress = progress;
         _logger = logger;
@@ -139,13 +139,24 @@ internal sealed class PhotoAlbumImporter
 
     private async Task CreateAlbumAsync(string filePath, CancellationToken cancellationToken)
     {
-        var (albumName, albumRelativePath) = _photoAlbumNameProvider.GetAlbumNameFromPath(
-            _parameters.FolderPath.AsSpan(),
-            Path.GetDirectoryName(filePath.AsSpan()));
+        var rootFolderPath = _parameters.FolderPath.AsSpan();
+        var currentFolderPath = Path.GetDirectoryName(filePath.AsSpan());
+
+        if (!currentFolderPath.StartsWith(rootFolderPath, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new PhotoImportException("Album name cannot be created: Root folder path and current folder path are not related");
+        }
+
+        var relativePath = (currentFolderPath.Length != rootFolderPath.Length
+                ? currentFolderPath[(rootFolderPath.Length + 1)..]
+                : ReadOnlySpan<char>.Empty)
+            .ToString();
+
+        var albumName = _albumNameProvider.GetAlbumNameFromPath(rootFolderPath, relativePath);
 
         _albumLinkId = await _photoAlbumService.CreateAlbumAsync(albumName, _parameters.ParentLinkId, cancellationToken).ConfigureAwait(false);
 
-        _progress.RaiseAlbumCreated(new PhotoImportFolderCurrentPosition { AlbumLinkId = _albumLinkId, RelativePath = albumRelativePath });
+        _progress.RaiseAlbumCreated(new PhotoImportFolderCurrentPosition { AlbumLinkId = _albumLinkId, RelativePath = relativePath });
     }
 
     private async Task ImportAsync(string filePath, CancellationToken cancellationToken)

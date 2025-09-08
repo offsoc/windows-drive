@@ -103,7 +103,7 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
             return;
         }
 
-        if (!_importFeatureIsRemotelyEnabled)
+        if (!_importFeatureIsRemotelyEnabled && _onboardingStatus is not OnboardingStatus.Completed)
         {
             SetState(PhotosFeatureStatus.Hidden);
             return;
