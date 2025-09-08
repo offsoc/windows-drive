@@ -786,10 +786,10 @@
     <value>添加文件夹</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive</value>
+    <value>无法同步 {0} 个文件夹，因为其中包含已同步到 Proton Drive 的文件夹</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive</value>
+    <value>无法同步 {0} 个文件夹，因为其中有一个子文件夹已同步到 Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>无法访问 {0} 个文件夹</value>
@@ -798,7 +798,7 @@
     <value>找不到或无法打开 {0} 个文件夹</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} folder(s) cannot be synced because they are located on a non-supported drive</value>
+    <value>{0} 文件夹因位于不支持的硬盘上而无法同步</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>由于不支持网络文件夹，因此无法同步 {0} 个文件夹</value>
@@ -875,7 +875,7 @@
     <value>刪除文件夹？</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Files within "{0}" folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>现在，"{0}" 文件夹中的文件将始终在设备上保持可用。所有文件完成下载可能需要几分钟时间（您可以通过文件资源管理器查看同步状态）。</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -933,9 +933,6 @@
   </data>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>导入失败。请尝试删除文件夹并重新导入。如果问题仍然存在，请联系技术支持。</value>
-  </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>导入失败，请重试。</value>
   </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>已导入 {0} / {1} 项</value>
@@ -1171,7 +1168,7 @@
     <value>照片</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Photos import</value>
+    <value>导入照片</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>菜单项： 照片</value>
@@ -1292,13 +1289,13 @@
     <value></value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
-    <value>Sync folder is invalid. Set up a new sync folder.</value>
+    <value>同步文件夹设置无效，请设置新的同步文件夹。</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>同步文件夹意外取消注册。请设置新的同步文件夹。</value>
   </data>
   <data name="MappingErrorCode_Value_PhotoImportFailed">
-    <value>Photo import failed</value>
+    <value>导入照片失败</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton 相册不可用</value>
@@ -1396,6 +1393,18 @@
   <data name="Onboarding_UpgradeStorage_Title">
     <value>获得更多存储空间</value>
   </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>导入失败，相册不存在。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>导入失败，已达到最大相册数量。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>导入失败，每个相册的照片数量已达到上限。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>导入失败，请重试。</value>
+  </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>导入失败</value>
   </data>
@@ -1403,7 +1412,7 @@
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Interrupted">
-    <value>Import was interrupted</value>
+    <value>导入已中断</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_NotStarted">
     <value></value>
@@ -1412,7 +1421,7 @@
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Succeeded">
-    <value>Import succeeded</value>
+    <value>导入成功</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_ValidationFailed">
     <value></value>

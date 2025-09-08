@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.App.Photos.LivePhoto;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Shared.Configuration;
@@ -15,6 +16,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
     private readonly PhotoAlbumServiceFactory _photoAlbumServiceFactory;
     private readonly IPhotoDuplicateService _duplicateService;
     private readonly IPhotoAlbumNameProvider _photoAlbumNameProvider;
+    private readonly ILivePhotoFileDetector _livePhotoFileDetector;
     private readonly ILoggerFactory _loggerFactory;
     private readonly int _maxNumberOfConcurrentFileTransfers;
 
@@ -25,6 +27,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
         PhotoAlbumServiceFactory photoAlbumServiceFactory,
         IPhotoDuplicateService duplicateService,
         IPhotoAlbumNameProvider photoAlbumNameProvider,
+        ILivePhotoFileDetector livePhotoFileDetector,
         AppConfig appConfig,
         ILoggerFactory loggerFactory)
     {
@@ -35,6 +38,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
         _photoAlbumServiceFactory = photoAlbumServiceFactory;
         _duplicateService = duplicateService;
         _photoAlbumNameProvider = photoAlbumNameProvider;
+        _livePhotoFileDetector = livePhotoFileDetector;
         _loggerFactory = loggerFactory;
     }
 
@@ -55,6 +59,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
             photoAlbumService,
             _duplicateService,
             _photoAlbumNameProvider,
+            _livePhotoFileDetector,
             _maxNumberOfConcurrentFileTransfers,
             _loggerFactory.CreateLogger<PhotoImportEngine>());
     }

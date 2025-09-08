@@ -49,18 +49,34 @@ internal sealed class PhotoRevisionSealer : RevisionSealer
     protected override async Task<RevisionUpdateParameters> GetRevisionParametersAsync(
         string manifestSignature,
         string? extendedAttributes,
-        DateTime creationTimeUtc,
-        string sha1Digest,
+        RevisionSealingParameters revisionSealingParameters,
         CancellationToken cancellationToken)
     {
-        var parameters = await base.GetRevisionParametersAsync(manifestSignature, extendedAttributes, creationTimeUtc, sha1Digest, cancellationToken)
+        if (revisionSealingParameters is not PhotoRevisionSealingParameters photoRevisionSealingParameters)
+        {
+            throw new ArgumentException("Photo revision sealing failed: missing photo revision parameters", nameof(revisionSealingParameters));
+        }
+
+        var parameters = await base.GetRevisionParametersAsync(
+                manifestSignature,
+                extendedAttributes,
+                revisionSealingParameters,
+                cancellationToken)
             .ConfigureAwait(false);
 
-        var contentHash = await _photoHashProvider.GetContentHashAsync(_shareId, _parentLinkId, sha1Digest, cancellationToken).ConfigureAwait(false);
-        var captureTime = (_extendedAttributesBuilder.CaptureTime ?? creationTimeUtc).ToUnixTimeSeconds();
+        var contentHash = await _photoHashProvider.GetContentHashAsync(_shareId, _parentLinkId, revisionSealingParameters.Sha1Digest, cancellationToken)
+            .ConfigureAwait(false);
+        var captureTime = (_extendedAttributesBuilder.CaptureTime ?? photoRevisionSealingParameters.DefaultCaptureTimeUtc).ToUnixTimeSeconds();
         var photoTags = await _fileMetadataProvider.GetPhotoTagsAsync(cancellationToken).ConfigureAwait(false);
 
-        parameters.PhotoDetails = new PhotoRevisionDetails(captureTime, contentHash, MainPhotoLinkId: null, photoTags);
+        // While capture time or file creation time can have values before the Unix epoch (1970-01-01),
+        // the backend requires the Unix time value to be greater than 0.
+        if (captureTime <= 0)
+        {
+            captureTime = 1;
+        }
+
+        parameters.PhotoDetails = new PhotoRevisionDetails(captureTime, contentHash, photoRevisionSealingParameters.MainPhotoLinkId, photoTags);
         return parameters;
     }
 }

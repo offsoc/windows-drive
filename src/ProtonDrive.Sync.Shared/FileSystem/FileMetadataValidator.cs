@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 namespace ProtonDrive.Sync.Shared.FileSystem;
@@ -19,7 +20,9 @@ public static class FileMetadataValidator
 
     public static bool IsValidCaptureTime(DateTimeOffset? captureTime)
     {
-        return captureTime > MinCaptureTime;
+        // For some photos with no capture time recorded, we still get the Unix epoch date with time zone offset of the current computer
+        return captureTime > MinCaptureTime &&
+            captureTime.Value.DateTime != DateTime.UnixEpoch;
     }
 
     public static bool IsValidDuration(double? durationInSeconds)
@@ -37,7 +40,7 @@ public static class FileMetadataValidator
         return !string.IsNullOrWhiteSpace(cameraDevice);
     }
 
-    public static bool IsValidGeoCoordinates(double? latitude, double? longitude)
+    public static bool IsValidGeoCoordinates([NotNullWhen(true)] double? latitude, [NotNullWhen(true)] double? longitude)
     {
         return latitude is not null && Math.Abs(latitude.Value) <= 90 && longitude is not null && Math.Abs(longitude.Value) <= 180;
     }

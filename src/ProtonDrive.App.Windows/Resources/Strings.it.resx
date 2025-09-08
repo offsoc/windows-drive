@@ -935,9 +935,6 @@ disattivare l'ottimizzazione della memoria in qualsiasi momento.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Importazione non riuscita. Prova a rimuovere la cartella e a importarla di nuovo. Se il problema persiste, contatta l'assistenza.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Importazione non riuscita. Riprova.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importato {0} di {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ I contenuti dei file verranno scaricati sono se necessari.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Ottieni più spazio di archiviazione</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Importazione non riuscita. L'album non esiste.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Importazione non riuscita. Numero massimo di album raggiunto.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Importazione non riuscita. Numero massimo di foto per album raggiunto.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importazione non riuscita. Riprova.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Importazione non riuscita</value>

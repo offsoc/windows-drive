@@ -27,13 +27,15 @@ public static class FileMetadataSanitizer
         var cameraDeviceIsValid = FileMetadataValidator.IsValidCameraDevice(cameraDevice);
         var geoLocationIsValid = FileMetadataValidator.IsValidGeoCoordinates(latitude, longitude);
 
-        return new FileMetadata(
-            mediaSizeIsValid ? new Size(width!.Value, height!.Value) : null,
-            durationIsValid ? durationInSeconds : null,
-            cameraOrientationIsValid ? cameraOrientation : null,
-            cameraDeviceIsValid ? cameraDevice : null,
-            captureTimeIsValid ? captureTime?.ToUniversalTime() : null,
-            geoLocationIsValid ? latitude : null,
-            geoLocationIsValid ? longitude : null);
+        return new FileMetadata
+        {
+            MediaSize = mediaSizeIsValid ? new Size(width!.Value, height!.Value) : null,
+            DurationInSeconds = durationIsValid ? durationInSeconds : null,
+            CameraOrientation = cameraOrientationIsValid ? cameraOrientation : null,
+            CameraDevice = cameraDeviceIsValid ? cameraDevice : null,
+            CaptureTime = captureTimeIsValid ? captureTime?.ToUniversalTime() : null,
+            Latitude = geoLocationIsValid ? latitude : null,
+            Longitude = geoLocationIsValid ? longitude : null,
+        };
     }
 }

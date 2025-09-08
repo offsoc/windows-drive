@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -42,29 +40,29 @@ internal class RevisionSealer : IRevisionSealer
         _extendedAttributesBuilder = extendedAttributesBuilder;
     }
 
-    public async Task SealRevisionAsync(
-        IReadOnlyCollection<UploadedBlock> blocks,
-        DateTime creationTimeUtc,
-        string sha1Digest,
-        CancellationToken cancellationToken)
+    public async Task SealRevisionAsync(RevisionSealingParameters revisionSealingParameters, CancellationToken cancellationToken)
     {
-        var manifest = _revisionManifestCreator.CreateManifest(blocks);
+        var manifest = _revisionManifestCreator.CreateManifest(revisionSealingParameters.Blocks);
 
         var manifestSignature = _signatureProducer.SignWithArmor(manifest);
 
-        _extendedAttributesBuilder.BlockSizes = blocks
+        _extendedAttributesBuilder.BlockSizes = revisionSealingParameters.Blocks
             .Where(block => !block.IsThumbnail)
             .OrderBy(block => block.Index)
             .Select(block => block.NumberOfPlainDataBytesRead);
 
-        _extendedAttributesBuilder.Sha1Digest = sha1Digest;
+        _extendedAttributesBuilder.Sha1Digest = revisionSealingParameters.Sha1Digest;
 
         var extendedAttributes = await _extendedAttributesBuilder.BuildAsync(cancellationToken).ConfigureAwait(false);
 
-        var parameters = await GetRevisionParametersAsync(manifestSignature, extendedAttributes, creationTimeUtc, sha1Digest, cancellationToken)
+        var parameters = await GetRevisionParametersAsync(
+                manifestSignature,
+                extendedAttributes,
+                revisionSealingParameters,
+                cancellationToken)
             .ConfigureAwait(false);
 
-        _logger.LogDebug("File with ID {FileID} SHA1 checksum is {SHA1}", _fileId, sha1Digest);
+        _logger.LogDebug("File with ID {FileID} SHA1 checksum is {SHA1}", _fileId, revisionSealingParameters.Sha1Digest);
 
         await _fileRevisionUpdateApiClient
             .UpdateRevisionAsync(_shareId, _fileId, _revisionId, parameters, cancellationToken)
@@ -75,8 +73,7 @@ internal class RevisionSealer : IRevisionSealer
     protected virtual Task<RevisionUpdateParameters> GetRevisionParametersAsync(
         string manifestSignature,
         string? extendedAttributes,
-        DateTime creationTimeUtc,
-        string sha1Digest,
+        RevisionSealingParameters revisionSealingParameters,
         CancellationToken cancellationToken)
     {
         var revisionUpdateParameters = new RevisionUpdateParameters(manifestSignature, _signatureAddress.EmailAddress, extendedAttributes);

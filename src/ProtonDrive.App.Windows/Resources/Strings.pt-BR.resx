@@ -278,7 +278,7 @@
     <value>Configurando...</value>
   </data>
   <data name="AppDisplayStatus_Value_SignInError">
-    <value>Erro ao fazer o início de sessão</value>
+    <value>Erro ao iniciar de sessão</value>
   </data>
   <data name="AppDisplayStatus_Value_SignedOut">
     <value>Sessão encerrada</value>
@@ -379,10 +379,10 @@
     <value>Cancelado</value>
   </data>
   <data name="FileSystemErrorCode_Value_CloudFileProviderNotRunning">
-    <value>Por favor, certifique-se de que seu provedor de armazenamento em nuvem (por exemplo, OneDrive) esteja em execução e conectado.</value>
+    <value>Certifique-se de que seu provedor de armazenamento em nuvem (por exemplo, OneDrive) esteja em execução e conectado.</value>
   </data>
   <data name="FileSystemErrorCode_Value_CyclicRedundancyCheck">
-    <value>Erro de dados (verificação de redundância cíclica). Por favor, verifique seu drive (USB, disco etc...) para erros no sistema de arquivos e setores defeituosos.</value>
+    <value>Erro de dados (verificação de redundância cíclica). Verifique seu drive (USB, disco etc...) para erros no sistema de arquivos e setores defeituosos.</value>
   </data>
   <data name="FileSystemErrorCode_Value_DirectoryNotFound">
     <value>Não foi possível encontrar uma parte do caminho</value>
@@ -935,9 +935,6 @@ desative a otimização de armazenamento a qualquer momento.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Falha na importação. Tente remover a pasta e importá-la novamente. Se o problema persistir, por favor, entre em contato com o suporte.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Falha na importação. Tente novamente.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importação: {0} de {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obter mais armazenamento</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Erro com a importação. O álbum não existe.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Erro com a importação. O número máximo de álbuns foi atingido.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Erro com a importação. O número máximo de fotos por álbum fo atingido.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Erro com a importação. Tente novamente.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Erro na importação</value>

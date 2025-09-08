@@ -935,9 +935,6 @@ inaktivera lagringsoptimering när som helst.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Import misslyckades. Prova ta bort mappen och importera den igen. Om problemet kvarstår, kontakta support.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import misslyckades. Försök igen.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importerade {0} av {1}</value>
   </data>
@@ -1172,7 +1169,7 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value>Foton</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Photos import</value>
+    <value>Fotoimport</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Menyobjekt: Foton</value>
@@ -1299,7 +1296,7 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value>Synkroniseringsmapp avregistrerades oväntat. Ställ in en ny synkroniseringsmapp.</value>
   </data>
   <data name="MappingErrorCode_Value_PhotoImportFailed">
-    <value>Photo import failed</value>
+    <value>Fotoimport misslyckades</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Photos unavailable</value>
@@ -1397,6 +1394,18 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Skaffa mer lagringsutrymme</value>
   </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Import misslyckades. Albumet finns inte.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Import failed. Maximum number of albums reached.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Import failed. Maximum number of photos per album reached.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import misslyckades. Försök igen.</value>
+  </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Import misslyckades</value>
   </data>
@@ -1404,7 +1413,7 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Interrupted">
-    <value>Import was interrupted</value>
+    <value>Import avbröts</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_NotStarted">
     <value></value>

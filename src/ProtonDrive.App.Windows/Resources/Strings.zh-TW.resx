@@ -934,9 +934,6 @@
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>匯入失敗。請嘗試移除該資料夾並重新匯入。如果問題持續存在，請聯絡支援服務。</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>匯入失敗，請再試一次。</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>已匯入 {0} / {1}</value>
   </data>
@@ -1395,6 +1392,18 @@
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>取得更多儲存空間</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>匯入失敗。該相簿不存在。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>匯入失敗。已達相簿數量上限。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>匯入失敗。已達相簿可容納照片數量的上限。</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>匯入失敗，請再試一次。</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>匯入失敗</value>

@@ -6,5 +6,5 @@ namespace ProtonDrive.App.Photos.Import;
 
 internal interface IPhotoFileUploader
 {
-    Task<NodeInfo<string>> UploadFileAsync(string filePath, string parentLinkId, CancellationToken cancellationToken);
+    Task<NodeInfo<string>> UploadFileAsync(string filePath, string parentLinkId, string? mainPhotoLinkId, CancellationToken cancellationToken);
 }

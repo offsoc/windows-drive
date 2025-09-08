@@ -12,12 +12,11 @@ using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Client.FileUploading;
 
-internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
+internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 {
     private readonly HashingStream _contentStream;
     private readonly IReadOnlyCollection<UploadedBlock> _uploadedBlocks;
     private readonly int _blockSize;
-    private readonly DateTime _creationTimeUtc;
     private readonly IRevisionSealer _revisionSealer;
 
     public RemoteRevisionCreationProcess(
@@ -25,7 +24,6 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         Stream contentStream,
         IReadOnlyCollection<UploadedBlock> uploadedBlocks,
         int blockSize,
-        DateTime creationTimeUtc,
         IRevisionSealer revisionSealer)
     {
         Ensure.NotNull(fileInfo.Id, nameof(fileInfo), nameof(fileInfo.Id));
@@ -35,7 +33,6 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         _contentStream = new HashingStream(contentStream, HashAlgorithmName.SHA1);
         _uploadedBlocks = uploadedBlocks;
         _blockSize = blockSize;
-        _creationTimeUtc = creationTimeUtc;
 
         _revisionSealer = revisionSealer;
     }
@@ -55,11 +52,12 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
         {
             ValidateUpload();
 
-            var sha1Digest = GetSha1Digest();
+            var revisionSealingParameters = GetRevisionSealingParameters();
 
-            await _revisionSealer.SealRevisionAsync(_uploadedBlocks, _creationTimeUtc, sha1Digest, cancellationToken).ConfigureAwait(false);
+            await _revisionSealer.SealRevisionAsync(revisionSealingParameters, cancellationToken)
+                .ConfigureAwait(false);
 
-            return FileInfo.Copy().WithSizeOnStorage(_uploadedBlocks.Sum(b => (long)b.Size)).WithSha1Digest(sha1Digest);
+            return FileInfo.Copy().WithSizeOnStorage(_uploadedBlocks.Sum(b => (long)b.Size)).WithSha1Digest(revisionSealingParameters.Sha1Digest);
         }
         catch (Exception ex) when (ExceptionMapping.TryMapException(ex, FileInfo.Id, includeObjectId: false, out var mappedException))
         {
@@ -75,6 +73,15 @@ internal sealed class RemoteRevisionCreationProcess : IRevisionCreationProcess<s
     public ValueTask DisposeAsync()
     {
         return _contentStream.DisposeAsync();
+    }
+
+    protected virtual RevisionSealingParameters GetRevisionSealingParameters()
+    {
+        return new RevisionSealingParameters
+        {
+            Blocks = _uploadedBlocks,
+            Sha1Digest = GetSha1Digest(),
+        };
     }
 
     private void ValidateUpload()

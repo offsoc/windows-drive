@@ -245,13 +245,12 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <StackPanel
                 Grid.Row="0"
-                Orientation="Horizontal"
-                Margin="0,0,0,0">
+                Orientation="Horizontal">
                 <ToggleButton
                     Cursor="Hand"
                     IsChecked="{Binding IsDisplayingImportGooglePhotosDetails}">
@@ -329,26 +328,17 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Image
-                        Grid.Column="0"
-                        Source="{StaticResource Icon.BlueFilledFolder}"
-                        Height="24" />
-
                     <TextBlock
                         Grid.Row="1"
                         Text="{loc:Resource Main_Photos_ImportFromGoogle_Import_Description}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap"
-                        MaxWidth="300"
-                        Margin="0,20,0,0" />
+                        TextWrapping="Wrap" />
 
                     <Button
                         Grid.Row="2"
                         Content="{loc:Resource Main_Photos_ImportFromGoogle_SelectFolder_Button}"
                         Command="{Binding AddFolderCommand}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Margin="0,20,0,0" />
+                        HorizontalAlignment="Left"
+                        Margin="0,20,0,5" />
                 </Grid>
             </Border>
         </Grid>

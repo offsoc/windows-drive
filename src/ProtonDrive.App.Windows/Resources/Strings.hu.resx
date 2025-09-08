@@ -931,9 +931,6 @@
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Az importálás sikertelen. Próbálja meg eltávolítani a mappát, és újra importálni. Ha a probléma továbbra is fennáll, lépjen kapcsolatba a támogató csoporttal.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import failed. Try again.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importálva {0} elem a(z) {1} elemből</value>
   </data>
@@ -952,14 +949,14 @@
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_Retry">
-    <value>_Retry</value>
+    <value>_Újrapróbálkozás</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Nem található fénykép vagy videó</value>
   </data>
   <data name="Main_Photos_Folders_WaitingToImport">
-    <value>Waiting to import...</value>
+    <value>Várakozás az importálásra...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Lépésről lépésre útmutató a Google Fotók exportálásához</value>
@@ -1167,7 +1164,7 @@
     <value>Fényképek</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Photos import</value>
+    <value>Fotók importálása</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Menüelem: fényképek</value>
@@ -1288,13 +1285,13 @@
     <value></value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
-    <value>Sync folder is invalid. Set up a new sync folder.</value>
+    <value>A szinkronizálási mappa érvénytelen. Állítson be egy új szinkronizálási mappát.</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>A szinkronizálási mappa regisztrációja váratlanul megszűnt. Állítson be egy új szinkronizálási mappát.</value>
   </data>
   <data name="MappingErrorCode_Value_PhotoImportFailed">
-    <value>Photo import failed</value>
+    <value>Fotó importálás sikertelen</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Fotók nem elérhető</value>
@@ -1391,6 +1388,18 @@
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Kapjon több tárhelyet</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Az importálás sikertelen. Az album nem létezik.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Az importálás sikertelen. Elérte az albumok maximális számát.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Az importálás sikertelen. Elérte az albumonkénti maximális fényképszámot.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Az importálás sikertelen. Próbálja újra.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Importálás sikertelen</value>

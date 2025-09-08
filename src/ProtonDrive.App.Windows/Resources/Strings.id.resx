@@ -935,9 +935,6 @@ menonaktifkan optimisasi ruang penyimpanan ini kapan saja.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Proses impor gagal. Cobalah untuk menghapus folder ini dan mengimpornya kembali. Apabila masalah ini terus berlanjut, silakan hubungi layanan dukungan.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import failed. Try again.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>{0} dari {1} diimpor</value>
   </data>
@@ -1396,6 +1393,18 @@ Konten berkas hanya akan diunduh apabila diminta.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Dapatkan lebih banyak ruang penyimpanan</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Import failed. The album does not exist.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Import failed. Maximum number of albums reached.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Import failed. Maximum number of photos per album reached.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import failed. Try again.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Proses impor gagal</value>

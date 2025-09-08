@@ -78,6 +78,11 @@ public abstract class FileSystemClientDecoratorBase<TId> : IFileSystemClient<TId
             cancellationToken);
     }
 
+    public virtual Task MoveAsync(IReadOnlyList<NodeInfo<TId>> sourceNodes, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
+    {
+        return _decoratedInstance.MoveAsync(sourceNodes, destinationInfo, cancellationToken);
+    }
+
     public virtual Task Move(NodeInfo<TId> info, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
     {
         return _decoratedInstance.Move(info, destinationInfo, cancellationToken);

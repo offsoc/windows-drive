@@ -935,9 +935,6 @@ desactivar la optimización del almacenamiento en cualquier momento.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Error al importar. Intente borrar la carpeta e importarla de nuevo. Si el problema persiste, contacte con el soporte.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Error al importar. Inténtelo de nuevo.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importación: {0} de {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ El contenido de los archivos se descargará solo cuando lo necesite.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obtener más almacenamiento</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Falló la importación. El álbum no existe.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Falló la importación. Se alcanzó el número máximo de álbumes.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Falló la importación. Se alcanzó el número máximo de fotos por álbum.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Falló la importación. Inténtelo de nuevo.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Error en la importación</value>

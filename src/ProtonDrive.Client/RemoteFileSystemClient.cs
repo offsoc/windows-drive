@@ -278,6 +278,8 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
         IRevisionSealer revisionSealer;
 
+        var nodeInfoWithIds = info.WithId(response.FileRevisionId.LinkId).WithRevisionId(response.FileRevisionId.Value);
+
         if (_isPhotoClient)
         {
             revisionSealer = _revisionSealerFactory.CreatePhotoSealer(
@@ -286,24 +288,28 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
                 signatureAddress,
                 extendedAttributesBuilder,
                 fileMetadataProvider);
+
+            return new RemotePhotoRevisionCreationProcess(
+                nodeInfoWithIds,
+                stream,
+                stream.UploadedBlocks,
+                stream.BlockSize,
+                fileMetadataProvider.CreationTimeUtc,
+                fileMetadataProvider.LastWriteTimeUtc,
+                revisionSealer);
         }
-        else
-        {
-            revisionSealer = _revisionSealerFactory.CreateRegularSealer(
+
+        revisionSealer = _revisionSealerFactory.CreateRegularSealer(
                 new RevisionSealerParameters(_shareId, response.FileRevisionId.LinkId, response.FileRevisionId.Value, info.ParentId),
                 contentEncrypter,
                 signatureAddress,
                 extendedAttributesBuilder);
-        }
-
-        var nodeInfoWithIds = info.WithId(response.FileRevisionId.LinkId).WithRevisionId(response.FileRevisionId.Value);
 
         return new RemoteRevisionCreationProcess(
             nodeInfoWithIds,
             stream,
             stream.UploadedBlocks,
             stream.BlockSize,
-            fileMetadataProvider.CreationTimeUtc,
             revisionSealer);
 
         async Task<(PgpSessionKey ContentSessionKey, PrivatePgpKey NodeKey)> GetExistingKeysAsync(string linkId)
@@ -427,8 +433,85 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             stream,
             stream.UploadedBlocks,
             stream.BlockSize,
-            fileMetadataProvider.CreationTimeUtc,
             revisionSealer);
+    }
+
+    public async Task MoveAsync(IReadOnlyList<NodeInfo<string>> sourceNodes, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
+    {
+        if (!_isPhotoClient)
+        {
+            throw new NotSupportedException();
+        }
+
+        _logger.LogDebug("Moving {Count} file(s) with to {DestinationName}", sourceNodes.Count, destinationInfo.Name);
+
+        Ensure.IsFalse(
+            string.IsNullOrEmpty(destinationInfo.Name) && string.IsNullOrEmpty(destinationInfo.ParentId),
+            $"Both {nameof(destinationInfo)}.{nameof(destinationInfo.Name)} and {nameof(destinationInfo)}.{nameof(destinationInfo.ParentId)} cannot be null or empty.");
+
+        var photosToAddParameters = new List<PhotoToAddParameter>(sourceNodes.Count);
+
+        foreach (var node in sourceNodes)
+        {
+            _logger.LogDebug("Moving file with ID {FileId} with to {DestinationName}", node.Id, destinationInfo.Name);
+            EnsureId(node.Id);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var share = await GetShareAsync(cancellationToken).ConfigureAwait(false);
+
+            var nodeToMove = await GetRemoteNodeAsync(node.Id, cancellationToken).ConfigureAwait(false);
+
+            // A volume root folder has no parent folder
+            if (string.IsNullOrEmpty(nodeToMove.ParentId))
+            {
+                throw new InvalidOperationException($"Cannot move the volume root node with ID {nodeToMove.Id}");
+            }
+
+            CheckMetadata(nodeToMove, node);
+            CheckLink(nodeToMove, node);
+
+            var destinationName = !string.IsNullOrEmpty(destinationInfo.Name) ? destinationInfo.Name : node.Name;
+
+            if (nodeToMove is RemoteFile remoteFile)
+            {
+                destinationName = RemoteFile.ConvertLocalNameToRemoteName(destinationName, remoteFile.MediaType);
+            }
+
+            var destinationParentFolder = ToRemoteFolder(await GetRemoteNodeAsync(destinationInfo.ParentId!, cancellationToken).ConfigureAwait(false));
+
+            var (nameEncrypter, signatureAddress) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
+                destinationParentFolder.PrivateKey.PublicKey,
+                nodeToMove.NameSessionKey,
+                share.RelevantMembershipAddressId,
+                cancellationToken).ConfigureAwait(false);
+
+            var name = nameEncrypter.EncryptNodeName(destinationName);
+            var nameHash = _cryptographyService.HashNodeNameHex(destinationParentFolder.HashKey, destinationName);
+
+            var passphraseEncrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(
+                destinationParentFolder.PrivateKey.PublicKey,
+                nodeToMove.PassphraseSessionKey,
+                signatureAddress);
+
+            var (encryptedPassphrase, _, _) = passphraseEncrypter.EncryptShareOrNodeKeyPassphrase(nodeToMove.Passphrase);
+
+            Ensure.NotNullOrEmpty(node.Sha1Digest, nameof(node.Sha1Digest));
+
+            photosToAddParameters.Add(new PhotoToAddParameter
+            {
+                Name = name,
+                LinkId = node.Id,
+                NameHash = nameHash,
+                NameSignatureEmailAddress = signatureAddress.EmailAddress,
+                NodePassphrase = encryptedPassphrase,
+                ContentHash = _cryptographyService.HashContentDigestHex(destinationParentFolder.HashKey, node.Sha1Digest),
+            });
+        }
+
+        var albumLinkId = destinationInfo.ParentId;
+        EnsureId(albumLinkId);
+
+        await AddToAlbumAsync(albumLinkId, new PhotoToAddListParameters { Photos = photosToAddParameters }, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task Move(NodeInfo<string> info, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
@@ -841,28 +924,38 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
     private async Task AddToAlbumAsync(string albumLinkId, PhotoToAddListParameters parameters, CancellationToken cancellationToken)
     {
-        var photoLinkId = parameters.Photos.First().LinkId;
+        var photoLinkIds = string.Join(',', parameters.Photos.Select(x => x.LinkId));
 
         try
         {
-            _logger.LogDebug("Adding photo file with ID {FileID} to album {AlbumLinkID}", photoLinkId, albumLinkId);
+            _logger.LogDebug("Adding {Count} photo file(s) with ID(s) {FileIDs} to album {AlbumLinkID}", parameters.Photos.Count, photoLinkIds, albumLinkId);
 
             var response = await _photoApiClient.AddPhotosToAlbumAsync(_volumeId, albumLinkId, parameters, cancellationToken)
                 .ThrowOnFailure()
                 .ConfigureAwait(false);
 
-            var result = response.AddedPhotoResponses.First();
+            var alreadyExistingPhotoResponses =
+                response.AddedPhotoResponses.Where(x => x.Response is { Succeeded: false, Code: ResponseCode.AlreadyExists }).ToList();
 
-            if (!result.Response.Succeeded)
+            if (alreadyExistingPhotoResponses.Count > 0)
             {
-                throw new ApiException(result.Response.Code, result.Response.Error ?? "API request failed");
+                var alreadyExistingPhotoLinkIds = string.Join(',', alreadyExistingPhotoResponses.Select(x => x.LinkId));
+                _logger.LogInformation("Photo file with ID(s) {FileIDs} was already added to album {AlbumLinkID}", alreadyExistingPhotoLinkIds, albumLinkId);
             }
 
-            _logger.LogDebug("Photo file with ID {FileID} added to album {AlbumLinkID}", photoLinkId, albumLinkId);
-        }
-        catch (ApiException ex) when (ex.ResponseCode is ResponseCode.AlreadyExists)
-        {
-            _logger.LogInformation("Photo file with ID {FileID} was already added to album {AlbumLinkID}", photoLinkId, albumLinkId);
+            var firstFailureResponse =
+                response.AddedPhotoResponses.FirstOrDefault(x => x.Response is { Succeeded: false, Code: not ResponseCode.AlreadyExists });
+
+            if (firstFailureResponse is not null)
+            {
+                throw new ApiException(firstFailureResponse.Response.Code, firstFailureResponse.Response.Error ?? "API request failed");
+            }
+
+            _logger.LogDebug(
+                "{Count} photo file(s) with ID(s) {FileID} added to album {AlbumLinkID}",
+                parameters.Photos.Count - alreadyExistingPhotoResponses.Count,
+                photoLinkIds,
+                albumLinkId);
         }
         catch (ApiException ex) when (ex.ResponseCode is ResponseCode.DoesNotExist or ResponseCode.InvalidRequirements or ResponseCode.TooManyChildren
                                       && ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))

@@ -933,9 +933,6 @@ Fișierele ocupă spațiul local doar când sunt deschise sau alegeți să fie p
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Importarea a eșuat. Încercați să eliminați folderul și să îl importați din nou. Dacă problema persistă, contactați asistența.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Importarea a eșuat. Reîncercați.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Articole importate: {0} din {1}</value>
   </data>
@@ -1394,6 +1391,18 @@ Conținutul fișierelor va fi descărcat numai la cerere.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obțineți mai mult spațiu de stocare</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Importarea a eșuat. Albumul nu există.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Importarea a eșuat. Numărul maxim de albume a fost atins.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Importarea a eșuat. Numărul maxim de fotografii per album a fost atins.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importarea a eșuat. Reîncercați.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Importare eșuată</value>

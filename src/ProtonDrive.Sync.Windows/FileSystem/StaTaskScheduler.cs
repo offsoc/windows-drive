@@ -53,7 +53,7 @@ public sealed class StaTaskScheduler : TaskScheduler, IDisposable
             return thread;
         }).ToList();
 
-        // Start all of the threads
+        // Start all the threads
         foreach (var thread in _threads)
         {
             thread.Start();

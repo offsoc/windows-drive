@@ -338,6 +338,11 @@ internal sealed class ClassicFileSystemClient : BaseFileSystemClient, IFileSyste
         return Task.CompletedTask;
     }
 
+    public Task MoveAsync(IReadOnlyList<NodeInfo<long>> sourceNodes, NodeInfo<long> destinationInfo, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
+    }
+
     public Task DeleteRevision(NodeInfo<long> info, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();

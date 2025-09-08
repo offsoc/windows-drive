@@ -935,9 +935,6 @@
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Збой імпартавання. Паспрабуйце выдаліць папку і імпартаваць яе зноў. Звярніцеся ў службу падтрымкі, калі праблема застанецца.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Збой імпартавання. Паспрабуйце яшчэ раз.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Імпартавана: {0} з {1}</value>
   </data>
@@ -1396,6 +1393,18 @@
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Атрымаць больш месца ў сховішчы</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Збой імпартавання. Альбом не існуе.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Збой імпартавання. Дасягнута максімальная колькасць альбомаў.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Збой імпартавання. Дасягнута максімальная колькасць фатаграфій на альбом.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Збой імпартавання. Паспрабуйце яшчэ раз.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Збой імпартавання</value>

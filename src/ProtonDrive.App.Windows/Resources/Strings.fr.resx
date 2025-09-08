@@ -935,9 +935,6 @@ désactiver l'optimisation du stockage à tout moment.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>L'importation n'a pas abouti. Essayez de supprimer le dossier et de le réimporter. Si le problème persiste, veuillez contacter le support</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>L'importation n'a pas abouti. Veuillez réessayer.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importation de {0} sur {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obtenir plus d'espace de stockage</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>L'importation n'a pas abouti. L'album n'existe pas.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>L'importation n'a pas abouti. Le nombre maximum d'albums a été atteint.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>L'importation n'a pas abouti. Le nombre maximal de photos par album a été atteint.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>L'importation n'a pas abouti. Veuillez réessayer.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>L'importation n'a pas abouti.</value>

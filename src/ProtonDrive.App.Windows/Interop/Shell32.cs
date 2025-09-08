@@ -66,7 +66,7 @@ internal static class Shell32
         /// <summary>get shell size icon</summary>
         ShellIconSize = 0x000000004,
 
-        /// <summary>pszPath is a pidl</summary>
+        /// <summary>pszPath is a PIDL</summary>
         PIDL = 0x000000008,
 
         /// <summary>use passed dwFileAttribute</summary>
@@ -225,22 +225,97 @@ internal static class Shell32
     [Flags]
     public enum WTS_FLAGS : uint
     {
+        /// <summary>
+        /// Introduced in Windows 8. None of the following options are set.
+        /// </summary>
         WTS_NONE = 0x00000000,
+
+        /// <summary>
+        /// Extract the thumbnail if it is not cached.
+        /// </summary>
         WTS_EXTRACT = 0x00000000,
+
+        /// <summary>
+        /// Only return the thumbnail if it is cached.
+        /// </summary>
         WTS_INCACHEONLY = 0x00000001,
+
+        /// <summary>
+        /// If not cached, only extract the thumbnail if it is embedded in EXIF format, typically 96x96.
+        /// </summary>
         WTS_FASTEXTRACT = 0x00000002,
+
+        /// <summary>
+        /// Ignore cache and extract thumbnail from source file.
+        /// </summary>
         WTS_FORCEEXTRACTION = 0x00000004,
+
+        /// <summary>
+        /// The thumbnail has an extended lifetime. Use for volumes that might go offline, like non-fixed disks.
+        /// </summary>
         WTS_SLOWRECLAIM = 0x00000008,
+
+        /// <summary>
+        /// Extract but do not add the thumbnail to the cache.
+        /// </summary>
         WTS_EXTRACTDONOTCACHE = 0x00000020,
+
+        /// <summary>
+        /// Introduced in Windows 7. If the specific thumbnail size requested in the <see cref="cxyRequestedThumbSize"/> parameter is not available,
+        /// resize the thumbnail to the requested size. If possible, a larger bitmap is reduced in scale, preserving its aspect ratio,
+        /// to the width and height required. If the only available cached thumbnail is smaller than the requested size,
+        /// then it is scaled up using the nearest-neighbor algorithm.
+        /// </summary>
         WTS_SCALETOREQUESTEDSIZE = 0x00000040,
+
+        /// <summary>
+        /// Introduced in Windows 7. Do not extract a thumbnail embedded in the metadata of an EXIF image.
+        /// </summary>
         WTS_SKIPFASTEXTRACT = 0x00000080,
+
+        /// <summary>
+        /// Introduced in Windows 7. Ensures that the thumbnail handler is loaded in the same process as the caller.
+        /// When this flag is not specified, the handler is loaded into a surrogate process to protect the caller from unexpected crashes
+        /// caused by the processing of the target file. Use this value when debugging thumbnail extractors.
+        /// </summary>
         WTS_EXTRACTINPROC = 0x00000100,
+
+        /// <summary>
+        /// Introduced in Windows 8. If necessary, crop the bitmap's dimensions so that is square.
+        /// The length of the shortest side becomes the length of all sides.
+        /// </summary>
         WTS_CROPTOSQUARE = 0x00000200,
+
+        /// <summary>
+        /// Introduced in Windows 8. Create a surrogate for this instance of the cache rather than using the shared DLLHost surrogate.
+        /// </summary>
         WTS_INSTANCESURROGATE = 0x00000400,
+
+        /// <summary>
+        /// Introduced in Windows 8. Require extractions to take place in the surrogate.
+        /// </summary>
         WTS_REQUIRESURROGATE = 0x00000800,
+
+        /// <summary>
+        /// Windows 8 and later. Pass the <see cref="WTSCF_APPSTYLE"/> flag to <see cref="IThumbnailSettings::SetContext"/>,
+        /// if the provider supports it.
+        /// </summary>
         WTS_APPSTYLE = 0x00002000,
+
+        /// <summary>
+        /// Windows 8 and later. Stretch and crop the bitmap so that its height is 0.7 times its width.
+        /// </summary>
         WTS_WIDETHUMBNAILS = 0x00004000,
+
+        /// <summary>
+        /// Windows 8 and later. Return from the ideal cache snap size only. The returned image might be larger,
+        /// but it will be pulled from the correct cache entry.
+        /// </summary>
         WTS_IDEALCACHESIZEONLY = 0x00008000,
+
+        /// <summary>
+        /// Windows 8 and later. If necessary, stretch the image so that the height and width fit the given size.
+        /// </summary>
         WTS_SCALEUP = 0x00010000,
     }
 
@@ -292,7 +367,4 @@ internal static class Shell32
                                      ?? throw new ThumbnailGenerationException("Could not get instance of local thumbnail cache"));
         }
     }
-
-    // ReSharper restore InconsistentNaming
-    // ReSharper restore IdentifierTypo
 }

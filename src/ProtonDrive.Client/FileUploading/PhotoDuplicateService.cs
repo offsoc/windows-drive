@@ -61,17 +61,24 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
 
         var nameHashes = nameHashesByHash.Keys.ToList();
 
-        var photoDuplicationResponse = await _photoApiClient.GetDuplicatesAsync(
+        var duplicatesResponse = await _photoApiClient.GetDuplicatesAsync(
             volumeId,
             new PhotoDuplicationParameters { NameHashes = nameHashes },
             cancellationToken).ThrowOnFailure().ConfigureAwait(false);
 
         var clientId = _clientInstanceIdentityProvider.GetClientInstanceId();
 
-        var duplicatesByFileName = new List<PhotoNameCollision>(photoDuplicationResponse.PhotoDuplicates.Count);
+        var duplicatesByFileName = new List<PhotoNameCollision>(duplicatesResponse.PhotoDuplicates.Count);
 
-        foreach (var duplicateHash in photoDuplicationResponse.PhotoDuplicates)
+        foreach (var duplicateHash in duplicatesResponse.PhotoDuplicates)
         {
+            if (string.IsNullOrEmpty(duplicateHash.LinkId) ||
+                duplicateHash.LinkState is not LinkState.Draft and not LinkState.Active and not LinkState.Trashed)
+            {
+                // Deleted remote photos are not considered as duplicates
+                continue;
+            }
+
             var draftCreatedByAnotherClient = duplicateHash.LinkState is LinkState.Draft
                 && !string.IsNullOrEmpty(duplicateHash.ClientId)
                 && !string.Equals(clientId, duplicateHash.ClientId);
@@ -87,7 +94,7 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
                 new PhotoNameCollision(duplicateHash.LinkId, fileName, duplicateHash.NameHash, duplicateHash.ContentHash, draftCreatedByAnotherClient));
         }
 
-        // A file with the same name can be uploaded multiple times if its content differs.
+        // Multiple files can exist with the same name
         return duplicatesByFileName.ToLookup(x => x.FileName);
     }
 }

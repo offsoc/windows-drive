@@ -935,9 +935,6 @@
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Η εισαγωγή απέτυχε. Δοκιμάστε να αφαιρέσετε τον φάκελο και να τον εισαγάγετε ξανά. Εάν το πρόβλημα επιμένει, παρακαλούμε επικοινωνήστε με την υποστήριξη πελατών.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Η εισαγωγή απέτυχε. Προσπαθήστε ξανά.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Εισήχθησαν {0} από {1}</value>
   </data>
@@ -1396,6 +1393,18 @@
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Αποκτήστε περισσότερο χώρο αποθήκευσης</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Η εισαγωγή απέτυχε. Το άλμπουμ δεν υπάρχει.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Η εισαγωγή απέτυχε. Έχει επιτευχθεί ο μέγιστος αριθμός άλμπουμ.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Η εισαγωγή απέτυχε. Έχει επιτευχθεί ο μέγιστος αριθμός φωτογραφιών ανά άλμπουμ.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Η εισαγωγή απέτυχε. Προσπαθήστε ξανά.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Αποτυχία εισαγωγής</value>

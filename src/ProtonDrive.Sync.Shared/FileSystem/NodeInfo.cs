@@ -20,6 +20,7 @@ public class NodeInfo<TId> : ICloneable
     public long Size { get; private set; } = -1;
     public long? SizeOnStorage { get; private set; }
     public string? Sha1Digest { get; private set; }
+    public string? MainPhotoLinkId { get; private set; }
 
     public bool IsEmpty => Root is null && (Id is null || Id.Equals(default)) && string.IsNullOrEmpty(Path) && string.IsNullOrEmpty(Name);
 
@@ -112,6 +113,13 @@ public class NodeInfo<TId> : ICloneable
     public NodeInfo<TId> WithSha1Digest(string value)
     {
         Sha1Digest = value;
+
+        return this;
+    }
+
+    public NodeInfo<TId> WithMainPhotoLinkId(string? value)
+    {
+        MainPhotoLinkId = value;
 
         return this;
     }

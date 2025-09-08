@@ -555,7 +555,7 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>Mehr Speicherplatz erhalten</value>
   </data>
   <data name="Main_Account_Plan_HelpText">
-    <value>Siehe andere Proton Drive Abonnements</value>
+    <value>Andere Proton Drive Abonnements ansehen</value>
   </data>
   <data name="Main_Account_SessionManagement_Button_Manage">
     <value>_Verwalten</value>
@@ -907,7 +907,7 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>Speicher optimieren</value>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Button_GetStarted">
-    <value>Jetzt_loslegen</value>
+    <value>Jetzt _starten</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_MyComputer_Onboarding_Page2_Point_1">
@@ -931,9 +931,6 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
   </data>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Import fehlgeschlagen. Versuche, den Ordner zu entfernen und ihn erneut zu importieren. Wenn das Problem weiterhin besteht, kontaktiere bitte den Support.</value>
-  </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import fehlgeschlagen. Versuche es erneut.</value>
   </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>{0} von {1} importiert</value>
@@ -1030,7 +1027,7 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
     <value>Sprache</value>
   </data>
   <data name="Main_Settings_OpenOnStartup_HelpText">
-    <value>Öffne Proton Drive beim Windows-Start</value>
+    <value>Proton Drive beim Starten von Windows öffnen</value>
   </data>
   <data name="Main_Settings_OpenOnStartup_Title">
     <value>Nach dem Hochfahren öffnen</value>
@@ -1093,7 +1090,7 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
     <value>Mit mir geteiltes Onboarding verwerfen</value>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Button_GetStarted">
-    <value>Jetzt loslegen</value>
+    <value>Jetzt _starten</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_SharedWithMe_Onboarding_Description">
@@ -1394,6 +1391,18 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Mehr Speicherplatz erhalten</value>
   </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Fehler beim Importieren. Das Album existiert nicht.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Fehler beim Importieren. Maximale Anzahl an Alben erreicht.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Fehler beim Importieren. Maximale Anzahl an Fotos pro Album erreicht.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Fehler beim Importieren. Versuche es erneut.</value>
+  </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Import fehlgeschlagen</value>
   </data>
@@ -1537,7 +1546,7 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
     <value>Der Ordner enthält einen bereits synchronisierten Ordner</value>
   </data>
   <data name="SyncFolderValidationResult_Value_InsufficientLocalFreeSpace">
-    <value>Gib Speicherplatz frei oder wähle die Checkbox ab.</value>
+    <value>Gib Platz frei oder wähle das Kontrollkästchen ab.</value>
   </data>
   <data name="SyncFolderValidationResult_Value_LocalFileSystemAccessFailed">
     <value>Kann nicht auf den Ordner zugreifen</value>
@@ -1602,7 +1611,7 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SystemTray_Menu_Item_PauseSync">
-    <value>_Anhalten der Synchronisierung</value>
+    <value>Synchronisierung _anhalten</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SystemTray_Menu_Item_SignIn">

@@ -706,7 +706,7 @@ Desactiveu i torneu a activar la sincronització per restaurar-lo i esborrar aqu
     <value>S'ha produït un error</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Error_Required">
-    <value>Es requereix un nom.</value>
+    <value>El nom és obligatori.</value>
   </data>
   <data name="Main_Activity_Rename_NewName_Label">
     <value>Nom nou:</value>
@@ -935,9 +935,6 @@ desactivar l'optimització d'emmagatzematge en qualsevol moment.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>S'ha produït un error amb la importació. Proveu d'eliminar la carpeta i d'importar-la de nou. Si el problema persisteix, poseu-vos en contacte amb el suport.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>La importació ha fallat. Torneu -ho a provar.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>S'han importat {0} de {1}</value>
   </data>
@@ -978,7 +975,7 @@ desactivar l'optimització d'emmagatzematge en qualsevol moment.</value>
     <value>2. Importeu la carpeta de Google Fotos</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
-    <value>Seleccioneu la carpeta</value>
+    <value>Selecciona la carpeta</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Title">
     <value>Importa des de Google Fotos</value>
@@ -1397,6 +1394,18 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obtén més emmagatzematge</value>
   </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Ha fallat la importació. Aquest àlbum no existeix.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>No s'ha pogut fer la importació. S'ha assolit el nombre màxim d'àlbums.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>No s'ha pogut fer la importació. S'ha assolit el nombre màxim de fotos per àlbum.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>No s'ha pogut fer la importació. Torneu-ho a provar.</value>
+  </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>S'ha produït un error en la importació</value>
   </data>
@@ -1413,7 +1422,7 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Succeeded">
-    <value>La importació s'ha realitzat.</value>
+    <value>Importació correcta</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_ValidationFailed">
     <value></value>

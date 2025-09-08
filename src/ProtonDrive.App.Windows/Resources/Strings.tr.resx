@@ -933,9 +933,6 @@ Dosyaların bu aygıtta yalnızca onları açtığınızda ya da her zaman bulun
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>İçe aktarım tamamlanamadı. Klasörü kaldırıp yeniden içe aktarmayı deneyin. Sorun sürerse destek ekibimizle görüşün.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>İçe aktarılamadı. Yeniden deneyin.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>{0} / {1} içe aktarıldı.</value>
   </data>
@@ -1394,6 +1391,18 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Daha fazla depolama alanı edinin</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>İçe aktarılamadı. Albüm bulunamadı.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>İçe aktarılamadı. Olabilecek en fazla albüm sayısı sınırına ulaşıldı.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>İçe aktarılamadı. Bir albümde bulunabilecek en fazla fotoğraf sayısına ulaşıldı.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>İçe aktarılamadı. Yeniden deneyin.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>İçe aktarılamadı</value>

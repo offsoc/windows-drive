@@ -10,6 +10,11 @@ namespace ProtonDrive.App.Windows.Interop;
 /// </content>
 internal partial struct HResult
 {
+    // ReSharper disable UnusedMember.Global
+    // ReSharper disable InconsistentNaming
+    // ReSharper disable IdentifierTypo
+    // ReSharper disable CommentTypo
+
     /// <summary>
     /// Common HRESULT constants.
     /// </summary>
@@ -89,5 +94,35 @@ internal partial struct HResult
         /// Call cancellation is not enabled on the specified thread
         /// </summary>
         CO_E_CANCEL_DISABLED = 0x80010140,
+
+        /// <summary>
+        /// Item could not be found
+        /// </summary>
+        STG_E_FILENOTFOUND = 0x80030002,
+
+        /// <summary>
+        /// The Shell item does not support thumbnail extraction. For example, .exe or .lnk items.
+        /// </summary>
+        WTS_E_FAILEDEXTRACTION = 0x8004B200,
+
+        /// <summary>
+        /// The extraction took longer than the maximum allowable time. The extraction was not completed.
+        /// </summary>
+        WTS_E_EXTRACTIONTIMEDOUT = 0x8004B201,
+
+        /// <summary>
+        /// A surrogate process was not available to be used for the extraction process.
+        /// </summary>
+        WTS_E_SURROGATEUNAVAILABLE = 0x8004B202,
+
+        /// <summary>
+        /// The WTS_FASTEXTRACT flag was set, but fast extraction is not available.
+        /// </summary>
+        WTS_E_FASTEXTRACTIONNOTSUPPORTED = 0x8004B203,
+
+        WTS_E_DATAFILEUNAVAILABLE = 0x8004B204,
+        WTS_E_EXTRACTIONPENDING = 0x8004B205,
+        WTS_E_EXTRACTIONBLOCKED = 0x8004B206,
+        WTS_E_NOSTORAGEPROVIDERTHUMBNAILHANDLER = 0x8004B207,
     }
 }

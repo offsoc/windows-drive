@@ -16,6 +16,7 @@ using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Shared.Reporting;
+using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem.CloudFiles;
 using ProtonDrive.Sync.Windows.Shell;
@@ -321,12 +322,13 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 return (OnDemandSyncRootVerificationVerdict.ConflictingRootExists, ConflictingRootInfo: actualInfo);
             }
 
+            LogInvalidSyncRoot(rootInfo, actualInfo);
+
             if (VerifySyncRootFlag(rootInfo.Path.Path) is var verdict2 and not OnDemandSyncRootVerificationVerdict.Valid)
             {
                 return (verdict2, ConflictingRootInfo: null);
             }
 
-            _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", rootInfo.Id);
             return (OnDemandSyncRootVerificationVerdict.Invalid, ConflictingRootInfo: null);
         }
         catch (COMException ex) when (ex.ErrorCode == ErrorCodeElementNotFound)
@@ -407,6 +409,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
         try
         {
+            // StorageFolder.GetFolderFromPathAsync throws UnauthorizedAccessException if the folder is marked with system or hidden file attributes
             var folder = await StorageFolder.GetFolderFromPathAsync(root.Path);
             var displayName = _appConfig.AppName + " - " + _fileSystemDisplayNameAndIconProvider.GetDisplayNameWithoutAccess(root.Path);
 
@@ -731,6 +734,96 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         {
             _logger.LogError("Failed to obtain Cloud Files platform version: {ErrorCode}: {ErrorMessage}", ex.GetRelevantFormattedErrorCode(), ex.Message);
             _platformVersionIsLogged = true;
+        }
+    }
+
+    private void LogInvalidSyncRoot(StorageProviderSyncRootInfo expected, StorageProviderSyncRootInfo actual)
+    {
+        _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", expected.Id);
+
+        if (!actual.Path.Path.Equals(expected.Path.Path, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning(
+                "On-demand sync root path \"{ActualPath}\" is not expected, should be \"{ExpectedPath}\"",
+                actual.Path.Path,
+                expected.Path.Path);
+        }
+
+        if (actual.DisplayNameResource != expected.DisplayNameResource)
+        {
+            _logger.LogWarning(
+                "On-demand sync root display name \"{ActualDisplayName}\" is not expected, should be \"{ExpectedDisplayName}\"",
+                actual.DisplayNameResource,
+                expected.DisplayNameResource);
+        }
+
+        if (actual.Version != expected.Version)
+        {
+            _logger.LogWarning(
+                "On-demand sync root version \"{ActualVersion}\" is not expected, should be \"{ExpectedVersion}\"",
+                actual.Version,
+                expected.Version);
+        }
+
+        if (actual.IconResource != expected.IconResource)
+        {
+            _logger.LogWarning("On-demand sync root icon resource is not expected");
+        }
+
+        if (actual.AllowPinning != expected.AllowPinning)
+        {
+            _logger.LogWarning(
+                "On-demand sync root allow pining flag \"{ActualAllowPinning}\" is not expected, should be \"{ExpectedAllowPinning}\"",
+                actual.AllowPinning,
+                expected.AllowPinning);
+        }
+
+        if (actual.ProtectionMode != expected.ProtectionMode)
+        {
+            _logger.LogWarning(
+                "On-demand sync root protection mode {ActualProtectionMode} is not expected, should be {ExpectedProtectionMode}",
+                actual.ProtectionMode,
+                expected.ProtectionMode);
+        }
+
+        if (actual.HydrationPolicy != expected.HydrationPolicy)
+        {
+            _logger.LogWarning(
+                "On-demand sync root hydration policy {ActualHydrationPolicy} is not expected, should be {ExpectedHydrationPolicy}",
+                actual.HydrationPolicy,
+                expected.HydrationPolicy);
+        }
+
+        if (actual.HydrationPolicyModifier != expected.HydrationPolicyModifier)
+        {
+            _logger.LogWarning(
+                "On-demand sync root hydration policy modifier {ActualHydrationPolicyModifier} is not expected, should be {ExpectedHydrationPolicyModifier}",
+                actual.HydrationPolicyModifier,
+                expected.HydrationPolicyModifier);
+        }
+
+        if (actual.PopulationPolicy != expected.PopulationPolicy)
+        {
+            _logger.LogWarning(
+                "On-demand sync root population policy {ActualPopulationPolicy} is not expected, should be {ExpectedPopulationPolicy}",
+                actual.PopulationPolicy,
+                expected.PopulationPolicy);
+        }
+
+        if (actual.InSyncPolicy != expected.InSyncPolicy)
+        {
+            _logger.LogWarning(
+                "On-demand sync root in-sync policy {ActualInSyncPolicy} is not expected, should be {ExpectedInSyncPolicy}",
+                actual.InSyncPolicy,
+                expected.InSyncPolicy);
+        }
+
+        if (actual.HardlinkPolicy != expected.HardlinkPolicy)
+        {
+            _logger.LogWarning(
+                "On-demand sync root hard link policy {ActualHardlinkPolicy} is not expected, should be {ExpectedHardlinkPolicy}",
+                actual.HardlinkPolicy,
+                expected.HardlinkPolicy);
         }
     }
 }

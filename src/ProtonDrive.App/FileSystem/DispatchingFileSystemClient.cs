@@ -115,6 +115,13 @@ internal sealed class DispatchingFileSystemClient<TId> : IFileSystemClient<TId>
         return new DispatchingRevisionCreationProcess(this, result, info.Root!);
     }
 
+    public Task MoveAsync(IReadOnlyList<NodeInfo<TId>> sourceNodes, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
+    {
+        var client = GetClient(destinationInfo);
+
+        return client.MoveAsync(sourceNodes, destinationInfo, cancellationToken);
+    }
+
     public Task Move(NodeInfo<TId> info, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
     {
         var client = GetClient(info);

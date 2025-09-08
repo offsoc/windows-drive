@@ -2,12 +2,15 @@
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.Shared;
 using ProtonDrive.Shared.Media;
+using ProtonDrive.Shared.Threading;
 using ProtonDrive.Sync.Shared.FileSystem;
 using Gdi32 = ProtonDrive.App.Windows.Interop.Gdi32;
 using Shell32 = ProtonDrive.App.Windows.Interop.Shell32;
@@ -16,34 +19,41 @@ namespace ProtonDrive.App.Windows.Services;
 
 internal class Win32ThumbnailGenerator : IThumbnailGenerator
 {
-    private const int MinHdPreviewNumberOfPixelsOnLargestSide = IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide + 1;
+    private static readonly TimeSpan ThumbnailExtractionTimeout = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan ThumbnailExtractionResultPollingInterval = TimeSpan.FromMilliseconds(500);
 
     // Below 15 it will start becoming unrecognizable and maybe even so ugly that using an icon rather than a thumbnail is likely to be more acceptable.
     private static readonly ImmutableArray<int> QualityLevels = [80, 70, 60, 45, 30, 15, 10, 5];
 
+    // Polling for pending thumbnail retrieval result must be performed on the same thread on which thumbnail retrieval was requested.
+    private static readonly DedicatedThreadTaskScheduler TaskScheduler = new();
+
+    private readonly IClock _clock;
     private readonly ILogger<IThumbnailGenerator> _logger;
 
-    public Win32ThumbnailGenerator(ILogger<IThumbnailGenerator> logger)
+    public Win32ThumbnailGenerator(IClock clock, ILogger<IThumbnailGenerator> logger)
     {
+        _clock = clock;
         _logger = logger;
     }
 
-    public bool TryGenerateThumbnail(string filePath, int numberOfPixelsOnLargestSide, int maxNumberOfBytes, out ReadOnlyMemory<byte> thumbnailBytes)
+    public async Task<ReadOnlyMemory<byte>> GenerateThumbnailAsync(string filePath, int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
     {
         var extension = Path.GetExtension(filePath);
 
         if (!KnownFileExtensions.ImageExtensions.Contains(extension) && !KnownFileExtensions.VideoExtensions.Contains(extension))
         {
-            _logger.LogInformation("Thumbnail generation skipped: file extension not supported");
-            thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-            return false;
+            _logger.LogInformation(
+                "Thumbnail generation skipped: File extension \"{Extension}\" not supported",
+                extension[^Math.Min(extension.Length, 5)..]);
+
+            return ReadOnlyMemory<byte>.Empty;
         }
 
         if (!File.Exists(filePath))
         {
             _logger.LogWarning("Thumbnail generation failed: File not found");
-            thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-            return false;
+            return ReadOnlyMemory<byte>.Empty;
         }
 
         IntPtr hBitmap = IntPtr.Zero;
@@ -54,31 +64,30 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
 
             if (isHdPreview)
             {
-                var validator = new HdPreviewGenerationValidator(filePath, extension, _logger);
+                var validator = new Win32ThumbnailGenerationValidator(filePath, extension, _logger);
 
                 if (!validator.IsHdPreviewAllowed())
                 {
-                    thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-                    return false;
+                    return ReadOnlyMemory<byte>.Empty;
                 }
             }
 
-            hBitmap = GetNativeBitmapHandle(filePath, numberOfPixelsOnLargestSide);
+            hBitmap = await GetNativeBitmapHandleAsync(filePath, numberOfPixelsOnLargestSide, cancellationToken).ConfigureAwait(false);
 
             if (hBitmap == IntPtr.Zero)
             {
-                thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-                return false;
+                return ReadOnlyMemory<byte>.Empty;
             }
 
             var bitmap = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
-            var nonTransparentBitmap = GetNonTransparentBitmap(bitmap);
+            var nonTransparentBitmap = bitmap.GetNonTransparentBitmap();
 
             var qualityLevelIndex = 0;
+            byte[] thumbnailBytes;
             do
             {
-                thumbnailBytes = EncodeToJpeg(nonTransparentBitmap, QualityLevels[qualityLevelIndex++]);
+                thumbnailBytes = nonTransparentBitmap.EncodeToJpeg(QualityLevels[qualityLevelIndex++]);
             }
             while (thumbnailBytes.Length > maxNumberOfBytes && qualityLevelIndex < QualityLevels.Length);
 
@@ -95,19 +104,23 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
                 bitmap.PixelHeight,
                 thumbnailBytes.Length);
 
-            return true;
+            return thumbnailBytes;
         }
         catch (FileNotFoundException)
         {
             _logger.LogWarning("Thumbnail generation failed: File not found");
-            thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-            return false;
+            return ReadOnlyMemory<byte>.Empty;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Thumbnail generation failed: {ExceptionType}: {HResult}", ex.GetType().Name, ex.HResult);
-            thumbnailBytes = ReadOnlyMemory<byte>.Empty;
-            return false;
+            _logger.LogError(
+                ex,
+                "Thumbnail generation failed for file extension \"{Extension}\": {ExceptionType}: {HResult}",
+                extension[^Math.Min(extension.Length, 5)..],
+                ex.GetType().Name,
+                ex.HResult);
+
+            return ReadOnlyMemory<byte>.Empty;
         }
         finally
         {
@@ -120,41 +133,24 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
         return numberOfPixelsOnLargestSide > IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide;
     }
 
-    private static RenderTargetBitmap GetNonTransparentBitmap(BitmapSource bitmap)
+    private static Task<TResult> Schedule<TResult>(Func<TResult> work, CancellationToken cancellationToken)
     {
-        var rect = new Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
-        var visual = new DrawingVisual();
-        var context = visual.RenderOpen();
-        context.DrawRectangle(new SolidColorBrush(Colors.Black), null, rect);
-        context.DrawImage(bitmap, rect);
-        context.Close();
-        var render = new RenderTargetBitmap(bitmap.PixelWidth, bitmap.PixelHeight, 96, 96, PixelFormats.Pbgra32);
-        render.Render(visual);
-        return render;
+        return Task.Factory.StartNew(
+            work,
+            cancellationToken,
+            TaskCreationOptions.None,
+            TaskScheduler);
     }
 
-    private static byte[] EncodeToJpeg(BitmapSource source, int qualityLevel)
-    {
-        using var stream = new MemoryStream();
-
-        var encoder = new JpegBitmapEncoder
-        {
-            QualityLevel = qualityLevel,
-            Frames = { BitmapFrame.Create(source) },
-        };
-
-        encoder.Save(stream);
-
-        return stream.ToArray();
-    }
-
-    private IntPtr GetNativeBitmapHandle(string fileName, int numberOfPixelsOnLargestSide)
+    private async Task<IntPtr> GetNativeBitmapHandleAsync(string fileName, int numberOfPixelsOnLargestSide, CancellationToken cancellationToken)
     {
         var itemGuid = Shell32.IID_IShellItem;
 
         var resultHandle = Shell32.SHCreateItemFromParsingName(fileName, IntPtr.Zero, ref itemGuid, out object item);
 
         resultHandle.ThrowOnFailure();
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         try
         {
@@ -164,25 +160,7 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
 
             try
             {
-                resultHandle = thumbnailCache.GetThumbnail(
-                    shellItem,
-                    (uint)numberOfPixelsOnLargestSide,
-                    Shell32.WTS_FLAGS.WTS_EXTRACT | Shell32.WTS_FLAGS.WTS_EXTRACTDONOTCACHE | Shell32.WTS_FLAGS.WTS_SCALETOREQUESTEDSIZE,
-                    out var sharedBitmap,
-                    out _,
-                    out _);
-
-                if (resultHandle.Failed)
-                {
-                    _logger.LogWarning("Thumbnail generation failed: 0x{ErrorCode:x8}", resultHandle.AsInt32);
-
-                    return IntPtr.Zero;
-                }
-
-                resultHandle = sharedBitmap.Detach(out var detachedBitmap);
-                resultHandle.ThrowOnFailure();
-
-                return detachedBitmap;
+                return await GetThumbnailHandleAsync(thumbnailCache, shellItem, numberOfPixelsOnLargestSide, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -195,73 +173,35 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
         }
     }
 
-    private sealed class HdPreviewGenerationValidator
+    private async Task<IntPtr> GetThumbnailHandleAsync(
+        Shell32.IThumbnailCache thumbnailCache,
+        Shell32.IShellItem shellItem,
+        int numberOfPixelsOnLargestSide,
+        CancellationToken cancellationToken)
     {
-        private readonly string _filePath;
-        private readonly string _extension;
-        private readonly ILogger _logger;
+        cancellationToken.ThrowIfCancellationRequested();
 
-        public HdPreviewGenerationValidator(string filePath, string extension, ILogger logger)
+        var startTickCount = _clock.TickCount;
+
+        var (result, thumbnail) = await Schedule(() => thumbnailCache.TryGetThumbnail(shellItem, numberOfPixelsOnLargestSide), cancellationToken).ConfigureAwait(false);
+
+        while (result.ThumbnailExtractionIsPending() && (_clock.TickCount - startTickCount) < ThumbnailExtractionTimeout)
         {
-            _filePath = filePath;
-            _extension = extension;
-            _logger = logger;
+            await Task.Delay(ThumbnailExtractionResultPollingInterval, cancellationToken).ConfigureAwait(false);
+
+            (result, thumbnail) = await Schedule(() => thumbnailCache.TryGetDeferredThumbnail(shellItem, numberOfPixelsOnLargestSide), cancellationToken).ConfigureAwait(false);
         }
 
-        public bool IsHdPreviewAllowed()
+        if (result.Failed || thumbnail is null)
         {
-            if (!KnownFileExtensions.ImageExtensions.Contains(_extension))
-            {
-                _logger.LogInformation("HD preview generation skipped: file extension not supported");
-                return false;
-            }
+            _logger.LogWarning("Thumbnail generation of max {Size}px failed: 0x{ErrorCode:x8}", numberOfPixelsOnLargestSide, result.AsInt32);
 
-            if (!TryGetNumberOfPixelsOnLargestSide(out var imageNumberOfPixelsOnLargestSide))
-            {
-                return false;
-            }
-
-            if (KnownFileExtensions.JpegExtensions.Contains(_extension))
-            {
-                if (imageNumberOfPixelsOnLargestSide <= IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide)
-                {
-                    _logger.LogInformation(
-                        "HD preview generation skipped: JPEG image too small (largest side smaller or equal than {RequiredSize}",
-                        IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide);
-
-                    return false;
-                }
-
-                return true;
-            }
-
-            if (imageNumberOfPixelsOnLargestSide < MinHdPreviewNumberOfPixelsOnLargestSide)
-            {
-                _logger.LogInformation(
-                    "HD preview generation skipped: non JPEG image too small (largest side smaller than {RequiredSize}",
-                    MinHdPreviewNumberOfPixelsOnLargestSide);
-
-                return false;
-            }
-
-            return true;
+            return IntPtr.Zero;
         }
 
-        private bool TryGetNumberOfPixelsOnLargestSide(out int numberOfPixelsOnLargestSide)
-        {
-            try
-            {
-                using var stream = File.OpenRead(_filePath);
-                var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.IgnoreColorProfile | BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-                numberOfPixelsOnLargestSide = Math.Max(decoder.Frames[0].PixelWidth, decoder.Frames[0].PixelHeight);
-                return true;
-            }
-            catch (NotSupportedException)
-            {
-                _logger.LogWarning("HD preview generation failed: file format not supported");
-                numberOfPixelsOnLargestSide = 0;
-                return false;
-            }
-        }
+        var resultHandle = thumbnail.Detach(out var nativeBitmapHandle);
+        resultHandle.ThrowOnFailure();
+
+        return nativeBitmapHandle;
     }
 }

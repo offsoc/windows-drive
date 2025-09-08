@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.App.Photos.LivePhoto;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -17,6 +18,7 @@ internal sealed class PhotoImportPipeline
     private readonly IPhotoAlbumService _photoAlbumService;
     private readonly IPhotoDuplicateService _duplicateService;
     private readonly IPhotoAlbumNameProvider _photoAlbumNameProvider;
+    private readonly ILivePhotoFileDetector _livePhotoFileDetector;
     private readonly ImportProgress _progress;
     private readonly ILogger _logger;
 
@@ -27,6 +29,7 @@ internal sealed class PhotoImportPipeline
         IPhotoAlbumService photoAlbumService,
         IPhotoDuplicateService duplicateService,
         IPhotoAlbumNameProvider photoAlbumNameProvider,
+        ILivePhotoFileDetector livePhotoFileDetector,
         ImportProgress progress,
         ILogger logger)
     {
@@ -36,6 +39,7 @@ internal sealed class PhotoImportPipeline
         _photoAlbumService = photoAlbumService;
         _duplicateService = duplicateService;
         _photoAlbumNameProvider = photoAlbumNameProvider;
+        _livePhotoFileDetector = livePhotoFileDetector;
         _progress = progress;
         _logger = logger;
     }
@@ -64,6 +68,7 @@ internal sealed class PhotoImportPipeline
                     _photoAlbumService,
                     _duplicateService,
                     _photoAlbumNameProvider,
+                    _livePhotoFileDetector,
                     _progress,
                     _logger);
 

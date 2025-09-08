@@ -5,22 +5,6 @@ namespace ProtonDrive.Client.Photos.Contracts;
 
 public sealed record PhotoDuplicateDto
 {
-    public PhotoDuplicateDto(
-        string? nameHash,
-        string? contentHash,
-        LinkState? linkState,
-        string? clientId,
-        string? linkId,
-        string? revisionId)
-    {
-        NameHash = nameHash;
-        ContentHash = contentHash;
-        LinkState = linkState;
-        ClientId = clientId;
-        LinkId = linkId;
-        RevisionId = revisionId;
-    }
-
     /// <summary>
     /// NameHash of the found duplicate
     /// </summary>

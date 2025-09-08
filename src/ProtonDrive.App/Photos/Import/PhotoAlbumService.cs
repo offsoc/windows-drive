@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -41,12 +42,12 @@ internal sealed class PhotoAlbumService : IPhotoAlbumService
         }
     }
 
-    public async ValueTask AddToAlbumAsync(string albumLinkId, NodeInfo<string> file, CancellationToken cancellationToken)
+    public async ValueTask AddToAlbumAsync(string albumLinkId, IReadOnlyList<NodeInfo<string>> files, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var albumNode = new NodeInfo<string>().WithParentId(albumLinkId);
-        await _remoteFileSystemClient.Move(file, albumNode, cancellationToken).ConfigureAwait(false);
+        await _remoteFileSystemClient.MoveAsync(files, albumNode, cancellationToken).ConfigureAwait(false);
 
         _logger.LogInformation("Added photo to album with ID {ID}", albumLinkId);
     }

@@ -935,9 +935,6 @@ Optimalizáciu úložiska môžete kedykoľvek vypnúť.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Import zlyhal. Skúste odstrániť priečinok a importovať ho znova. Ak problém pretrváva, kontaktujte podporu, prosím.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import zlyhal. Skúste znova.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importovaných {0} z {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ Obsah súborov sa bude sťahovať len na požiadanie.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Získajte viac úložného priestoru</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Import zlyhal. Album neexistuje.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Import zlyhal. Bol dosiahnutý maximálny počet albumov.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Import zlyhal. Bol dosiahnutý maximálny počet fotografií na album.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import zlyhal. Skúste znova.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Import zlyhal</value>

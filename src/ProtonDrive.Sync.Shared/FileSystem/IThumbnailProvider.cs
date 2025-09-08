@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProtonDrive.Sync.Shared.FileSystem;
 
@@ -8,8 +10,8 @@ public interface IThumbnailProvider
     public const int MaxHdPreviewNumberOfPixelsOnLargestSide = 1920;
 
     /// <summary>
-    /// Attempts to obtain a file revision thumbnail.
+    /// Obtains a thumbnail for a file.
     /// </summary>
-    /// <returns><value>true</value> if the thumbnail has been obtained, <value>false</value> otherwise.</returns>
-    bool TryGetThumbnail(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, out ReadOnlyMemory<byte> thumbnailBytes);
+    /// <returns>Thumbnail bytes if obtaining thumbnail succeeded; Empty memory otherwise.</returns>
+    Task<ReadOnlyMemory<byte>> GetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken);
 }

@@ -38,7 +38,7 @@ internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
 
         var cameraManufacturer = imageProperties.CameraManufacturer;
         var cameraModel = imageProperties.CameraModel;
-        var captureTime = FileMetadataValidator.IsValidCaptureTime(imageProperties.DateTaken) ? imageProperties.DateTaken : default(DateTimeOffset?);
+        var captureTime = imageProperties.DateTaken;
         var cameraOrientation = (int)imageProperties.Orientation;
         var cameraDevice = (cameraManufacturer + " " + cameraModel).Trim();
 

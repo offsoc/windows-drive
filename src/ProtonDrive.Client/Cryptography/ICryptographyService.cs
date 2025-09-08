@@ -75,10 +75,7 @@ public interface ICryptographyService
         string? signatureEmailAddress,
         CancellationToken cancellationToken);
 
-    Task<IVerificationCapablePgpDecrypter> CreateFileContentsBlockDecrypterAsync(
-        PrivatePgpKey nodeKey,
-        string? signatureEmailAddress,
-        CancellationToken cancellationToken);
+    IPgpDecrypter CreateFileContentsBlockDecrypter(PrivatePgpKey nodeKey);
 
     Task<IPgpMessageProducer> CreateShareUrlPasswordEncrypterAsync(CancellationToken cancellationToken);
 

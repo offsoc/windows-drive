@@ -8,7 +8,6 @@ namespace ProtonDrive.Sync.Shared.FileSystem;
 public interface IRevision : IThumbnailProvider, IFileMetadataProvider, IDisposable, IAsyncDisposable
 {
     long Size { get; }
-    DateTime LastWriteTimeUtc { get; }
 
     Task CheckReadabilityAsync(CancellationToken cancellationToken);
     Stream GetContentStream();

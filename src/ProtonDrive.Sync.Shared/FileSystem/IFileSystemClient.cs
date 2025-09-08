@@ -247,6 +247,14 @@ public interface IFileSystemClient<TId>
     Task Move(NodeInfo<TId> info, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Moves the file system objects to the new parent directory.
+    /// </summary>
+    /// <param name="sourceNodes">The list of file system objects information.</param>
+    /// <param name="destinationInfo">The new folder file system object information.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    Task MoveAsync(IReadOnlyList<NodeInfo<TId>> sourceNodes, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Deletes the specified file system object. Directories are deleted recursively including all descendants.
     /// </summary>
     /// <param name="info">The file system object information.</param>

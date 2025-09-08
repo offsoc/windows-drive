@@ -935,9 +935,6 @@ desativar a otimização de armazenamento a qualquer momento.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Erro na importação. Tente remover a pasta e importá-la novamente. Se o problema persistir, contacte o apoio ao cliente.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>A importação falhou. Tente novamente.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importação: {0} de {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ O conteúdo do ficheiro será transferido apenas a pedido.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Obter mais espaço de armazenamento</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Erro com a importação. O álbum não existe.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Erro com a importação. O número máximo de álbuns foi atingido.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Erro com a importação. O número máximo de fotos por álbum fo atingido.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Erro com a importação. Tente novamente.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>A importação falhou</value>

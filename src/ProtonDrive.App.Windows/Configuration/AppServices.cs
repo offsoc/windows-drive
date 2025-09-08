@@ -9,6 +9,7 @@ using ProtonDrive.App.Authentication;
 using ProtonDrive.App.Configuration;
 using ProtonDrive.App.Devices;
 using ProtonDrive.App.Features;
+using ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
 using ProtonDrive.App.InterProcessCommunication;
 using ProtonDrive.App.Localization;
 using ProtonDrive.App.Mapping;
@@ -18,6 +19,7 @@ using ProtonDrive.App.Notifications.Offers;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Photos;
 using ProtonDrive.App.Photos.Import;
+using ProtonDrive.App.Photos.LivePhoto;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;
@@ -251,8 +253,25 @@ internal static class AppServices
             .AddSingleton<IStartableService>(provider => provider.GetRequiredService<NamedPipeBasedIpcServer>())
             .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<NamedPipeBasedIpcServer>())
 
-            .AddSingleton<IThumbnailGenerator, Win32ThumbnailGenerator>()
-            .AddSingleton<IFileMetadataGenerator, WinRtFileMetadataGenerator>()
+            .AddSingleton<ILivePhotoFileDetector, LivePhotoFileDetector>()
+            .AddSingleton<WinRtFileMetadataGenerator>()
+            .AddSingleton<IFileMetadataGenerator>(
+                provider =>
+                    new LivePhotoMetadataExtractingDecorator(
+                        new GoogleTakeoutMetadataExtractingDecorator(
+                            provider.GetRequiredService<WinRtFileMetadataGenerator>(),
+                            provider.GetRequiredService<IGoogleTakeoutMetadataExtractor>()),
+                        provider.GetRequiredService<ILivePhotoFileDetector>()))
+
+            .AddSingleton<Win32ThumbnailGenerator>()
+            .AddSingleton<IThumbnailGenerator>(
+                provider =>
+                    new LivePhotoThumbnailExtractingDecorator(
+                        new Win32ThumbnailGenerator(
+                            provider.GetRequiredService<Shared.IClock>(),
+                            provider.GetRequiredService<ILogger<IThumbnailGenerator>>()),
+                        provider.GetRequiredService<ILivePhotoFileDetector>()))
+
             .AddSingleton<IPhotoTagsGenerator, PhotoTagsGenerator>()
             .AddSingleton<ILocalFileSystemClientFactory, LocalFileSystemClientFactory>()
             .AddSingleton<ILocalEventLogClientFactory, LocalEventLogClientFactory>()

@@ -2,12 +2,12 @@
 
 namespace ProtonDrive.Client.FileUploading;
 
-public sealed class PhotoNameCollision(string? linkId, string fileName, string nameHash, string? contentHash, bool draftCreatedByAnotherClient)
+public sealed class PhotoNameCollision(string linkId, string fileName, string nameHash, string? contentHash, bool draftCreatedByAnotherClient)
 {
     private readonly bool _draftCreatedByAnotherClient = draftCreatedByAnotherClient;
     private readonly string? _contentHash = contentHash;
 
-    public string? LinkId { get; } = linkId;
+    public string LinkId { get; } = linkId;
     public string FileName { get; } = fileName;
     public string NameHash { get; } = nameHash;
 

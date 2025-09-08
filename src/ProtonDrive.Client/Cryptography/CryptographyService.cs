@@ -242,16 +242,9 @@ internal sealed class CryptographyService : ICryptographyService
         return _pgpTransformerFactory.CreateVerificationCapableDecrypter([nodeKey], verificationKeys);
     }
 
-    public async Task<IVerificationCapablePgpDecrypter> CreateFileContentsBlockDecrypterAsync(
-        PrivatePgpKey nodeKey,
-        string? signatureEmailAddress,
-        CancellationToken cancellationToken)
+    public IPgpDecrypter CreateFileContentsBlockDecrypter(PrivatePgpKey nodeKey)
     {
-        var verificationKeys = !string.IsNullOrEmpty(signatureEmailAddress)
-            ? await _addressKeyProvider.Value.GetPublicKeysForEmailAddressAsync(signatureEmailAddress, cancellationToken).ConfigureAwait(false)
-            : [];
-
-        return _pgpTransformerFactory.CreateVerificationCapableDecrypter([nodeKey], verificationKeys);
+        return _pgpTransformerFactory.CreateDecrypter([nodeKey]);
     }
 
     public async Task<IPgpDecrypter> CreateShareUrlPasswordDecrypterAsync(IReadOnlyCollection<string> emailAddresses, CancellationToken cancellationToken)

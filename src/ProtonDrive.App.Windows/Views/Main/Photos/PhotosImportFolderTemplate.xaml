@@ -22,6 +22,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Image
@@ -225,8 +226,18 @@
                     </Grid>
                 </Grid>
 
-                <Menu
+                <Button
+                    AutomationProperties.AutomationId="RetryImportButton"
                     Grid.Column="5"
+                    Content="{loc:Resource Main_Photos_Folders_Menu_Item_Retry}"
+                    CommandParameter="{Binding .}"
+                    Command="{Binding ElementName=ImportedFoldersItemsControl, Path=DataContext.RetryCommand}"
+                    Visibility="{Binding ImportStatus, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={x:Static import:PhotoImportFolderStatus.Failed}}"
+                    VerticalAlignment="Center"
+                    Margin="20,0,0,0" />
+
+                <Menu
+                    Grid.Column="6"
                     Background="Transparent"
                     KeyboardNavigation.DirectionalNavigation="Continue"
                     MinWidth="36"

@@ -934,9 +934,6 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Importeren mislukt. Probeer de map te verwijderen en opnieuw te importeren. Als het probleem aanhoudt, neem dan contact op met support.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Importeren mislukt. Probeer het opnieuw.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>{0} van {1} geïmporteerd</value>
   </data>
@@ -1395,6 +1392,18 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Krijg meer opslag</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Importeren mislukt. Het album bestaat niet.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Importeren mislukt. Maximum aantal albums bereikt.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Importeren mislukt. Maximum aantal foto's per album bereikt.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importeren mislukt. Probeer het opnieuw.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Importeren mislukt</value>

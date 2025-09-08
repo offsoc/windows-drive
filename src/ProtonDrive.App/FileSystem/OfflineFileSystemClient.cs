@@ -48,6 +48,11 @@ internal sealed class OfflineFileSystemClient<TId> : IFileSystemClient<TId>
         throw new FileSystemClientException(ExceptionMessage, FileSystemErrorCode.Offline);
     }
 
+    public Task MoveAsync(IReadOnlyList<NodeInfo<TId>> sourceNodes, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
+    {
+        throw new FileSystemClientException(ExceptionMessage, FileSystemErrorCode.Offline);
+    }
+
     public Task Move(NodeInfo<TId> info, NodeInfo<TId> destinationInfo, CancellationToken cancellationToken)
     {
         throw new FileSystemClientException(ExceptionMessage, FileSystemErrorCode.Offline);

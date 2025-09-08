@@ -18,6 +18,7 @@ using ProtonDrive.App.Drive.Services.SharedWithMe;
 using ProtonDrive.App.EarlyAccess;
 using ProtonDrive.App.Features;
 using ProtonDrive.App.FileSystem.Local;
+using ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
 using ProtonDrive.App.FileSystem.Remote;
 using ProtonDrive.App.Instrumentation.Observability;
 using ProtonDrive.App.Instrumentation.Telemetry;
@@ -61,6 +62,7 @@ using ProtonDrive.Shared.Offline;
 using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Telemetry;
+using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Update.Config;
 
 namespace ProtonDrive.App.Configuration;
@@ -522,6 +524,8 @@ public static class AppServices
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<OfferService>())
                 .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<OfferService>())
                 .AddSingleton<IRemoteSettingsAware>(provider => provider.GetRequiredService<OfferService>())
+
+                .AddSingleton<IGoogleTakeoutMetadataExtractor, GoogleTakeoutMetadataExtractor>()
             ;
     }
 

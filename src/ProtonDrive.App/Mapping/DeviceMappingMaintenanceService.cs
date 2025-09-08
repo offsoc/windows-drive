@@ -198,9 +198,14 @@ internal sealed class DeviceMappingMaintenanceService : IStoppableService, IDevi
 
             foreach (var device in _devices)
             {
-                if (device.Type != DeviceType.Foreign || !device.DataItem.IsSynchronizationEnabled)
+                if (device.Type != DeviceType.Foreign)
                 {
                     continue;
+                }
+
+                if (!device.DataItem.IsSynchronizationEnabled)
+                {
+                    _logger.LogWarning("Device with ID {DeviceId} has syncing disabled, but we sync it regardless", device.Id);
                 }
 
                 // The device name is not used for comparison, so renaming

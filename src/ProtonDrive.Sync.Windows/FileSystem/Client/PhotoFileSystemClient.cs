@@ -141,6 +141,11 @@ internal sealed class PhotoFileSystemClient : IPhotoFileSystemClient<long>
         throw new NotSupportedException();
     }
 
+    public Task MoveAsync(IReadOnlyList<NodeInfo<long>> sourceNodes, NodeInfo<long> destinationInfo, CancellationToken cancellationToken)
+    {
+        throw new NotSupportedException();
+    }
+
     public Task Move(NodeInfo<long> info, NodeInfo<long> destinationInfo, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();

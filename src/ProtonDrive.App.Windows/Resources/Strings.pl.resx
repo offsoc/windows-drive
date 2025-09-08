@@ -935,9 +935,6 @@ wyłączyć optymalizację przestrzeni dyskowej w dowolnym momencie.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Importowanie nie powiodło się. Spróbuj usunąć folder i zaimportować go ponownie. Jeśli problem będzie się powtarzał, skontaktuj się ze wsparciem.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Importowanie nie powiodło się. Spróbuj ponownie.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Zaimportowano {0} z {1}</value>
   </data>
@@ -1396,6 +1393,18 @@ Zawartość plików będzie pobierana na żądanie.</value>
   </data>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Uzyskaj więcej przestrzeni dyskowej</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Importowanie nie powiodło się. Album nie istnieje.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Importowanie nie powiodło się. Osiągnięto maksymalną liczbę albumów.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Importowanie nie powiodło się. Osiągnięto maksymalną liczbę zdjęć w albumie.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Importowanie nie powiodło się. Spróbuj ponownie.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Importowanie nie powiodło się</value>

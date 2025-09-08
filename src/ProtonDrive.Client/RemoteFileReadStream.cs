@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -53,7 +52,7 @@ internal sealed class RemoteFileReadStream : Stream
     private readonly ITargetBlock<Stream> _pipelineStart;
     private readonly DataflowPipeline _pipeline;
     private readonly SemaphoreSlim _pipelineThrottlingSemaphore = new(MaxNumberOfBlocksInPipeline, MaxNumberOfBlocksInPipeline);
-    private readonly List<DownloadedBlock> _downloadedBlocks = new();
+    private readonly List<DownloadedBlock> _downloadedBlocks = [];
 
     private bool _isDisposed;
     private long _position;
@@ -71,7 +70,7 @@ internal sealed class RemoteFileReadStream : Stream
         RemoteFile remoteFile,
         ILogger<RemoteFileReadStream> logger,
         Action<Exception> reportBlockDecryptionFailure,
-        Action<Progress>? progressCallback = default)
+        Action<Progress>? progressCallback = null)
     {
         _config = config;
         _fileApiClient = fileApiClient;
@@ -233,26 +232,11 @@ internal sealed class RemoteFileReadStream : Stream
         }
     }
 
-    private static void ThrowIfNotValid(Block block, bool skipSignatureVerification)
+    private static void ThrowIfNotValid(Block block)
     {
         if (string.IsNullOrEmpty(block.Url))
         {
             throw new ApiException(ResponseCode.InvalidValue, $"Missing URL for block blob with index {block.Index}.");
-        }
-
-        if (skipSignatureVerification)
-        {
-            return;
-        }
-
-        if (string.IsNullOrEmpty(block.EncryptedSignature))
-        {
-            throw new ApiException(ResponseCode.InvalidValue, $"Missing signature for block blob with index {block.Index}.");
-        }
-
-        if (string.IsNullOrEmpty(block.SignatureEmailAddress))
-        {
-            throw new ApiException(ResponseCode.InvalidValue, $"Missing signature e-mail address for block blob with index {block.Index}.");
         }
     }
 
@@ -343,11 +327,10 @@ internal sealed class RemoteFileReadStream : Stream
         await DownloadThumbnailBlocksAsync(activeRevision, cancellationToken).ConfigureAwait(false);
 
         var blocks = GetBlocksAsync(activeRevision.Id, cancellationToken);
-        var skipSignatureVerification = string.IsNullOrEmpty(activeRevision.SignatureEmailAddress);
 
-        await foreach (var (block, isLast) in blocks)
+        await foreach (var (block, isLast) in blocks.ConfigureAwait(false))
         {
-            await SendBlockToDownloadPipelineAsync(block, isLast, skipSignatureVerification, destination, downloadToBufferBlock, sequencer, cancellationToken).ConfigureAwait(false);
+            await SendBlockToDownloadPipelineAsync(block, isLast, destination, downloadToBufferBlock, sequencer, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -415,13 +398,12 @@ internal sealed class RemoteFileReadStream : Stream
     private async Task SendBlockToDownloadPipelineAsync(
         Block block,
         bool isLast,
-        bool skipSignatureVerification,
         Stream destination,
         ITargetBlock<DownloadBlockToBufferJob> downloadToBufferBlock,
         MessageSequencer<WriteToDestinationJob> sequencer,
         CancellationToken cancellationToken)
     {
-        ThrowIfNotValid(block, skipSignatureVerification);
+        ThrowIfNotValid(block);
 
         sequencer.AddIndex(block.Index);
 
@@ -431,7 +413,7 @@ internal sealed class RemoteFileReadStream : Stream
 
         try
         {
-            var job = new DownloadBlockToBufferJob(block, isLast, skipSignatureVerification, destination, httpClient, sequencer);
+            var job = new DownloadBlockToBufferJob(block, isLast, destination, httpClient, sequencer);
             await downloadToBufferBlock.SendAsync(job, cancellationToken).ConfigureAwait(false);
         }
         catch
@@ -496,10 +478,7 @@ internal sealed class RemoteFileReadStream : Stream
         IMemoryOwner<byte> bufferOwner,
         CancellationToken cancellationToken)
     {
-        var decrypter = await _cryptographyService.CreateFileContentsBlockDecrypterAsync(
-            _remoteFile.PrivateKey,
-            job.Block.SignatureEmailAddress,
-            cancellationToken).ConfigureAwait(false);
+        var decrypter = _cryptographyService.CreateFileContentsBlockDecrypter(_remoteFile.PrivateKey);
 
         var blobStream = await GetBlobStreamAsync(job.Block, job.HttpClient, cancellationToken).ConfigureAwait(false);
 
@@ -520,39 +499,14 @@ internal sealed class RemoteFileReadStream : Stream
                 var pgpMessageSource = new PgpMessageSource(contentMessageStream);
                 await using (pgpMessageSource.ConfigureAwait(false))
                 {
-                    if (TryGetSignature(job.Block, out var pgpSignatureSource))
+                    var decryptingStream = decrypter.GetDecryptingStream(pgpMessageSource);
+
+                    await using (decryptingStream.ConfigureAwait(false))
                     {
-                        await using (pgpSignatureSource.ConfigureAwait(false))
-                        {
-                            var (decryptingStream, verificationTask) = decrypter.GetDecryptingAndVerifyingStream(pgpMessageSource, pgpSignatureSource);
+                        var writeToDestinationJob = await ReadDecryptedBlockAndGetNextJobAsync(job, decryptingStream, bufferOwner, cancellationToken)
+                            .ConfigureAwait(false);
 
-                            await using (decryptingStream.ConfigureAwait(false))
-                            {
-                                var writeToDestinationJob = await ReadDecryptedBlockAndGetNextJobAsync(job, decryptingStream, bufferOwner, cancellationToken)
-                                    .ConfigureAwait(false);
-
-                                LogIfBlockSignatureIsInvalid(verificationTask, job.Block.Index);
-
-                                return writeToDestinationJob;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var (decryptingStream, _) = decrypter.GetDecryptingAndVerifyingStream(pgpMessageSource);
-
-                        await using (decryptingStream.ConfigureAwait(false))
-                        {
-                            var writeToDestinationJob = await ReadDecryptedBlockAndGetNextJobAsync(job, decryptingStream, bufferOwner, cancellationToken)
-                                .ConfigureAwait(false);
-
-                            if (!job.SkipSignatureVerification)
-                            {
-                                LogIfBlockSignatureIsInvalid(Task.FromResult(VerificationVerdict.NoSignature), job.Block.Index);
-                            }
-
-                            return writeToDestinationJob;
-                        }
+                        return writeToDestinationJob;
                     }
                 }
             }
@@ -560,18 +514,6 @@ internal sealed class RemoteFileReadStream : Stream
         finally
         {
             await blobStream.DisposeAsync().ConfigureAwait(false);
-        }
-
-        bool TryGetSignature(Block block, [MaybeNullWhen(false)] out PgpMessageSource signatureSource)
-        {
-            if (string.IsNullOrEmpty(block.EncryptedSignature))
-            {
-                signatureSource = null;
-                return false;
-            }
-
-            signatureSource = new PgpMessageSource(new AsciiStream(block.EncryptedSignature), PgpArmoring.Ascii);
-            return true;
         }
     }
 
@@ -618,7 +560,7 @@ internal sealed class RemoteFileReadStream : Stream
                 var httpClient = _httpClientFactory.CreateClient(ApiClientConfigurator.BlocksHttpClientName);
                 var thumbnailUrl = Path.Join(thumbnail.BareUrl, "/", thumbnail.Token);
                 var response = await httpClient.GetAsync(thumbnailUrl, ct).ThrowOnFailure().ConfigureAwait(false);
-                var thumbnailBytes = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+                var thumbnailBytes = await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
                 var hash = _cryptographyService.HashBlockContent(thumbnailBytes.AsMemory().AsStream());
 
                 // Fake block index used to order the thumbnails before the content blocks, for the manifest generation
@@ -626,7 +568,7 @@ internal sealed class RemoteFileReadStream : Stream
 
                 lock (_downloadedBlocks)
                 {
-                    _downloadedBlocks.Add(new(blockIndex, hash));
+                    _downloadedBlocks.Add(new DownloadedBlock(blockIndex, hash));
                 }
             })
             .ConfigureAwait(false);
@@ -668,29 +610,9 @@ internal sealed class RemoteFileReadStream : Stream
         _pipeline.Cancel();
     }
 
-    private void LogIfBlockSignatureIsInvalid(Task<VerificationVerdict> task, int blockIndex)
-    {
-        // TODO: Instead of Task<>, use a type that expresses the guarantee of a result
-        Trace.Assert(task.IsCompleted, "Signature verification task is not completed");
-
-        var code = task.Result;
-        if (code == VerificationVerdict.ValidSignature)
-        {
-            return;
-        }
-
-        // TODO: pass the verification failure as result for marking nodes as suspicious.
-        _logger.LogWarning(
-            "Signature problem on block at index {BlockIndex} of file with ID {FileId}: {VerificationResultCode}",
-            blockIndex,
-            _remoteFile.Id,
-            code);
-    }
-
     private sealed record DownloadBlockToBufferJob(
         Block Block,
         bool IsLastBlock,
-        bool SkipSignatureVerification,
         Stream Destination,
         HttpClient HttpClient,
         MessageSequencer<WriteToDestinationJob> Sequencer);

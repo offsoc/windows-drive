@@ -166,7 +166,7 @@
     <comment>Indicates a file being downloaded. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_InProgress_SyncActivityType_Value_FetchUpdates">
-    <value>Získávání aktualizací</value>
+    <value>Stahování aktualizací</value>
     <comment>Indicates local file system changes being fetched. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_InProgress_SyncActivityType_Value_Move">
@@ -194,7 +194,7 @@
     <comment>Indicates a file has been downloaded. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_Succeeded_SyncActivityType_Value_FetchUpdates">
-    <value>Aktualizace získány</value>
+    <value>Aktualizace staženy</value>
     <comment>Indicates local file system changes have been fetched. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Local_Succeeded_SyncActivityType_Value_Move">
@@ -222,7 +222,7 @@
     <comment>Indicates a file is being downloaded from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_FetchUpdates">
-    <value>Získávání aktualizací z Proton Drive</value>
+    <value>Stahování aktualizací z Proton Drive</value>
     <comment>Indicates changes are being fetched from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_InProgress_SyncActivityType_Value_Move">
@@ -250,7 +250,7 @@
     <comment>Indicates a file has been downloaded from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_Succeeded_SyncActivityType_Value_FetchUpdates">
-    <value>Aktualizace získány z Proton Drive</value>
+    <value>Aktualizace staženy z Proton Drive</value>
     <comment>Indicates changes have been fetched from Proton Drive. Displayed on the Activity page in the tooltip of the activity type.</comment>
   </data>
   <data name="Activity_Remote_Succeeded_SyncActivityType_Value_Move">
@@ -935,9 +935,6 @@ Optimalizaci úložiště můžete kdykoliv deaktivovat.</value>
   <data name="Main_Photos_Folders_Error_ImportFailed">
     <value>Import se nezdařil. Zkuste složku odebrat a importovat znovu. Pokud problém přetrvává, kontaktujte prosím podporu.</value>
   </data>
-  <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import selhal. Zkuste to znovu.</value>
-  </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
     <value>Importováno {0} z {1}</value>
   </data>
@@ -1397,6 +1394,18 @@ Obsah souborů bude stažen jen na vyžádání.</value>
   <data name="Onboarding_UpgradeStorage_Title">
     <value>Získat více úložného prostoru</value>
   </data>
+  <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
+    <value>Import selhal. Album neexistuje.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
+    <value>Import selhal. Bylo dosaženo maximálního počtu alb.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
+    <value>Import selhal. Byl dosažen maximálního počtu fotek na album.</value>
+  </data>
+  <data name="PhotoImportErrorCode_Value_Unknown">
+    <value>Import selhal. Zkuste to znovu.</value>
+  </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Import selhal</value>
   </data>
@@ -1564,7 +1573,7 @@ Obsah souborů bude stažen jen na vyžádání.</value>
     <value></value>
   </data>
   <data name="SyncStatus_Value_DetectingUpdates">
-    <value>Získávání aktualizací...</value>
+    <value>Stahování aktualizací...</value>
   </data>
   <data name="SyncStatus_Value_Failed">
     <value>Chyba</value>

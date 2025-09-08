@@ -68,9 +68,9 @@ internal sealed class FileRevision : IRevision
         }
     }
 
-    public bool TryGetThumbnail(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, out ReadOnlyMemory<byte> thumbnailBytes)
+    public Task<ReadOnlyMemory<byte>> GetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
     {
-        return _thumbnailGenerator.TryGenerateThumbnail(_file.FullPath, numberOfPixelsOnLargestSide, maxNumberOfBytes, out thumbnailBytes);
+        return _thumbnailGenerator.GenerateThumbnailAsync(_file.FullPath, numberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken);
     }
 
     public Task<FileMetadata?> GetMetadataAsync()
