@@ -5,5 +5,5 @@ namespace ProtonDrive.Client.Albums.Contracts;
 public sealed record AddedPhotoResponseDetails
 {
     [JsonPropertyName("NewLinkID")]
-    public required string NewLinkId { get; init; }
+    public string? NewLinkId { get; init; }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MoreLinq;
 using ProtonDrive.App.Photos.LivePhoto;
 using ProtonDrive.Client;
 using ProtonDrive.Client.FileUploading;
@@ -17,6 +18,8 @@ namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class PhotoAlbumImporter
 {
+    private const int MaxAddToAlbumBatchSize = 100;
+
     private readonly PhotoImportPipelineParameters _parameters;
     private readonly IPhotoFileSystemClient<long> _localFileSystemClient;
     private readonly IPhotoFileUploader _photoFileUploader;
@@ -28,8 +31,6 @@ internal sealed class PhotoAlbumImporter
     private readonly ILogger _logger;
 
     private readonly SemaphoreSlim _semaphore;
-
-    private string? _albumLinkId;
 
     public PhotoAlbumImporter(
         PhotoImportPipelineParameters parameters,
@@ -59,22 +60,18 @@ internal sealed class PhotoAlbumImporter
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (_parameters.FolderCurrentPosition.HasValue)
-        {
-            TrySetResumedAlbumLinkId(albumFolder.Path, _parameters.FolderCurrentPosition.Value);
-        }
-
         var batch = new List<PhotoGroup>(_parameters.DuplicationCheckBatchSize);
         var currentBatchCount = 0;
 
         var photoFiles = _localFileSystemClient.EnumeratePhotoFilesAsync(albumFolder, cancellationToken);
         var photoGroups = PhotoGroupEnumerator.EnumerateAsync(photoFiles, _livePhotoFileDetector);
+        var albumIdTask = new Lazy<Task<string>>(() => CreateOrResumeAlbumAsync(albumFolder.Path, cancellationToken));
 
         await foreach (var photoGroup in photoGroups.ConfigureAwait(false))
         {
             if (currentBatchCount + photoGroup.Count > _parameters.DuplicationCheckBatchSize)
             {
-                await ProcessBatchAsync(batch, cancellationToken).ConfigureAwait(false);
+                await ProcessBatchAsync(albumIdTask, batch, cancellationToken).ConfigureAwait(false);
                 batch.Clear();
                 currentBatchCount = 0;
             }
@@ -83,7 +80,7 @@ internal sealed class PhotoAlbumImporter
             currentBatchCount += photoGroup.Count;
         }
 
-        await ProcessBatchAsync(batch, cancellationToken).ConfigureAwait(false);
+        await ProcessBatchAsync(albumIdTask, batch, cancellationToken).ConfigureAwait(false);
         batch.Clear();
     }
 
@@ -92,22 +89,30 @@ internal sealed class PhotoAlbumImporter
         return exception.IsFileAccessException() || exception.IsDriveClientException() || exception is FileSystemClientException;
     }
 
-    private void TrySetResumedAlbumLinkId(string albumFolderPath, PhotoImportFolderCurrentPosition currentPosition)
+    private bool TryGetExistingAlbumLinkId(string albumFolderPath, [MaybeNullWhen(false)] out string albumLinkId)
     {
+        if (_parameters.FolderCurrentPosition is not { } currentPosition)
+        {
+            albumLinkId = null;
+            return false;
+        }
+
         var lastProcessedAlbumPath = Path.Combine(_parameters.FolderPath, currentPosition.RelativePath);
 
         if (!string.Equals(albumFolderPath, lastProcessedAlbumPath, StringComparison.OrdinalIgnoreCase))
         {
-            return;
+            albumLinkId = null;
+            return false;
         }
 
-        _albumLinkId = currentPosition.AlbumLinkId;
+        albumLinkId = currentPosition.AlbumLinkId;
 
         var folderPathToLog = _logger.GetSensitiveValueForLogging(currentPosition.RelativePath);
-        _logger.LogInformation("Photo import resumed: Folder \"{Path}\", Album ID {AlbumLinkId}", folderPathToLog, _albumLinkId);
+        _logger.LogInformation("Photo import resumed: Folder \"{Path}\", Album ID {AlbumLinkId}", folderPathToLog, albumLinkId);
+        return true;
     }
 
-    private async Task ProcessBatchAsync(IReadOnlyList<PhotoGroup> batch, CancellationToken cancellationToken)
+    private async Task ProcessBatchAsync(Lazy<Task<string>> albumLinkIdTask, IReadOnlyList<PhotoGroup> batch, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -116,24 +121,42 @@ internal sealed class PhotoAlbumImporter
             return;
         }
 
+        var albumLinkId = await albumLinkIdTask.Value.ConfigureAwait(false);
+
+        var fileNames = batch.SelectMany(pg => pg.RelatedMedia.Select(x => x.File.Name).Prepend(pg.MainPhoto.File.Name));
+
+        var nameCollisions = await _duplicateService.GetNameCollisionsAsync(
+            _parameters.VolumeId,
+            _parameters.ShareId,
+            _parameters.ParentLinkId,
+            fileNames,
+            cancellationToken).ConfigureAwait(false);
+
         try
         {
-            var importTasks = new List<Task>(_parameters.MaxNumberOfConcurrentFileTransfers);
+            var importPhotoTasks = new List<Task<IReadOnlyList<NodeInfo<string>>>>(_parameters.MaxNumberOfConcurrentFileTransfers);
 
-            await foreach (var photoGroup in GetPhotoGroupsExcludingDuplicatesAsync(batch, cancellationToken).ConfigureAwait(false))
+            foreach (var photoGroup in batch)
             {
-                if (_albumLinkId is null)
-                {
-                    await CreateAlbumAsync(photoGroup.MainPhoto.Path, cancellationToken).ConfigureAwait(false);
-                }
+                await MarkDuplicatesAsync(photoGroup, nameCollisions, cancellationToken).ConfigureAwait(false);
 
                 await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-                var importTask = ImportAsync(photoGroup, cancellationToken);
-                importTasks.Add(importTask);
+                var importTask = ImportPhotoGroupAsync(photoGroup, cancellationToken);
+
+                importPhotoTasks.Add(importTask);
             }
 
-            await Task.WhenAll(importTasks).ConfigureAwait(false);
+            var batchesToAddToAlbum = (await Task.WhenAll(importPhotoTasks).ConfigureAwait(false))
+                .SelectMany(x => x)
+                .Batch(MaxAddToAlbumBatchSize);
+
+            foreach (var batchToAddToAlbum in batchesToAddToAlbum)
+            {
+                _logger.LogDebug("Adding batch of {Count} photos to album", batchToAddToAlbum.Length);
+
+                await _photoAlbumService.AddToAlbumAsync(albumLinkId, batchToAddToAlbum, cancellationToken).ConfigureAwait(false);
+            }
         }
         catch (AggregateException exception)
         {
@@ -147,10 +170,15 @@ internal sealed class PhotoAlbumImporter
         }
     }
 
-    private async Task CreateAlbumAsync(string filePath, CancellationToken cancellationToken)
+    private async Task<string> CreateOrResumeAlbumAsync(string albumFolderPath, CancellationToken cancellationToken)
     {
+        if (TryGetExistingAlbumLinkId(albumFolderPath, out var albumLinkId))
+        {
+            return albumLinkId;
+        }
+
         var rootFolderPath = _parameters.FolderPath.AsSpan();
-        var currentFolderPath = Path.GetDirectoryName(filePath.AsSpan());
+        var currentFolderPath = albumFolderPath.AsSpan();
 
         if (!currentFolderPath.StartsWith(rootFolderPath, StringComparison.OrdinalIgnoreCase))
         {
@@ -163,12 +191,14 @@ internal sealed class PhotoAlbumImporter
 
         var albumName = _albumNameProvider.GetAlbumNameFromPath(rootFolderPath, relativePath);
 
-        _albumLinkId = await _photoAlbumService.CreateAlbumAsync(albumName, _parameters.ParentLinkId, cancellationToken).ConfigureAwait(false);
+        albumLinkId = await _photoAlbumService.CreateAlbumAsync(albumName, _parameters.ParentLinkId, cancellationToken).ConfigureAwait(false);
 
-        _progress.RaiseAlbumCreated(new PhotoImportFolderCurrentPosition { AlbumLinkId = _albumLinkId, RelativePath = relativePath });
+        _progress.RaiseAlbumCreated(new PhotoImportFolderCurrentPosition { AlbumLinkId = albumLinkId, RelativePath = relativePath });
+
+        return albumLinkId;
     }
 
-    private async Task ImportAsync(PhotoGroup photoGroup, CancellationToken cancellationToken)
+    private async Task<IReadOnlyList<NodeInfo<string>>> ImportPhotoGroupAsync(PhotoGroup photoGroup, CancellationToken cancellationToken)
     {
         try
         {
@@ -176,27 +206,27 @@ internal sealed class PhotoAlbumImporter
 
             var photosToAddToAlbum = new List<NodeInfo<string>>(1 + photoGroup.RelatedMedia.Count);
 
-            var uploadedFile = await UploadFileAsync(photoGroup.MainPhoto.Path, null, cancellationToken).ConfigureAwait(false);
-
-            var albumLinkId = _albumLinkId ?? throw new PhotoImportException("Cannot add file to album: missing album link ID");
-
-            photosToAddToAlbum.Add(uploadedFile);
+            var uploadedFile = photoGroup.MainPhoto.Duplicate
+                ?? await UploadFileAsync(photoGroup.MainPhoto.File.Path, null, cancellationToken).ConfigureAwait(false);
 
             _progress.RaiseFileImported();
+
+            photosToAddToAlbum.Add(uploadedFile);
 
             if (photoGroup.RelatedMedia.Count > 0)
             {
                 foreach (var relatedMedia in photoGroup.RelatedMedia)
                 {
-                    var uploadedRelatedFile = await UploadFileAsync(relatedMedia.Path, uploadedFile.Id, cancellationToken).ConfigureAwait(false);
-
-                    photosToAddToAlbum.Add(uploadedRelatedFile);
+                    var uploadedRelatedFile = relatedMedia.Duplicate
+                        ?? await UploadFileAsync(relatedMedia.File.Path, uploadedFile.Id, cancellationToken).ConfigureAwait(false);
 
                     _progress.RaiseFileImported();
+
+                    photosToAddToAlbum.Add(uploadedRelatedFile);
                 }
             }
 
-            await _photoAlbumService.AddToAlbumAsync(albumLinkId, photosToAddToAlbum, cancellationToken).ConfigureAwait(false);
+            return photosToAddToAlbum;
         }
         finally
         {
@@ -215,12 +245,12 @@ internal sealed class PhotoAlbumImporter
         {
             try
             {
-                _logger.LogInformation("Importing file \"{Path}\" (attempt {Attempt}/{MaxNumberOfRetries})", filePathToLog, attempt, maxNumberOfRetries);
+                _logger.LogInformation("Uploading file \"{Path}\" (attempt {Attempt}/{MaxNumberOfRetries})", filePathToLog, attempt, maxNumberOfRetries);
 
                 var importedFile = await _photoFileUploader.UploadFileAsync(filePath, _parameters.ParentLinkId, mainPhotoLinkId, cancellationToken)
                     .ConfigureAwait(false);
 
-                _logger.LogInformation("Imported file \"{Path}\"", filePathToLog);
+                _logger.LogInformation("File \"{Path}\" uploaded", filePathToLog);
 
                 _progress.RaiseFileUploaded(filePath);
 
@@ -240,7 +270,7 @@ internal sealed class PhotoAlbumImporter
             }
             catch (Exception exception) when (IsExpectedException(exception))
             {
-                _logger.LogWarning("Failed to import file \"{Path}\": {Message}", filePathToLog, exception.Message);
+                _logger.LogWarning("Failed to upload file \"{Path}\": {Message}", filePathToLog, exception.Message);
 
                 _progress.RaiseFileUploadFailed(filePath, exception);
 
@@ -249,179 +279,97 @@ internal sealed class PhotoAlbumImporter
         }
     }
 
-    private async IAsyncEnumerable<PhotoGroup> GetPhotoGroupsExcludingDuplicatesAsync(
-        IReadOnlyList<PhotoGroup> photoGroups,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        var fileNames = photoGroups.SelectMany(pg => pg.RelatedMedia.Select(x => x.Name).Prepend(pg.MainPhoto.Name));
-
-        var nameCollisions = await _duplicateService.GetNameCollisionsAsync(
-            _parameters.VolumeId,
-            _parameters.ShareId,
-            _parameters.ParentLinkId,
-            fileNames,
-            cancellationToken).ConfigureAwait(false);
-
-        foreach (var photoGroup in photoGroups)
-        {
-            var (duplicate, sha1Digest) =
-                await FindPhotoDuplicateAsync(photoGroup.MainPhoto.Path, photoGroup.MainPhoto.Name, nameCollisions, cancellationToken).ConfigureAwait(false);
-
-            if (duplicate is not null)
-            {
-                if (_albumLinkId is not null && sha1Digest is not null)
-                {
-                    // TODO: This method should not cause side effects, such as uploading files and adding to album
-                    await AddDuplicateToAlbumAsync(_albumLinkId, photoGroup, duplicate.LinkId, sha1Digest, nameCollisions, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-
-                continue;
-            }
-
-            yield return photoGroup;
-        }
-    }
-
-    private async Task AddDuplicateToAlbumAsync(
-        string albumLinkId,
-        PhotoGroup photo,
-        string mainPhotoLinkId,
-        string mainPhotoSha1Digest,
+    private async Task MarkDuplicatesAsync(
+        PhotoGroup photoGroup,
         ILookup<string, PhotoNameCollision> nameCollisions,
         CancellationToken cancellationToken)
     {
-        var mainPhoto = NodeInfo<string>.File()
-            .WithId(mainPhotoLinkId)
-            .WithName(photo.MainPhoto.Name)
-            .WithSha1Digest(mainPhotoSha1Digest);
+        var fileHashCache = new Dictionary<string, (string ContentHash, string Sha1Digest)>();
 
-        var filesToAddToAlbum = new List<NodeInfo<string>>(1 + photo.RelatedMedia.Count) { mainPhoto };
+        await MarkIfDuplicateAsync(photoGroup.MainPhoto, nameCollisions, fileHashCache, cancellationToken).ConfigureAwait(false);
 
-        foreach (var relatedMedium in photo.RelatedMedia)
+        foreach (var relatedMedium in photoGroup.RelatedMedia)
         {
-            var relatedFile = await GetOrUploadRelatedMediaAsync(relatedMedium, mainPhotoLinkId, nameCollisions, cancellationToken).ConfigureAwait(false);
-            filesToAddToAlbum.Add(relatedFile);
+            await MarkIfDuplicateAsync(relatedMedium, nameCollisions, fileHashCache, cancellationToken).ConfigureAwait(false);
         }
-
-        await _photoAlbumService.AddToAlbumAsync(albumLinkId, filesToAddToAlbum, cancellationToken).ConfigureAwait(false);
-        _progress.RaiseFilesImported(filesToAddToAlbum.Count);
     }
 
-    private async Task<NodeInfo<string>> GetOrUploadRelatedMediaAsync(
-        NodeInfo<string> relatedMedium,
-        string mainPhotoLinkId,
+    private async Task MarkIfDuplicateAsync(
+        PhotoImportInfo photoImportInfo,
         ILookup<string, PhotoNameCollision> nameCollisions,
-        CancellationToken cancellationToken)
-    {
-        var (relatedMediumDuplicate, relatedMediumSha1Digest) = await FindPhotoDuplicateAsync(
-            relatedMedium.Path,
-            relatedMedium.Name,
-            nameCollisions,
-            cancellationToken).ConfigureAwait(false);
-
-        if (relatedMediumDuplicate is not null && relatedMediumSha1Digest is not null)
-        {
-            // Reuse existing duplicate file
-            return NodeInfo<string>.File()
-                .WithId(relatedMediumDuplicate.LinkId)
-                .WithName(relatedMedium.Name)
-                .WithSha1Digest(relatedMediumSha1Digest);
-        }
-
-        // Upload new file
-        var uploadedRelatedFile = await UploadFileAsync(relatedMedium.Path, mainPhotoLinkId, cancellationToken).ConfigureAwait(false);
-
-        if (uploadedRelatedFile.Sha1Digest is null)
-        {
-            throw new PhotoImportException($"Import failed: missing SHA1 digest for uploaded file with ID {uploadedRelatedFile.Id}");
-        }
-
-        return NodeInfo<string>.File()
-            .WithId(uploadedRelatedFile.Id)
-            .WithName(relatedMedium.Name)
-            .WithSha1Digest(uploadedRelatedFile.Sha1Digest);
-    }
-
-    private async Task<(PhotoNameCollision? Duplicate, string? Sha1Digest)> FindPhotoDuplicateAsync(
-        string filePath,
-        string fileName,
-        ILookup<string, PhotoNameCollision> nameCollisions,
+        Dictionary<string, (string ContentHash, string Sha1Digest)> fileHashCache,
         CancellationToken cancellationToken)
     {
         try
         {
-            if (!nameCollisions.Contains(fileName))
+            if (!nameCollisions.Contains(photoImportInfo.File.Name))
             {
-                return (Duplicate: null, Sha1Digest: null);
+                return;
             }
 
             // A file with the same name can be uploaded multiple times if its content differs.
             // Therefore, when checking for duplicates, we must evaluate all matching filenames.
-            foreach (var collision in nameCollisions[fileName])
+            foreach (var collision in nameCollisions[photoImportInfo.File.Name])
             {
-                var filePathToLog = _logger.GetSensitiveValueForLogging(filePath);
+                var filePathToLog = _logger.GetSensitiveValueForLogging(photoImportInfo.File.Path);
 
-                if (!collision.TryGetContentHashIfNotDraft(out var collisionContentHash, out var draftCreatedByAnotherClient))
+                if (collision.ContentHash is null)
                 {
-                    if (draftCreatedByAnotherClient.Value)
-                    {
-                        _logger.LogInformation(
-                            "Importing photo \"{Path}\" skipped, draft with same name from another client exists, assuming duplicate",
-                            filePathToLog);
-
-                        return (collision, Sha1Digest: null);
-                    }
-
-                    // The draft will be resumed or overwritten.
+                    // The draft will be ignored and the file will be re-uploaded.
                     continue;
                 }
 
-                // TODO: Duplicate detection recomputes content hash repeatedly if source file has multiple collisions
-                var source = await _localFileSystemClient.OpenFileForReading(NodeInfo<long>.File().WithPath(filePath), cancellationToken)
-                    .ConfigureAwait(false);
-
-                await using (source.ConfigureAwait(false))
+                if (!fileHashCache.TryGetValue(photoImportInfo.File.Path, out var fileHashes))
                 {
-                    var contentStream = source.GetContentStream();
+                    var source = await _localFileSystemClient.OpenFileForReading(NodeInfo<long>.File().WithPath(photoImportInfo.File.Path), cancellationToken)
+                        .ConfigureAwait(false);
 
-                    await using (contentStream.ConfigureAwait(false))
+                    await using (source.ConfigureAwait(false))
                     {
-                        var (contentHash, sha1Digest) = await _duplicateService.GetContentHashAndSha1DigestAsync(
+                        var contentStream = source.GetContentStream();
+
+                        await using (contentStream.ConfigureAwait(false))
+                        {
+                            fileHashes = await _duplicateService.GetContentHashAndSha1DigestAsync(
                                 contentStream,
                                 _parameters.ShareId,
                                 _parameters.ParentLinkId,
-                                cancellationToken)
-                            .ConfigureAwait(false);
+                                cancellationToken).ConfigureAwait(false);
 
-                        if (contentHash.Equals(collisionContentHash, StringComparison.Ordinal))
-                        {
-                            _logger.LogInformation("Importing photo \"{Path}\" skipped, duplicate detected", filePathToLog);
-                            return (collision, sha1Digest);
+                            fileHashCache[photoImportInfo.File.Path] = fileHashes;
                         }
                     }
                 }
-            }
 
-            return (Duplicate: null, Sha1Digest: null);
+                if (fileHashes.ContentHash.Equals(collision.ContentHash, StringComparison.Ordinal))
+                {
+                    _logger.LogInformation("Photo with path \"{Path}\" upload skipped, duplicate detected", filePathToLog);
+
+                    photoImportInfo.MarkAsDuplicate(NodeInfo<string>.File()
+                        .WithId(collision.LinkId)
+                        .WithName(photoImportInfo.File.Name)
+                        .WithSha1Digest(fileHashes.Sha1Digest));
+
+                    return; // No need to check further collisions once we found a duplicate
+                }
+            }
         }
         catch (Exception exception) when (IsExpectedException(exception))
         {
             throw new PhotoImportException(
-                $"Eligibility cannot be evaluated for file with path \"{_logger.GetSensitiveValueForLogging(filePath)}\"",
+                $"Eligibility cannot be evaluated for file with path \"{_logger.GetSensitiveValueForLogging(photoImportInfo.File.Path)}\"",
                 exception);
         }
     }
 
     private static class PhotoGroupEnumerator
     {
-        // TODO: Live Photo pairing relies on file order, especially on extensions; videos first won't pair
         public static async IAsyncEnumerable<PhotoGroup> EnumerateAsync(
             IAsyncEnumerable<NodeInfo<long>> photoFiles,
             ILivePhotoFileDetector livePhotoFileDetector)
         {
-            NodeInfo<string>? currentMainFile = null;
-            List<NodeInfo<string>> currentRelatedMediaFiles = [];
+            PhotoImportInfo? currentMainFile = null;
+            List<PhotoImportInfo> currentRelatedMediaFiles = [];
 
             await foreach (var nodeInfo in photoFiles.ConfigureAwait(false))
             {
@@ -429,19 +377,19 @@ internal sealed class PhotoAlbumImporter
 
                 if (currentMainFile is null)
                 {
-                    currentMainFile = file;
+                    currentMainFile = new PhotoImportInfo(file);
                     continue;
                 }
 
-                if (livePhotoFileDetector.IsVideoRelatedToLivePhoto(file.Path, currentMainFile.Path))
+                if (livePhotoFileDetector.IsVideoRelatedToLivePhoto(file.Path, currentMainFile.File.Path))
                 {
-                    currentRelatedMediaFiles.Add(file);
+                    currentRelatedMediaFiles.Add(new PhotoImportInfo(file));
                     continue;
                 }
 
                 yield return new PhotoGroup(currentMainFile, currentRelatedMediaFiles);
 
-                currentMainFile = file;
+                currentMainFile = new PhotoImportInfo(file);
                 currentRelatedMediaFiles = [];
             }
 
@@ -452,7 +400,17 @@ internal sealed class PhotoAlbumImporter
         }
     }
 
-    private record PhotoGroup(NodeInfo<string> MainPhoto, IReadOnlyList<NodeInfo<string>> RelatedMedia)
+    private sealed record PhotoImportInfo(NodeInfo<string> File)
+    {
+        public NodeInfo<string>? Duplicate { get; private set; }
+
+        public void MarkAsDuplicate(NodeInfo<string> duplicate)
+        {
+            Duplicate = duplicate;
+        }
+    }
+
+    private record PhotoGroup(PhotoImportInfo MainPhoto, IReadOnlyList<PhotoImportInfo> RelatedMedia)
     {
         public int Count => RelatedMedia.Count + 1;
     }

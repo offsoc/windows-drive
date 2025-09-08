@@ -786,10 +786,10 @@ Slå av/på dess synkronisering igen för att återställa den och rensa detta f
     <value>Lägg till mappar</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludedByAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because they are included in a folder already synced to Proton Drive</value>
+    <value>{0} mapp(ar) kan inte synkroniseras eftersom de ingår i en mapp som redan synkroniseras med Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_FolderIncludesAnAlreadySyncedFolderFormat">
-    <value>{0} folder(s) cannot be synced because they have a subfolder already synced to Proton Drive</value>
+    <value>{0} mapp(ar) kan inte synkroniseras eftersom de innehåller en undermapp som redan synkroniseras med Proton Drive</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalFileSystemAccessFailedFormat">
     <value>{0} mapp(ar) kan inte kommas åt</value>
@@ -798,7 +798,7 @@ Slå av/på dess synkronisering igen för att återställa den och rensa detta f
     <value>{0} mapp(ar) kan inte hittas eller kan inte öppnas</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_LocalVolumeNotSupportedFormat">
-    <value>{0} folder(s) cannot be synced because they are located on a non-supported drive</value>
+    <value>{0} mapp(ar) kan inte synkroniseras eftersom de ligger på en drive som inte stöds</value>
   </data>
   <data name="Main_MyComputer_Folders_AddFolders_ValidationError_NetworkFolderNotSupportedFormat">
     <value>{0} mapp(ar) kan inte synkas då nätverksmappar inte stöds</value>
@@ -876,7 +876,7 @@ inaktivera lagringsoptimering när som helst.</value>
     <value>Ta bort mapp?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Files within "{0}" folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>Filer i mappen "{0}" kommer nu alltid att vara tillgängliga på din enhet. Det kan ta några minuter innan alla filer har laddats ner (du kan kontrollera statusen i Utforskaren).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -972,7 +972,7 @@ inaktivera lagringsoptimering när som helst.</value>
     <value>Det måste vara den uppackade mappen som innehåller dina exporterade foton och videoklipp.</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Import_Title">
-    <value>2. Import Google Photos folder</value>
+    <value>2. Importera Google Foto-mapp</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
     <value>Välj mapp</value>
@@ -990,7 +990,7 @@ inaktivera lagringsoptimering när som helst.</value>
     <value>Importera en mapp</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Description">
-    <value>Import Google photos from Google Takeout</value>
+    <value>Importera Google-foton från Google Takeout</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Title">
     <value>Importera från Google Foton</value>
@@ -1299,10 +1299,10 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value>Fotoimport misslyckades</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
-    <value>Proton Photos unavailable</value>
+    <value>Proton Photos otillgängligt</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosNotReady">
-    <value>Photos feature not ready</value>
+    <value>Fotofunktionen är inte klar</value>
   </data>
   <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
     <value>Kan inte komma åt delad Proton Drive-fil eller mapp. Kontrollera om det fortfarande delas med dig.</value>
@@ -1398,10 +1398,10 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value>Import misslyckades. Albumet finns inte.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>Import failed. Maximum number of albums reached.</value>
+    <value>Importen misslyckades. Maxantalet album har uppnåtts.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>Import failed. Maximum number of photos per album reached.</value>
+    <value>Importen misslyckades. Maxantalet foton per album har uppnåtts.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
     <value>Import misslyckades. Försök igen.</value>

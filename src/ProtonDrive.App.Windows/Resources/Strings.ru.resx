@@ -876,7 +876,7 @@
     <value>Удалить папку?</value>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_1">
-    <value>Files within "{0}" folder will now always be available on your device. It may take a few minutes before all files finish downloading (you can check the status in File Explorer).</value>
+    <value>Файлы в папке «{0}» теперь всегда будут доступны на вашем устройстве. Загрузка всех файлов может занять несколько минут (статус можно проверить в Проводнике).</value>
     <comment>Placeholder {0}: folder name</comment>
   </data>
   <data name="Main_MyComputer_Folders_StorageOptimizationTurnedOffNotification_Message_2">
@@ -930,19 +930,19 @@
     <value>Управление хранением</value>
   </data>
   <data name="Main_MyComputer_Title">
-    <value>My computer</value>
+    <value>Мой компьютер</value>
   </data>
   <data name="Main_Photos_Folders_Error_ImportFailed">
-    <value>Import failed. Try removing the folder and importing it again. If the issue persists, please contact support.</value>
+    <value>Импорт не удался. Попробуйте удалить папку и импортировать её снова. Если проблема сохранится, обратитесь в службу поддержки.</value>
   </data>
   <data name="Main_Photos_Folders_ImportedItemsFormat">
-    <value>Imported {0} of {1}</value>
+    <value>Импортировано {0} из {1}</value>
   </data>
   <data name="Main_Photos_Folders_ImportingItemsFormat">
-    <value>Importing... {0} of {1}</value>
+    <value>Импорт... {0} из {1}</value>
   </data>
   <data name="Main_Photos_Folders_Items_Label">
-    <value>item(s)</value>
+    <value>элемент(ов)</value>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
     <value>_Открыть папку</value>
@@ -953,56 +953,56 @@
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_Retry">
-    <value>_Retry</value>
+    <value>_Повторить</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
-    <value>No photos/videos found</value>
+    <value>Фото и видео не найдены</value>
   </data>
   <data name="Main_Photos_Folders_WaitingToImport">
-    <value>Waiting to import...</value>
+    <value>Ожидание импорта...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
-    <value>Step-by-step guide of how to export your Google Photos</value>
+    <value>Пошаговое руководство по экспорту фотографий из Google Photos</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Title">
-    <value>1. Export your Google Photos</value>
+    <value>1. Экспортируйте ваши фотографии из Google Photos</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Import_Description">
-    <value>It must be the unzipped folder containing your exported photos and videos.</value>
+    <value>Это должна быть распакованная папка с вашими экспортированными фотографиями и видео.</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Import_Title">
-    <value>2. Import Google Photos folder</value>
+    <value>2. Импортируйте папку из Google Photos</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button">
-    <value>Select Folder</value>
+    <value>Выбрать папку</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Title">
-    <value>Import from Google Photos</value>
+    <value>Импорт из Google Photos</value>
   </data>
   <data name="Main_Photos_Import_HowImportWorks_Label">
-    <value>How does photo import work?</value>
+    <value>Как работает импорт фото?</value>
   </data>
   <data name="Main_Photos_Import_ImportFolder_Description">
-    <value>Import a local folder from your computer</value>
+    <value>Импорт локальной папки с вашего компьютера.</value>
   </data>
   <data name="Main_Photos_Import_ImportFolder_Title">
-    <value>Import a folder</value>
+    <value>Импорт папки</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Description">
-    <value>Import Google photos from Google Takeout</value>
+    <value>Импорт фотографий из Google Takeout</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Title">
-    <value>Import from Google Photos</value>
+    <value>Импорт из Google Photos</value>
   </data>
   <data name="Main_Photos_Import_Title">
-    <value>Import photos</value>
+    <value>Импорт фото</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Фото</value>
   </data>
   <data name="Main_Photos_Warning_UploadUnavailable">
-    <value>Uploading photos is temporarily unavailable</value>
+    <value>Загрузка фото временно недоступна</value>
   </data>
   <data name="Main_Settings_AccountRootFolder_Button_Change">
     <value>_Изменить</value>
@@ -1169,7 +1169,7 @@
     <value>Фото</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Photos import</value>
+    <value>Импорт фото</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Элемент меню: Фото</value>
@@ -1290,25 +1290,25 @@
     <value></value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
-    <value>Sync folder is invalid. Set up a new sync folder.</value>
+    <value>Папка синхронизации недействительна. Настройте новую папку синхронизации.</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Папка синхронизации была неожиданно отменена. Настройте новую папку для синхронизации.</value>
   </data>
   <data name="MappingErrorCode_Value_PhotoImportFailed">
-    <value>Photo import failed</value>
+    <value>Импорт фото не удался</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
-    <value>Proton Photos unavailable</value>
+    <value>Proton Photos недоступно</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosNotReady">
-    <value>Photos feature not ready</value>
+    <value>Функция «Фото» не готова</value>
   </data>
   <data name="MappingErrorCode_Value_RemoteSharedWithMeItemDoesNotExist">
-    <value>Can’t access shared Proton Drive file or folder. Check if it is still shared with you.</value>
+    <value>Не удаётся получить доступ к общему файлу или папке Proton Drive. Проверьте, есть ли у вас ещё доступ к ним.</value>
   </data>
   <data name="MappingErrorCode_Value_RemoteSharedWithMeItemPermissionsDiverged">
-    <value>Permissions of shared Proton Drive file or folder have changed. Toggle its sync off and on again to resolve.</value>
+    <value>Разрешения для общего файла или папки в Proton Drive изменились. Чтобы устранить проблему, отключите и снова включите их синхронизацию.</value>
   </data>
   <data name="MappingErrorCode_Value_SharingDisabled">
     <value>Обмен файлами временно недоступен</value>
@@ -1395,16 +1395,16 @@
     <value>Получите больше места в хранилище</value>
   </data>
   <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
-    <value>Import failed. The album does not exist.</value>
+    <value>Импорт не удался. Альбом не существует.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>Import failed. Maximum number of albums reached.</value>
+    <value>Импорт не удался. Достигнуто максимальное количество альбомов.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>Import failed. Maximum number of photos per album reached.</value>
+    <value>Импорт не удался. Достигнуто максимальное количество фото в альбоме.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import failed. Try again.</value>
+    <value>Импорт не удался. Попробуйте ещё раз.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Импорт не удался</value>
@@ -1413,7 +1413,7 @@
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Interrupted">
-    <value>Import was interrupted</value>
+    <value>Импорт прерван</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_NotStarted">
     <value></value>
@@ -1422,7 +1422,7 @@
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Succeeded">
-    <value>Import succeeded</value>
+    <value>Импорт успешно завершён</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_ValidationFailed">
     <value></value>

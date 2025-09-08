@@ -945,22 +945,22 @@ menonaktifkan optimisasi ruang penyimpanan ini kapan saja.</value>
     <value>item(s)</value>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_OpenFolder">
-    <value>_Open folder</value>
+    <value>_Buka folder</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_Remove">
-    <value>_Remove</value>
+    <value>_Hapus</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_Menu_Item_Retry">
-    <value>_Retry</value>
+    <value>_Coba lagi</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Photos_Folders_NoItemsFound_Label">
     <value>Foto/video tidak ditemukan</value>
   </data>
   <data name="Main_Photos_Folders_WaitingToImport">
-    <value>Waiting to import...</value>
+    <value>Menunggu untuk mengimpor...</value>
   </data>
   <data name="Main_Photos_ImportFromGoogle_Export_Description">
     <value>Panduan langkah demi langkah untuk mengekspor Google Photos Anda</value>
@@ -1169,7 +1169,7 @@ Konten berkas hanya akan diunduh apabila diminta.</value>
     <value>Foto</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Photos import</value>
+    <value>Impor foto</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Item menu: Foto</value>
@@ -1290,13 +1290,13 @@ Konten berkas hanya akan diunduh apabila diminta.</value>
     <value></value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootMissingSyncRootFlag">
-    <value>Sync folder is invalid. Set up a new sync folder.</value>
+    <value>Folder sinkronisasi tidak valid. Atur folder sinkronisasi baru.</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered">
     <value>Folder sinkronisasi tidak terdaftar secara tidak sengaja. Persiapkan folder sinkronisasi baru.</value>
   </data>
   <data name="MappingErrorCode_Value_PhotoImportFailed">
-    <value>Photo import failed</value>
+    <value>Impor foto gagal</value>
   </data>
   <data name="MappingErrorCode_Value_PhotosDisabled">
     <value>Proton Foto tidak tersedia</value>
@@ -1395,16 +1395,16 @@ Konten berkas hanya akan diunduh apabila diminta.</value>
     <value>Dapatkan lebih banyak ruang penyimpanan</value>
   </data>
   <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
-    <value>Import failed. The album does not exist.</value>
+    <value>Impor gagal. Album tidak ada.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>Import failed. Maximum number of albums reached.</value>
+    <value>Impor gagal. Jumlah maksimum album telah tercapai.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>Import failed. Maximum number of photos per album reached.</value>
+    <value>Impor gagal. Jumlah maksimum foto per album telah tercapai.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Import failed. Try again.</value>
+    <value>Impor gagal. Coba lagi.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
     <value>Proses impor gagal</value>

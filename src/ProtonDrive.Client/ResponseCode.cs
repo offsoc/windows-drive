@@ -78,6 +78,17 @@ public enum ResponseCode
     /// </summary>
     InvalidVerificationToken = 200501,
 
+    /// <summary>
+    /// Related files are missing in a request to add, remove, or move Photos.
+    /// </summary>
+    /// <remarks>
+    /// Compound Photos consist of multiple files. E.g., Live Photo can consist of the main image file and related video file,
+    /// or Burst Photo can consist of the main image file and many related image files.
+    /// Some API requests require all related files to be present in the same request. If any is missing,
+    /// request fails with this error.
+    /// </remarks>
+    MissingRelatedFiles = 202000,
+
     CustomCode = 10000000,
 
     /// <summary>

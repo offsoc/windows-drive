@@ -141,10 +141,10 @@ internal sealed class CloudFilesMappingFoldersSetupStep
             return MappingErrorCode.LocalFolderDoesNotExist;
         }
 
-        if (!mapping.Local.RootFolderId.Equals(rootFolder.Id))
+        var result = _localFolderIdentityValidator.ValidateFolderIdentity(rootFolder, mapping.Local, LinkType.Folder);
+        if (result is not null)
         {
-            _logger.LogWarning("The local sync folder identity has diverged from {PreviousId} to {NewId}", mapping.Local.RootFolderId, rootFolder.Id);
-            return MappingErrorCode.LocalFolderDiverged;
+            return result;
         }
 
         if (_localFolderService.EmptyFolderExists(mapping.Local.Path, _specialFolders))

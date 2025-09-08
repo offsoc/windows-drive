@@ -72,26 +72,23 @@ internal sealed class PhotoDuplicateService : IPhotoDuplicateService
 
         foreach (var duplicateHash in duplicatesResponse.PhotoDuplicates)
         {
-            if (string.IsNullOrEmpty(duplicateHash.LinkId) ||
-                duplicateHash.LinkState is not LinkState.Draft and not LinkState.Active and not LinkState.Trashed)
+            if (string.IsNullOrEmpty(duplicateHash.LinkId)
+                || duplicateHash.LinkState is not LinkState.Draft and not LinkState.Active
+                || duplicateHash.NameHash is null)
             {
-                // Deleted remote photos are not considered as duplicates
+                // Trashed and deleted remote photos are not considered as duplicates
                 continue;
             }
 
-            var draftCreatedByAnotherClient = duplicateHash.LinkState is LinkState.Draft
-                && !string.IsNullOrEmpty(duplicateHash.ClientId)
-                && !string.Equals(clientId, duplicateHash.ClientId);
+            var isDraftCreatedByThisClientInstance = duplicateHash.LinkState is LinkState.Draft && string.Equals(clientId, duplicateHash.ClientId);
 
-            if (duplicateHash.NameHash is null
-                || !nameHashesByHash.TryGetValue(duplicateHash.NameHash, out var fileName)
-                || (duplicateHash.ContentHash is null && !draftCreatedByAnotherClient))
+            if (isDraftCreatedByThisClientInstance || !nameHashesByHash.TryGetValue(duplicateHash.NameHash, out var fileName))
             {
                 continue;
             }
 
-            duplicatesByFileName.Add(
-                new PhotoNameCollision(duplicateHash.LinkId, fileName, duplicateHash.NameHash, duplicateHash.ContentHash, draftCreatedByAnotherClient));
+            var duplicate = new PhotoNameCollision(duplicateHash.LinkId, fileName, duplicateHash.NameHash, duplicateHash.ContentHash);
+            duplicatesByFileName.Add(duplicate);
         }
 
         // Multiple files can exist with the same name

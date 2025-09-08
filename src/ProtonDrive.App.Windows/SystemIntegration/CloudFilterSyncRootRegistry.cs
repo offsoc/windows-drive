@@ -15,8 +15,6 @@ using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
-using ProtonDrive.Shared.Reporting;
-using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem;
 using ProtonDrive.Sync.Windows.FileSystem.CloudFiles;
 using ProtonDrive.Sync.Windows.Shell;
@@ -29,6 +27,9 @@ namespace ProtonDrive.App.Windows.SystemIntegration;
 
 internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISessionStateAware
 {
+    private const StorageProviderHydrationPolicyModifier AllowFullRestartHydration = (StorageProviderHydrationPolicyModifier)0x0008;
+    private const int AllowFullRestartHydrationMinPlatformVersionIntegrationNumber = 0x0300;
+
     private const int ErrorCodeElementNotFound = unchecked((int)0x80070490);
     private const string ProviderName = "ProtonDrive";
     private const string SyncRootManagerKeyName = @"Software\Microsoft\Windows\CurrentVersion\Explorer\SyncRootManager";
@@ -41,7 +42,6 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     private readonly AppConfig _appConfig;
     private readonly IFileSystemDisplayNameAndIconProvider _fileSystemDisplayNameAndIconProvider;
-    private readonly IErrorReporting _errorReporting;
     private readonly ILogger<CloudFilterSyncRootRegistry> _logger;
 
     private string? _userAccountId;
@@ -50,12 +50,10 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
     public CloudFilterSyncRootRegistry(
         AppConfig appConfig,
         IFileSystemDisplayNameAndIconProvider fileSystemDisplayNameAndIconProvider,
-        IErrorReporting errorReporting,
         ILogger<CloudFilterSyncRootRegistry> logger)
     {
         _appConfig = appConfig;
         _fileSystemDisplayNameAndIconProvider = fileSystemDisplayNameAndIconProvider;
-        _errorReporting = errorReporting;
         _logger = logger;
     }
 
@@ -282,6 +280,18 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         return !string.IsNullOrEmpty(providerName) ? providerName : null;
     }
 
+    private static StorageProviderHydrationPolicyModifier GetAllowFullRestartHydrationFlag()
+    {
+        var result = CldApi.CfGetPlatformInfo(out var platformVersion);
+        Marshal.ThrowExceptionForHR((int)result);
+
+        // According to documentation, flag AllowFullRestartHydration is supported only if the Cloud Files platform IntegrationNumber is 0x500 or higher,
+        // thus not before Windows 11. But in fact, it is supported in earlier versions of the platform.
+        return platformVersion.IntegrationNumber >= AllowFullRestartHydrationMinPlatformVersionIntegrationNumber
+            ? AllowFullRestartHydration
+            : default;
+    }
+
     private (OnDemandSyncRootVerificationVerdict Verdict, StorageProviderSyncRootInfo? ConflictingRootInfo) VerifySyncRoot(StorageProviderSyncRootInfo rootInfo)
     {
         LogPlatformVersionOnce();
@@ -292,12 +302,13 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
             /* ProviderId and ShowSiblingsAsGroup are not filled by a call to StorageProviderSyncRootManager.GetSyncRootInformationForFolder.
              * If provided folder is not an on-demand root folder, but parent is, parent folder is returned in the Path property.
+             *
+             * We don't check version to prevent updating registration with each app update. Version is set to app version.
              */
 
             if (actualInfo.Id == rootInfo.Id &&
                 actualInfo.Path.Path.Equals(rootInfo.Path.Path, StringComparison.OrdinalIgnoreCase) &&
                 actualInfo.DisplayNameResource == rootInfo.DisplayNameResource &&
-                actualInfo.Version == rootInfo.Version &&
                 actualInfo.IconResource == rootInfo.IconResource &&
                 actualInfo.AllowPinning == rootInfo.AllowPinning &&
                 actualInfo.ProtectionMode == rootInfo.ProtectionMode &&
@@ -429,7 +440,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 HydrationPolicyModifier =
                     StorageProviderHydrationPolicyModifier.AutoDehydrationAllowed |
                     StorageProviderHydrationPolicyModifier.ValidationRequired |
-                    (StorageProviderHydrationPolicyModifier)0x0008, // AllowFullRestartHydration
+                    GetAllowFullRestartHydrationFlag(),
                 PopulationPolicy = StorageProviderPopulationPolicy.AlwaysFull,
                 InSyncPolicy =
                     StorageProviderInSyncPolicy.FileSystemAttribute |
@@ -667,7 +678,6 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
         if (!placeholderState.HasFlag(PlaceholderState.SyncRoot))
         {
             _logger.LogWarning("Root folder placeholder state is {PlaceholderState}", placeholderState);
-            _errorReporting.CaptureError("On-demand sync folder is missing sync root flag");
             return OnDemandSyncRootVerificationVerdict.MissingSyncRootFlag;
         }
 
@@ -728,6 +738,11 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 platformVersion.BuildNumber,
                 platformVersion.IntegrationNumber);
 
+            if (platformVersion.IntegrationNumber < AllowFullRestartHydrationMinPlatformVersionIntegrationNumber)
+            {
+                _logger.LogWarning("Cloud Files platform does not support restarting hydration");
+            }
+
             _platformVersionIsLogged = true;
         }
         catch (Exception ex) when (ex.IsFileAccessException() || ex is COMException)
@@ -739,7 +754,7 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
 
     private void LogInvalidSyncRoot(StorageProviderSyncRootInfo expected, StorageProviderSyncRootInfo actual)
     {
-        _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid", expected.Id);
+        _logger.LogWarning("On-demand sync root \"{RootId}\" is not valid, version is \"{ActualVersion}\"", expected.Id, actual.Version);
 
         if (!actual.Path.Path.Equals(expected.Path.Path, StringComparison.OrdinalIgnoreCase))
         {
@@ -755,14 +770,6 @@ internal class CloudFilterSyncRootRegistry : IOnDemandSyncRootRegistry, ISession
                 "On-demand sync root display name \"{ActualDisplayName}\" is not expected, should be \"{ExpectedDisplayName}\"",
                 actual.DisplayNameResource,
                 expected.DisplayNameResource);
-        }
-
-        if (actual.Version != expected.Version)
-        {
-            _logger.LogWarning(
-                "On-demand sync root version \"{ActualVersion}\" is not expected, should be \"{ExpectedVersion}\"",
-                actual.Version,
-                expected.Version);
         }
 
         if (actual.IconResource != expected.IconResource)

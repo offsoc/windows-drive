@@ -40,7 +40,6 @@ using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Photos;
 using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Reporting;
-using ProtonDrive.App.Sanitization;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Settings.Remote;
@@ -62,7 +61,6 @@ using ProtonDrive.Shared.Offline;
 using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Telemetry;
-using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Update.Config;
 
 namespace ProtonDrive.App.Configuration;
@@ -209,9 +207,6 @@ public static class AppServices
                 .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<FeatureService>())
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<FeatureService>())
                 .AddSingleton<IFeatureFlagProvider>(provider => provider.GetRequiredService<FeatureService>())
-
-                .AddSingleton<FileSanitizationProvider>()
-                .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<FileSanitizationProvider>())
 
                 .AddSingleton<AccountService>()
                 .AddSingleton<IAccountService>(provider => provider.GetRequiredService<AccountService>())

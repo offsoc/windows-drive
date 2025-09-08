@@ -443,45 +443,56 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             throw new NotSupportedException();
         }
 
-        _logger.LogDebug("Moving {Count} file(s) with to {DestinationName}", sourceNodes.Count, destinationInfo.Name);
-
         Ensure.IsFalse(
-            string.IsNullOrEmpty(destinationInfo.Name) && string.IsNullOrEmpty(destinationInfo.ParentId),
-            $"Both {nameof(destinationInfo)}.{nameof(destinationInfo.Name)} and {nameof(destinationInfo)}.{nameof(destinationInfo.ParentId)} cannot be null or empty.");
+            string.IsNullOrEmpty(destinationInfo.ParentId),
+            $"{nameof(destinationInfo)}.{nameof(destinationInfo.ParentId)} cannot be null or empty.");
 
         var photosToAddParameters = new List<PhotoToAddParameter>(sourceNodes.Count);
 
+        var parameters = new FetchLinksMetadataParameters
+        {
+            LinkIds = sourceNodes.Select(
+                x => x.Id ?? throw new FileSystemClientException<string>(
+                    "Node Id value is not specified",
+                    FileSystemErrorCode.PathBasedAccessNotSupported,
+                    objectId: null)).ToList(),
+        };
+
+        var linkListResponse = await _linkApiClient.GetLinksAsync(_shareId, parameters, cancellationToken).ThrowOnFailure().ConfigureAwait(false);
+
+        // The response lacks nodes that do not exist or cannot be accessed
+        var numberOfMissingNodes = sourceNodes.Count - linkListResponse.Links.Count;
+
+        if (numberOfMissingNodes != 0)
+        {
+            _logger.LogWarning("Failed to retrieve {NumberOfMissingNodes} link(s)", numberOfMissingNodes);
+            throw new FileSystemClientException<string>($"Unable to retrieve {numberOfMissingNodes} link(s)");
+        }
+
+        var linksById = linkListResponse.Links.ToDictionary(x => x.Id);
+
+        var destinationParentFolder = ToRemoteFolder(await GetRemoteNodeAsync(destinationInfo.ParentId, cancellationToken).ConfigureAwait(false));
+
         foreach (var node in sourceNodes)
         {
-            _logger.LogDebug("Moving file with ID {FileId} with to {DestinationName}", node.Id, destinationInfo.Name);
+            _logger.LogDebug("Adding file with ID {FileId}", node.Id);
+
             EnsureId(node.Id);
+
             cancellationToken.ThrowIfCancellationRequested();
 
             var share = await GetShareAsync(cancellationToken).ConfigureAwait(false);
 
-            var nodeToMove = await GetRemoteNodeAsync(node.Id, cancellationToken).ConfigureAwait(false);
+            var nodeToAdd = await GetRemoteNodeAsync(linksById[node.Id], draftAllowed: false, cancellationToken).ConfigureAwait(false);
 
-            // A volume root folder has no parent folder
-            if (string.IsNullOrEmpty(nodeToMove.ParentId))
-            {
-                throw new InvalidOperationException($"Cannot move the volume root node with ID {nodeToMove.Id}");
-            }
+            CheckMetadata(nodeToAdd, node);
+            CheckLink(nodeToAdd, node);
 
-            CheckMetadata(nodeToMove, node);
-            CheckLink(nodeToMove, node);
-
-            var destinationName = !string.IsNullOrEmpty(destinationInfo.Name) ? destinationInfo.Name : node.Name;
-
-            if (nodeToMove is RemoteFile remoteFile)
-            {
-                destinationName = RemoteFile.ConvertLocalNameToRemoteName(destinationName, remoteFile.MediaType);
-            }
-
-            var destinationParentFolder = ToRemoteFolder(await GetRemoteNodeAsync(destinationInfo.ParentId!, cancellationToken).ConfigureAwait(false));
+            var destinationName = node.Name;
 
             var (nameEncrypter, signatureAddress) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
                 destinationParentFolder.PrivateKey.PublicKey,
-                nodeToMove.NameSessionKey,
+                nodeToAdd.NameSessionKey,
                 share.RelevantMembershipAddressId,
                 cancellationToken).ConfigureAwait(false);
 
@@ -490,10 +501,10 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
             var passphraseEncrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(
                 destinationParentFolder.PrivateKey.PublicKey,
-                nodeToMove.PassphraseSessionKey,
+                nodeToAdd.PassphraseSessionKey,
                 signatureAddress);
 
-            var (encryptedPassphrase, _, _) = passphraseEncrypter.EncryptShareOrNodeKeyPassphrase(nodeToMove.Passphrase);
+            var (encryptedPassphrase, _, _) = passphraseEncrypter.EncryptShareOrNodeKeyPassphrase(nodeToAdd.Passphrase);
 
             Ensure.NotNullOrEmpty(node.Sha1Digest, nameof(node.Sha1Digest));
 
@@ -508,10 +519,8 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             });
         }
 
-        var albumLinkId = destinationInfo.ParentId;
-        EnsureId(albumLinkId);
-
-        await AddToAlbumAsync(albumLinkId, new PhotoToAddListParameters { Photos = photosToAddParameters }, cancellationToken).ConfigureAwait(false);
+        await AddToAlbumAsync(albumLinkId: destinationInfo.ParentId, new PhotoToAddListParameters { Photos = photosToAddParameters }, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task Move(NodeInfo<string> info, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
@@ -892,9 +901,21 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
             var link = linkResponse.Link ?? throw new ApiException(ResponseCode.InvalidValue, "Link is not present in the API response");
 
+            return await GetRemoteNodeAsync(link, draftAllowed, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, linkId, includeObjectId: true, out var mappedException))
+        {
+            throw mappedException;
+        }
+    }
+
+    private async Task<RemoteNode> GetRemoteNodeAsync(Link link, bool draftAllowed, CancellationToken cancellationToken)
+    {
+        try
+        {
             if (link.State is not LinkState.Active && (!draftAllowed || link.State is not LinkState.Draft))
             {
-                throw new FileSystemClientException<string>($"File system object state is {link.State}", FileSystemErrorCode.ObjectNotFound, linkId);
+                throw new FileSystemClientException<string>($"File system object state is {link.State}", FileSystemErrorCode.ObjectNotFound, link.Id);
             }
 
             if (link.Id == _linkId)
@@ -904,7 +925,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
             return await DecryptLinkAsync(link, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, linkId, includeObjectId: true, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, link.Id, includeObjectId: true, out var mappedException))
         {
             throw mappedException;
         }
@@ -924,47 +945,75 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
     private async Task AddToAlbumAsync(string albumLinkId, PhotoToAddListParameters parameters, CancellationToken cancellationToken)
     {
-        var photoLinkIds = string.Join(',', parameters.Photos.Select(x => x.LinkId));
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (parameters.Photos.Count == 0)
+        {
+            _logger.LogWarning("No photos to add to album with ID {AlbumID}. Skipping request.", albumLinkId);
+            return;
+        }
 
         try
         {
-            _logger.LogDebug("Adding {Count} photo file(s) with ID(s) {FileIDs} to album {AlbumLinkID}", parameters.Photos.Count, photoLinkIds, albumLinkId);
-
             var response = await _photoApiClient.AddPhotosToAlbumAsync(_volumeId, albumLinkId, parameters, cancellationToken)
                 .ThrowOnFailure()
                 .ConfigureAwait(false);
 
-            var alreadyExistingPhotoResponses =
-                response.AddedPhotoResponses.Where(x => x.Response is { Succeeded: false, Code: ResponseCode.AlreadyExists }).ToList();
+            var failures = response.AddedPhotoResponses
+                .Where(x => x.Response is { Succeeded: false })
+                .ToList();
 
-            if (alreadyExistingPhotoResponses.Count > 0)
+            var numberOfAlreadyAddedFiles = failures
+                .Count(x => x.Response is { Code: ResponseCode.AlreadyExists });
+
+            if (numberOfAlreadyAddedFiles > 0)
             {
-                var alreadyExistingPhotoLinkIds = string.Join(',', alreadyExistingPhotoResponses.Select(x => x.LinkId));
-                _logger.LogInformation("Photo file with ID(s) {FileIDs} was already added to album {AlbumLinkID}", alreadyExistingPhotoLinkIds, albumLinkId);
+                _logger.LogInformation(
+                    "In current batch, {NumberOfFiles} Photo file(s) were already in the album with ID {AlbumId}",
+                    numberOfAlreadyAddedFiles,
+                    albumLinkId);
             }
 
-            var firstFailureResponse =
-                response.AddedPhotoResponses.FirstOrDefault(x => x.Response is { Succeeded: false, Code: not ResponseCode.AlreadyExists });
+            var numberOfFailedToAddFilesDueToMissingRelatedFiles = failures
+                .Count(x => x.Response is { Code: ResponseCode.MissingRelatedFiles });
 
-            if (firstFailureResponse is not null)
+            if (numberOfFailedToAddFilesDueToMissingRelatedFiles > 0)
             {
-                throw new ApiException(firstFailureResponse.Response.Code, firstFailureResponse.Response.Error ?? "API request failed");
+                _logger.LogWarning(
+                    "In current batch, {NumberOfFiles} Photo files(s) failed to add to the album with ID {AlbumId} due to missing related files. Failure is ignored",
+                    numberOfFailedToAddFilesDueToMissingRelatedFiles,
+                    albumLinkId);
             }
 
-            _logger.LogDebug(
-                "{Count} photo file(s) with ID(s) {FileID} added to album {AlbumLinkID}",
-                parameters.Photos.Count - alreadyExistingPhotoResponses.Count,
-                photoLinkIds,
-                albumLinkId);
+            var otherFailures = failures
+                .Where(x => x.Response is { Code: not ResponseCode.AlreadyExists and not ResponseCode.MissingRelatedFiles })
+                .ToList();
+
+            foreach (var failure in otherFailures)
+            {
+                _logger.LogError(
+                    "Adding Photo file with ID {FileID} to the album with ID {AlbumId} failed: {ErrorCode} {ErrorMessage}",
+                    failure.LinkId,
+                    albumLinkId,
+                    failure.Response.Code,
+                    failure.Response.Error);
+            }
+
+            var firstFailure = otherFailures.FirstOrDefault();
+
+            if (firstFailure is not null)
+            {
+                throw new ApiException(firstFailure.Response.Code, firstFailure.Response.Error ?? "API request failed");
+            }
         }
         catch (ApiException ex) when (ex.ResponseCode is ResponseCode.DoesNotExist or ResponseCode.InvalidRequirements or ResponseCode.TooManyChildren
-                                      && ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))
+                                      && ExceptionMapping.TryMapException(ex, id: null, includeObjectId: false, out var mappedException))
         {
             /* A specific case when the limit of photos is reached on the destination album or when the album does not exist */
 
             throw mappedException;
         }
-        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, albumLinkId, includeObjectId: true, out var mappedException))
+        catch (Exception ex) when (ExceptionMapping.TryMapException(ex, id: null, includeObjectId: false, out var mappedException))
         {
             throw mappedException;
         }

@@ -7,6 +7,10 @@ namespace ProtonDrive.Client;
 
 public interface ILinkApiClient
 {
+    [Post("/shares/{shareId}/links/fetch_metadata")]
+    [BearerAuthorizationHeader]
+    Task<LinkResponseList> GetLinksAsync(string shareId, FetchLinksMetadataParameters parameters, CancellationToken cancellationToken);
+
     [Get("/shares/{shareId}/links/{linkId}")]
     [BearerAuthorizationHeader]
     Task<LinkResponse> GetLinkAsync(string shareId, string linkId, CancellationToken cancellationToken);

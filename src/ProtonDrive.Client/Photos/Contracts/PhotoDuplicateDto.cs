@@ -12,7 +12,8 @@ public sealed record PhotoDuplicateDto
     public string? NameHash { get; init; }
 
     /// <summary>
-    /// ContentHash of the found duplicate
+    /// ContentHash of the found duplicate.
+    /// <para>If it is null, we assume the file has been permanently deleted or the file is a draft.</para>
     /// </summary>
     public string? ContentHash { get; init; }
 

@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ProtonDrive.App.Sanitization;
 using ProtonDrive.DataAccess.Databases;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.Extensions;
@@ -34,7 +33,6 @@ internal class SyncAgent : IDisposable
     private readonly LocalAdapterDatabase _localAdapterDatabase;
     private readonly SyncEngineDatabase _syncEngineDatabase;
     private readonly FileTransferDatabase _fileTransferDatabase;
-    private readonly FileSanitizer _fileSanitizer;
     private readonly StateConsistencyGuard<long> _stateConsistencyGuard;
     private readonly IClock _clock;
     private readonly IErrorCounter _errorCounter;
@@ -64,7 +62,6 @@ internal class SyncAgent : IDisposable
         LocalAdapterDatabase localAdapterDatabase,
         SyncEngineDatabase syncEngineDatabase,
         FileTransferDatabase fileTransferDatabase,
-        FileSanitizer fileSanitizer,
         StateConsistencyGuard<long> stateConsistencyGuard,
         IScheduler scheduler,
         IClock clock,
@@ -78,7 +75,6 @@ internal class SyncAgent : IDisposable
         _localAdapterDatabase = localAdapterDatabase;
         _syncEngineDatabase = syncEngineDatabase;
         _fileTransferDatabase = fileTransferDatabase;
-        _fileSanitizer = fileSanitizer;
         _stateConsistencyGuard = stateConsistencyGuard;
         _clock = clock;
         _errorCounter = errorCounter;
@@ -176,8 +172,6 @@ internal class SyncAgent : IDisposable
 
         await _stateConsistencyGuard.ExecuteAsync(cancellationToken).ConfigureAwait(false);
 
-        await _fileSanitizer.StartAsync(cancellationToken).ConfigureAwait(false);
-
         _syncEngine.Initialize();
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -220,7 +214,6 @@ internal class SyncAgent : IDisposable
     public async Task<bool> StopAsync()
     {
         AvailabilityChanged?.Invoke(this, false);
-        _fileSanitizer.Stop();
 
         if (Status is SyncStatus.Terminated)
         {

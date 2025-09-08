@@ -46,9 +46,11 @@ internal sealed class PhotoAlbumService : IPhotoAlbumService
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        _logger.LogDebug("Adding batch of {Count} photo files to album with ID {AlbumId}", files.Count, albumLinkId);
+
         var albumNode = new NodeInfo<string>().WithParentId(albumLinkId);
         await _remoteFileSystemClient.MoveAsync(files, albumNode, cancellationToken).ConfigureAwait(false);
 
-        _logger.LogInformation("Added photo to album with ID {ID}", albumLinkId);
+        _logger.LogInformation("Finished adding batch of {Count} photo files to album with ID {AlbumId}", files.Count, albumLinkId);
     }
 }

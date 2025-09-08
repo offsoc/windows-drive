@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using ProtonDrive.App.FileSystem.Local;
 using ProtonDrive.App.FileSystem.Remote;
 using ProtonDrive.App.Mapping;
-using ProtonDrive.App.Sanitization;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.DataAccess;
@@ -48,7 +47,6 @@ internal sealed class SyncAgentFactory
     private readonly RemoteDecoratedFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly RemoteDecoratedEventLogClientFactory _remoteEventLogClientFactory;
     private readonly LocalRootMapForDeletionDetectionFactory _localSyncRootMapForDeletionDetectionFactory;
-    private readonly FileSanitizationProvider _fileSanitizerProvider;
     private readonly ILocalVolumeInfoProvider _localVolumeInfoProvider;
     private readonly ILocalFileSystemClientFactory _localUndecoratedFileSystemClientFactory;
     private readonly ILocalEventLogClientFactory _localUndecoratedEventLogClientFactory;
@@ -64,7 +62,6 @@ internal sealed class SyncAgentFactory
         RemoteDecoratedFileSystemClientFactory remoteFileSystemClientFactory,
         RemoteDecoratedEventLogClientFactory remoteEventLogClientFactory,
         LocalRootMapForDeletionDetectionFactory localSyncRootMapForDeletionDetectionFactory,
-        FileSanitizationProvider fileSanitizerProvider,
         ILocalVolumeInfoProvider localVolumeInfoProvider,
         ILocalFileSystemClientFactory localUndecoratedFileSystemClientFactory,
         ILocalEventLogClientFactory localUndecoratedEventLogClientFactory,
@@ -79,7 +76,6 @@ internal sealed class SyncAgentFactory
         _remoteFileSystemClientFactory = remoteFileSystemClientFactory;
         _remoteEventLogClientFactory = remoteEventLogClientFactory;
         _localSyncRootMapForDeletionDetectionFactory = localSyncRootMapForDeletionDetectionFactory;
-        _fileSanitizerProvider = fileSanitizerProvider;
         _localVolumeInfoProvider = localVolumeInfoProvider;
         _localUndecoratedFileSystemClientFactory = localUndecoratedFileSystemClientFactory;
         _localUndecoratedEventLogClientFactory = localUndecoratedEventLogClientFactory;
@@ -208,8 +204,6 @@ internal sealed class SyncAgentFactory
             new FileNameFactory<long>(TempUniqueNamePattern),
             serialScheduler);
 
-        var fileSanitizer = _fileSanitizerProvider.Create(remoteAdapterDatabase, localAdapterDatabase, mappings, remoteAdapter.TryMarkNodeAsDirtyAsync);
-
         var stateConsistencyGuard = new StateConsistencyGuard<long>(
             syncEngineDatabase.SyncedTreeRepository,
             syncEngineDatabase.LocalUpdateTreeRepository,
@@ -225,7 +219,6 @@ internal sealed class SyncAgentFactory
             localAdapterDatabase,
             syncEngineDatabase,
             transferDatabase,
-            fileSanitizer,
             stateConsistencyGuard,
             _scheduler,
             _clock,
