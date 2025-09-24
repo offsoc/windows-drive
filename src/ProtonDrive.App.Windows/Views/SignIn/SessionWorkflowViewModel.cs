@@ -23,7 +23,7 @@ internal sealed class SessionWorkflowViewModel : ObservableObject, ISessionState
         _authenticationService = authenticationService;
 
         _credentialInputViewModel = new CredentialInputViewModel(authenticationService, externalHyperlinks, scheduler);
-        _secondFactorInputViewModel = new SecondFactorInputViewModel(authenticationService, scheduler);
+        _secondFactorInputViewModel = new SecondFactorInputViewModel(authenticationService, externalHyperlinks, scheduler);
         _dataPasswordInputViewModel = new DataPasswordInputViewModel(authenticationService);
 
         _currentStepViewModel = _credentialInputViewModel;
@@ -34,8 +34,16 @@ internal sealed class SessionWorkflowViewModel : ObservableObject, ISessionState
     public SessionWorkflowStepViewModelBase CurrentStepViewModel
     {
         get => _currentStepViewModel;
-        private set => SetProperty(ref _currentStepViewModel, value);
+        private set
+        {
+            if (SetProperty(ref _currentStepViewModel, value))
+            {
+                OnPropertyChanged(nameof(IsSecondFactorView));
+            }
+        }
     }
+
+    public bool IsSecondFactorView => CurrentStepViewModel is SecondFactorInputViewModel;
 
     public bool IsConnecting
     {
@@ -52,8 +60,6 @@ internal sealed class SessionWorkflowViewModel : ObservableObject, ISessionState
 
         IsConnecting = value.SigningInStatus == SigningInStatus.Authenticating;
 
-        CurrentStepViewModel.LastResponse = value.Response;
-
         if (value.Status is SessionStatus.Ending)
         {
             CurrentStepViewModel = _credentialInputViewModel;
@@ -65,13 +71,17 @@ internal sealed class SessionWorkflowViewModel : ObservableObject, ISessionState
             return;
         }
 
+        _secondFactorInputViewModel.HandleSessionStateChange(value);
+
         CurrentStepViewModel = value.SigningInStatus switch
         {
             SigningInStatus.WaitingForAuthenticationPassword => _credentialInputViewModel,
-            SigningInStatus.WaitingForSecondFactorCode => _secondFactorInputViewModel,
+            SigningInStatus.WaitingForSecondFactorAuthentication => _secondFactorInputViewModel,
             SigningInStatus.WaitingForDataPassword => _dataPasswordInputViewModel,
             _ => CurrentStepViewModel,
         };
+
+        CurrentStepViewModel.LastResponse = value.Response;
     }
 
     public void CancelAuthentication()

@@ -11,6 +11,8 @@ using ProtonDrive.App.Services;
 using ProtonDrive.App.Volumes;
 using ProtonDrive.Client;
 using ProtonDrive.Client.Authentication;
+using ProtonDrive.Shared.Authentication;
+using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Offline;
 using ProtonDrive.Shared.Threading;
@@ -21,6 +23,7 @@ public class StatefulSessionService
     : IStatefulSessionService, IAuthenticationService, IStartableService, IStoppableService, IAccountStateAware, IMainVolumeStateAware
 {
     private readonly Client.Authentication.IAuthenticationService _clientAuthenticationService;
+    private readonly IFido2Authenticator _fido2Authenticator;
     private readonly IOfflineService _offlineService;
     private readonly Lazy<IEnumerable<ISessionStateAware>> _sessionStateAware;
     private readonly ILogger<StatefulSessionService> _logger;
@@ -32,15 +35,18 @@ public class StatefulSessionService
     private volatile bool _stopping;
     private bool _isFirstSessionStart = true;
     private SessionState _state = SessionState.None;
+    private Fido2AssertionParameters? _fido2AssertionParameters;
     private string? _accountSetupErrorMessage;
 
     public StatefulSessionService(
         Client.Authentication.IAuthenticationService clientAuthenticationService,
+        IFido2Authenticator fido2Authenticator,
         IOfflineService offlineService,
         Lazy<IEnumerable<ISessionStateAware>> sessionStateAware,
         ILogger<StatefulSessionService> logger)
     {
         _clientAuthenticationService = clientAuthenticationService;
+        _fido2Authenticator = fido2Authenticator;
         _offlineService = offlineService;
         _sessionStateAware = sessionStateAware;
         _logger = logger;
@@ -141,10 +147,16 @@ public class StatefulSessionService
         return Schedule(ct => InternalAuthenticateAsync(credential, ct));
     }
 
-    public Task FinishTwoFactorAuthenticationAsync(string secondFactor)
+    public Task AuthenticateWithTotpAsync(string totp)
     {
         ForceOnline();
-        return Schedule(ct => InternalFinishTwoFactorAuthenticationAsync(secondFactor, ct));
+        return Schedule(ct => InternalAuthenticateWithTotpAsync(totp, ct));
+    }
+
+    public Task AuthenticateWithFido2Async()
+    {
+        ForceOnline();
+        return Schedule(InternalAuthenticateWithFido2Async);
     }
 
     public Task FinishTwoPasswordAuthenticationAsync(SecureString secondPassword)
@@ -167,13 +179,27 @@ public class StatefulSessionService
 
     public void RestartAuthentication()
     {
-        if (State.SigningInStatus is (
-            SigningInStatus.WaitingForSecondFactorCode
+        if (State.SigningInStatus is
+            SigningInStatus.WaitingForSecondFactorAuthentication
             or SigningInStatus.WaitingForDataPassword
-            or SigningInStatus.WaitingForAuthenticationPassword))
+            or SigningInStatus.WaitingForAuthenticationPassword)
         {
             SetSigningIn(SigningInStatus.WaitingForAuthenticationPassword);
         }
+    }
+
+    private static MultiFactorAuthenticationMethods GetMultiFactorMethods(StartSessionResult? result)
+    {
+        var methods = (MultiFactorAuthenticationMethods)(result?.MultiFactor?.Methods ?? default);
+
+        methods &= MultiFactorAuthenticationMethods.Totp | MultiFactorAuthenticationMethods.Fido2;
+
+        if (result?.MultiFactor?.Fido2 is null)
+        {
+            methods &= ~MultiFactorAuthenticationMethods.Fido2;
+        }
+
+        return methods;
     }
 
     private async Task InternalStartSessionAsync(CancellationToken cancellationToken)
@@ -218,9 +244,12 @@ public class StatefulSessionService
         SetState(await GetAccountSetupResultAsync(cancellationToken).ConfigureAwait(false) ?? result);
     }
 
-    private async Task InternalFinishTwoFactorAuthenticationAsync(string secondFactor, CancellationToken cancellationToken)
+    private async Task InternalAuthenticateWithTotpAsync(string totp, CancellationToken cancellationToken)
     {
-        if (_stopping || State.Status != SessionStatus.SigningIn || State.SigningInStatus != SigningInStatus.WaitingForSecondFactorCode)
+        if (_stopping ||
+            State.Status != SessionStatus.SigningIn ||
+            State.SigningInStatus != SigningInStatus.WaitingForSecondFactorAuthentication ||
+            !State.MultiFactorAuthenticationMethods.HasFlag(MultiFactorAuthenticationMethods.Totp))
         {
             return;
         }
@@ -228,7 +257,7 @@ public class StatefulSessionService
         cancellationToken.ThrowIfCancellationRequested();
         SetSigningIn(SigningInStatus.Authenticating);
 
-        var result = await _clientAuthenticationService.FinishTwoFactorAuthenticationAsync(secondFactor, cancellationToken).ConfigureAwait(false);
+        var result = await _clientAuthenticationService.AuthenticateWithTotpAsync(totp, cancellationToken).ConfigureAwait(false);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -241,6 +270,73 @@ public class StatefulSessionService
         SetState(SessionStatus.Started, result, SigningInStatus.Authenticating);
 
         SetState(await GetAccountSetupResultAsync(cancellationToken).ConfigureAwait(false) ?? result);
+    }
+
+    private async Task InternalAuthenticateWithFido2Async(CancellationToken cancellationToken)
+    {
+        var fido2AssertionParameters = _fido2AssertionParameters;
+
+        if (_stopping ||
+            State.Status != SessionStatus.SigningIn ||
+            State.SigningInStatus != SigningInStatus.WaitingForSecondFactorAuthentication ||
+            !State.MultiFactorAuthenticationMethods.HasFlag(MultiFactorAuthenticationMethods.Fido2) ||
+            fido2AssertionParameters is null)
+        {
+            return;
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        SetSigningIn(SigningInStatus.Authenticating);
+
+        var (assertionResult, errorResponse) = await AssertFido2Async(fido2AssertionParameters, cancellationToken).ConfigureAwait(false);
+
+        if (assertionResult is null)
+        {
+            await InternalEndSessionAsync(errorResponse).ConfigureAwait(false);
+            return;
+        }
+
+        var result = await _clientAuthenticationService.AuthenticateWithFido2Async(assertionResult, cancellationToken).ConfigureAwait(false);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!result.IsSuccess)
+        {
+            SetState(result);
+            return;
+        }
+
+        SetState(SessionStatus.Started, result, SigningInStatus.Authenticating);
+
+        SetState(await GetAccountSetupResultAsync(cancellationToken).ConfigureAwait(false) ?? result);
+    }
+
+    private async Task<(Fido2AssertionResult? Result, ApiResponse? ErrorResponse)> AssertFido2Async(Fido2AssertionParameters fido2AssertionParameters, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return (await _fido2Authenticator.AssertAsync(fido2AssertionParameters, cancellationToken).ConfigureAwait(false), null);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning("FIDO2 operation cancelled");
+            return (Result: null, ErrorResponse: ApiResponse.Success);
+        }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning("FIDO2 is not supported: {ErrorMessage}", ex.Message);
+            return (Result: null, ErrorResponse: new ApiResponse { Code = ResponseCode.Unknown, Error = ex.Message });
+        }
+        catch (TimeoutException ex)
+        {
+            _logger.LogWarning("FIDO2 operation timed out");
+            return (Result: null, ErrorResponse: new ApiResponse { Code = ResponseCode.Unknown, Error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("FIDO2 operation failed: {ErrorCode} : {ErrorMessage}", ex.GetRelevantFormattedErrorCode(), ex.Message);
+            return (Result: null, ErrorResponse: new ApiResponse { Code = ResponseCode.Unknown, Error = ex.Message });
+        }
     }
 
     private async Task InternalFinishTwoPasswordAuthenticationAsync(SecureString secondPassword, CancellationToken cancellationToken)
@@ -349,11 +445,11 @@ public class StatefulSessionService
         {
             case StartSessionResultCode.SignInRequired:
             case StartSessionResultCode.Failure:
-                SetState(SessionStatus.NotStarted, result, SigningInStatus.WaitingForAuthenticationPassword);
+                SetState(SessionStatus.SigningIn, result, SigningInStatus.WaitingForAuthenticationPassword);
                 break;
 
-            case StartSessionResultCode.SecondFactorCodeRequired:
-                SetSigningIn(SigningInStatus.WaitingForSecondFactorCode, result);
+            case StartSessionResultCode.SecondFactorRequired:
+                SetSigningIn(SigningInStatus.WaitingForSecondFactorAuthentication, result);
                 break;
 
             case StartSessionResultCode.DataPasswordRequired:
@@ -389,7 +485,11 @@ public class StatefulSessionService
             IsFirstSessionStart = _isFirstSessionStart,
             UserId = result?.UserId,
             Response = result?.Response ?? ApiResponse.Success,
+            MultiFactorAuthenticationMethods = GetMultiFactorMethods(result),
+            IsFido2Available = _fido2Authenticator.IsAvailable,
         };
+
+        _fido2AssertionParameters = result?.MultiFactor?.Fido2;
     }
 
     private void OnStateChanged(SessionState state)

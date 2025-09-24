@@ -270,7 +270,8 @@ internal sealed class PhotoAlbumImporter
             }
             catch (Exception exception) when (IsExpectedException(exception))
             {
-                _logger.LogWarning("Failed to upload file \"{Path}\": {Message}", filePathToLog, exception.Message);
+                // TODO: Avoid log-and-throw (antipattern)
+                _logger.LogWarning("Failed to upload file \"{Path}\": {Message}", filePathToLog, exception.CombinedMessage());
 
                 _progress.RaiseFileUploadFailed(filePath, exception);
 

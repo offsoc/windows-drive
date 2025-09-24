@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -28,6 +29,28 @@ public static class Ensure
         }
 
         return arg;
+    }
+
+    [DebuggerHidden]
+    [StackTraceHidden]
+    public static T[] NotNullOrEmpty<T>([NotNull] T[]? arg, string paramName, string? valuePath = null)
+    {
+        if (arg is null || arg.Length == 0)
+        {
+            throw new ArgumentException($"{valuePath ?? paramName} value cannot be null or empty.", paramName);
+        }
+
+        return arg;
+    }
+
+    [DebuggerHidden]
+    [StackTraceHidden]
+    public static void NotNullOrEmpty<T>([NotNull] IReadOnlyCollection<T>? arg, string paramName, string? valuePath = null)
+    {
+        if (arg is null || arg.Count == 0)
+        {
+            throw new ArgumentException($"{valuePath ?? paramName} value cannot be null or empty.", paramName);
+        }
     }
 
     [DebuggerHidden]

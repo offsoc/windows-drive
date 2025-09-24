@@ -15,7 +15,7 @@ internal interface IAuthenticationApiClient
 
     [Post("/v4/2fa")]
     [BearerAuthorizationHeader]
-    Task<ScopesResponse> LoginAsync(AuthSecondFactorRequest data, CancellationToken cancellationToken);
+    Task<ScopesResponse> LoginAsync(MultiFactorAuthenticationRequest data, CancellationToken cancellationToken);
 
     [Delete("/v4")]
     Task<ApiResponse> LogoutAsync(

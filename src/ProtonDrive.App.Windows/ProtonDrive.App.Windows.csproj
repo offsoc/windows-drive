@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <None Remove="Resources\.locale-state.metadata" />
+    <None Remove="Views\SignIn\Banner.No2FA.DarkTheme.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProtonDrive.App\ProtonDrive.App.csproj" />
+    <ProjectReference Include="..\ProtonDrive.Native.Windows\ProtonDrive.Native.Windows.csproj" />
     <ProjectReference Include="..\ProtonDrive.Sync.Windows\ProtonDrive.Sync.Windows.csproj" />
   </ItemGroup>
 
@@ -57,7 +59,10 @@
     <EmbeddedResource Include="Resources\Icons\Notification\Paused.ico" />
     <EmbeddedResource Include="Resources\Icons\Notification\Paused.Dark.ico" />
     <EmbeddedResource Include="Resources\Icons\Notification\Warning.ico" />
+    <Resource Include="Views\SignIn\Banner.DarkTheme.2FA.png" />
     <Resource Include="Views\SignIn\Banner.DarkTheme.png" />
+    <Resource Include="Views\SignIn\Banner.No2FA.DarkTheme.png" />
+    <Resource Include="Views\SignIn\SecurityKey.DarkTheme.png" />
     <Resource Include="Views\Main\Activity\PausedSyncPlaceholder.png" />
     <Resource Include="Views\Main\Activity\ActivityListPlaceholder.png" />
     <Resource Include="Views\Main\Activity\InitializingSyncPlaceholder.png" />
@@ -67,6 +72,7 @@
     <Resource Include="Views\Main\SharedWithMe\SharedWithMeListPlaceholder.png" />
     <Resource Include="Views\Main\SharedWithMe\SharedWithMeOnboarding.png" />
     <Resource Include="Views\Onboarding\FileExplorer.png" />
+    <Resource Include="Views\SignIn\SecurityKey.NotSupported.DarkTheme.png" />
   </ItemGroup>
 
   <ItemGroup>

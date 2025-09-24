@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -10,11 +10,16 @@ using Windows.Storage.FileProperties;
 
 namespace ProtonDrive.App.Windows.Services;
 
-internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
+/// <summary>
+/// Base metadata extractor using Windows Runtime APIs.
+/// Provides reliable extraction of basic properties for all media types,
+/// and EXIF metadata for photos.
+/// </summary>
+internal sealed class WinRtFileMetadataExtractor : IFileMetadataGenerator
 {
-    private readonly ILogger<WinRtFileMetadataGenerator> _logger;
+    private readonly ILogger<WinRtFileMetadataExtractor> _logger;
 
-    public WinRtFileMetadataGenerator(ILogger<WinRtFileMetadataGenerator> logger)
+    public WinRtFileMetadataExtractor(ILogger<WinRtFileMetadataExtractor> logger)
     {
         _logger = logger;
     }
@@ -61,7 +66,6 @@ internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
         }
 
         var geoTag = await GetGeotagAsync(file).ConfigureAwait(false);
-
         var latitude = geoTag?.Position.Latitude;
         var longitude = geoTag?.Position.Longitude;
 
@@ -102,7 +106,7 @@ internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
     }
 
     private async Task<TResult?> WithExceptionLogging<TResult>(Func<Task<TResult>> function, string failureNote)
-    where TResult : class
+        where TResult : class
     {
         try
         {
@@ -111,7 +115,7 @@ internal sealed class WinRtFileMetadataGenerator : IFileMetadataGenerator
         catch (Exception ex) when (ex.IsFileAccessException() || ex is COMException)
         {
             _logger.LogWarning(
-                "Metadata generation failed: {FailureNote}: {ErrorCode} {ErrorMessage}",
+                "Metadata extraction failed: {FailureNote}: {ErrorCode} {ErrorMessage}",
                 failureNote,
                 ex.GetRelevantFormattedErrorCode(),
                 ex.Message);

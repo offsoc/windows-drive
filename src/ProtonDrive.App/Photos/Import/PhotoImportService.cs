@@ -226,6 +226,7 @@ internal sealed class PhotoImportService : IStartableService, IStoppableService,
         }
         catch (OperationCanceledException)
         {
+            // TODO: Avoid log-and-throw (antipattern)
             _logger.LogInformation("Photo import interrupted");
             OnInterrupted(photoImportFolder);
             throw;

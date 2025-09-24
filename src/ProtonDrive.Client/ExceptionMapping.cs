@@ -27,6 +27,8 @@ internal static class ExceptionMapping
 
         FileSystemClientException<string> CreateFileSystemClientException(FileSystemErrorCode errorCode)
         {
+            var isMessageAuthoritative = exception is ApiException { Message: not null } or ApiException { IsMessageAuthoritative: true } or IOException;
+
             return new FileSystemClientException<string>(
                 $"{errorCode}",
                 errorCode,
@@ -34,7 +36,7 @@ internal static class ExceptionMapping
                 exception)
             {
                 // ApiException might contain the error message suitable for displaying in the UI
-                IsInnerExceptionMessageAuthoritative = exception is ApiException { IsMessageAuthoritative: true } or IOException,
+                IsInnerExceptionMessageAuthoritative = isMessageAuthoritative,
             };
         }
     }

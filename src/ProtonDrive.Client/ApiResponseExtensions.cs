@@ -35,18 +35,6 @@ public static class ApiResponseExtensions
         }
     }
 
-    public static async Task<ApiResponse?> TryReadFromJsonAsync(this HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        if (response.Content.Headers.ContentType?.MediaType != MediaTypeNames.Application.Json)
-        {
-            return null;
-        }
-
-        var content = await ReadContentNoneDestructiveAsync(response, cancellationToken).ConfigureAwait(false);
-
-        return TryReadApiResponseFromJson(content);
-    }
-
     public static async Task<T> Safe<T>(this Task<T> origin)
         where T : ApiResponse, new()
     {
@@ -57,20 +45,6 @@ public static class ApiResponseExtensions
         catch (ApiException ex)
         {
             return new T { Code = ex.ResponseCode, Error = ex.Message };
-        }
-    }
-
-    public static async Task ThrowOnFailureToDelete<T>(this Task<T> origin)
-        where T : ApiResponse
-    {
-        try
-        {
-            await origin.ThrowOnFailure().ConfigureAwait(false);
-        }
-        catch (ApiException ex) when (ex.ResponseCode is ResponseCode.DoesNotExist)
-        {
-            // The item might have already been deleted.
-            // If it is missing, the request is considered as succeeded.
         }
     }
 
@@ -209,42 +183,6 @@ public static class ApiResponseExtensions
         }
 
         return default;
-    }
-
-    private static ApiResponse? TryReadApiResponseFromJson(byte[] content)
-    {
-        try
-        {
-            var response = JsonSerializer.Deserialize<ApiResponse>(content);
-            if (response != null && response.Code != default)
-            {
-                return response;
-            }
-        }
-        catch
-        {
-            // Ignore
-        }
-
-        return null;
-    }
-
-    private static async Task<byte[]> ReadContentNoneDestructiveAsync(HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        var origin = response.Content;
-        var content = await origin.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-        var clonedContent = new ByteArrayContent(content);
-
-        foreach (var (key, value) in origin.Headers)
-        {
-            clonedContent.Headers.TryAddWithoutValidation(key, value);
-        }
-
-        // HttpContent can be read only once, therefore we replace it with a fresh clone so that it can be read once again
-        response.Content = clonedContent;
-        origin.Dispose();
-
-        return content;
     }
 
     private static ResponseCode ToResponseCode(SocketException exception)

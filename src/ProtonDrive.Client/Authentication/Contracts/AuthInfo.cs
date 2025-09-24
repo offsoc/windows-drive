@@ -8,7 +8,7 @@ internal record AuthInfo : ApiResponse
     public string? ServerEphemeral { get; init; }
     public int Version { get; init; }
     public string? Salt { get; init; }
+
     [JsonPropertyName("SRPSession")]
     public string? SrpSession { get; init; }
-    public int TwoFactor { get; init; }
 }

@@ -6,6 +6,7 @@
 
 using System;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,18 @@ internal class LoggingInnerHttpMessageHandler : DelegatingHandler
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            Log.RequestEnd(_logger, request, response, stopwatch.GetElapsedTime());
+            string? details = null;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorResponse = await response.TryReadFromJsonAsync<ApiErrorResponse>(cancellationToken).ConfigureAwait(false);
+
+                details = errorResponse is not null
+                    ? $"{(int)response.StatusCode} - {errorResponse.ErrorCode} - {errorResponse.ErrorMessage}"
+                    : null;
+            }
+
+            Log.RequestEnd(_logger, request, response, stopwatch.GetElapsedTime(), details ?? $"{(int)response.StatusCode}");
 
             return response;
         }
@@ -48,6 +60,16 @@ internal class LoggingInnerHttpMessageHandler : DelegatingHandler
 
             throw;
         }
+    }
+
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private sealed class ApiErrorResponse
+    {
+        [JsonPropertyName("Code")]
+        public int ErrorCode { get; init; }
+
+        [JsonPropertyName("Error")]
+        public string? ErrorMessage { get; init; }
     }
 
     internal static class Log
@@ -62,10 +84,10 @@ internal class LoggingInnerHttpMessageHandler : DelegatingHandler
             EventIds.RequestEnd,
             "Success response : {RequestId:000000} {HttpMethod} {Uri}, attempt: {NumberOfAttempt}, after {ElapsedMilliseconds:0.00}ms - {StatusCode}");
 
-        private static readonly Action<ILogger, int, HttpMethod, string?, int, double, int, Exception?> LogRequestFailure = LoggerMessage.Define<int, HttpMethod, string?, int, double, int>(
+        private static readonly Action<ILogger, int, HttpMethod, string?, int, double, string?, Exception?> LogRequestFailure = LoggerMessage.Define<int, HttpMethod, string?, int, double, string?>(
             LogLevel.Warning,
             EventIds.RequestEnd,
-            "Failure response : {RequestId:000000} {HttpMethod} {Uri}, attempt: {NumberOfAttempt}, after {ElapsedMilliseconds:0.00}ms - {StatusCode}");
+            "Failure response : {RequestId:000000} {HttpMethod} {Uri}, attempt: {NumberOfAttempt}, after {ElapsedMilliseconds:0.00}ms - {ErrorDetails}");
 
         private static readonly Action<ILogger, int, HttpMethod, string?, int, double, string, Exception?> LogRequestException = LoggerMessage.Define<int, HttpMethod, string?, int, double, string>(
             LogLevel.Warning,
@@ -90,20 +112,20 @@ internal class LoggingInnerHttpMessageHandler : DelegatingHandler
             LogRequestStart(logger, requestId, request.Method, GetUriString(request.RequestUri), attemptNumber, null);
         }
 
-        public static void RequestEnd(ILogger logger, HttpRequestMessage request, HttpResponseMessage response, TimeSpan duration)
+        public static void RequestEnd(ILogger logger, HttpRequestMessage request, HttpResponseMessage response, TimeSpan duration, string details)
         {
             var (requestId, attemptNumber) = GetLoggingOptions(request);
 
             if (!response.IsSuccessStatusCode)
             {
-                LogRequestFailure(
+                LogRequestFailure.Invoke(
                     logger,
                     requestId,
                     request.Method,
                     GetUriString(request.RequestUri),
                     attemptNumber,
                     duration.TotalMilliseconds,
-                    (int)response.StatusCode,
+                    details,
                     null);
 
                 return;

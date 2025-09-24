@@ -37,6 +37,7 @@
                 <ResourceDictionary Source="/Resources/Styles/BorderStyle.xaml" />
                 <ResourceDictionary Source="/Resources/Styles/ProgressBarStyle.xaml" />
                 <ResourceDictionary Source="/Resources/Styles/ComboBoxStyle.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/ListBoxStyle.xaml" />
                 <ResourceDictionary Source="/Themes/Generic.CustomChromeWindow.xaml" />
                 <ResourceDictionary Source="/Themes/Generic.ToggleSwitch.xaml" />
                 <ResourceDictionary Source="/Themes/Generic.ProgressRingStyle.xaml" />

@@ -397,7 +397,7 @@
     <value>Неадпаведнасць файла або папкі</value>
   </data>
   <data name="FileSystemErrorCode_Value_IntegrityFailure">
-    <value>Збой праверкі даных</value>
+    <value>Збой спраўджання даных</value>
   </data>
   <data name="FileSystemErrorCode_Value_InvalidName">
     <value>Назва змяшчае сімвалы, якія не падтрымліваюцца Windows. Выдаліце наступныя сімвалы, каб дазволіць сінхранізацыю: \ / : * ? " &lt; &gt; |</value>
@@ -1169,7 +1169,7 @@
     <value>Фатаграфіі</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_PhotosImport">
-    <value>Імпартаванне фатаграфій</value>
+    <value>Імпарт фатаграфій</value>
   </data>
   <data name="Main_Sidebar_NavigationMenu_Item_Photos_HelpText">
     <value>Элемент меню: фатаграфіі</value>
@@ -1395,25 +1395,25 @@
     <value>Атрымаць больш месца ў сховішчы</value>
   </data>
   <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
-    <value>Збой імпартавання. Альбом не існуе.</value>
+    <value>Збой імпарту. Альбом не існуе.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>Збой імпартавання. Дасягнута максімальная колькасць альбомаў.</value>
+    <value>Збой імпарту. Дасягнута максімальная колькасць альбомаў.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>Збой імпартавання. Дасягнута максімальная колькасць фатаграфій на альбом.</value>
+    <value>Збой імпарту. Дасягнута максімальная колькасць фатаграфій на альбом.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>Збой імпартавання. Паспрабуйце яшчэ раз.</value>
+    <value>Збой імпарту. Паспрабуйце яшчэ раз.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
-    <value>Збой імпартавання</value>
+    <value>Збой імпарту</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Importing">
     <value></value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Interrupted">
-    <value>Імпартаванне было перапынена</value>
+    <value>Імпарт быў перапынены</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_NotStarted">
     <value></value>

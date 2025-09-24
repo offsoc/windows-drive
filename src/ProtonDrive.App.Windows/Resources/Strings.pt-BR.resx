@@ -403,7 +403,7 @@
     <value>O nome contém caracteres que não são suportados pelo Windows. Por favor, remova os seguintes caracteres para permitir a sincronização: \ / : * ? " &lt; &gt; |</value>
   </data>
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
-    <value>Arquivo ignorado porque foi alterado muito recentemente. O aplicativo tentará novamente automaticamente</value>
+    <value>O arquivo foi ignorado porque foi alterado muito recentemente. O aplicativo tentará novamente automaticamente.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>O arquivo ou pasta divergiu</value>
@@ -428,13 +428,13 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Arquivo ou pasta inexistente</value>
   </data>
   <data name="FileSystemErrorCode_Value_RateLimited">
-    <value>Algo deu errado.</value>
+    <value>Algo deu errado</value>
   </data>
   <data name="FileSystemErrorCode_Value_ReadOnlyFile">
     <value>O arquivo é só de leitura.</value>
   </data>
   <data name="FileSystemErrorCode_Value_ReadOnlyRoot">
-    <value>Arquivos e pastas apenas para visualização não podem ser modificados. Desative e ative novamente a sincronização em "Compartilhado comigo" para resolver.</value>
+    <value>Arquivos e pastas somente visualização não podem ser modificados. Desative e ative a sincronização em "Compartilhado comigo" para resolver o problema.</value>
   </data>
   <data name="FileSystemErrorCode_Value_ServerError">
     <value>Algo deu errado.</value>
@@ -455,19 +455,19 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Algo deu errado.</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_ContainsInvalidCharacter">
-    <value>O nome contem um carácter inválido</value>
+    <value>O nome contém um caractere inválido</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_Empty">
     <value>O nome está vazio.</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_EndsWithPeriod">
-    <value>O nome termina com um punto.</value>
+    <value>O nome termina com um ponto</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_EndsWithSpace">
-    <value>O nome termina com um espaço.</value>
+    <value>O nome termina com um espaço</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_Reserved">
-    <value>O nome não é suportado pelo Windows.</value>
+    <value>O nome não é suportado pelo Windows</value>
   </data>
   <data name="FileSystemNameValidationResult_Value_TooLong">
     <value>O nome é muito longo.</value>
@@ -540,7 +540,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Account_Password_Description">
-    <value>Altere senha de acesso à sua conta.</value>
+    <value>Altere a senha de acesso à sua conta.</value>
   </data>
   <data name="Main_Account_Password_HelpText">
     <value>Alterar sua senha do Proton Drive</value>
@@ -562,7 +562,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Account_SessionManagement_Description">
-    <value>A menos que você encerre sessão de sua conta ou mude a senha, sua sessão permanecerá ativa. Sessões expiram após 60 dias de inatividade.</value>
+    <value>A menos que você saia da sua conta ou altere sua senha, sua sessão permanecerá ativa. As sessões expiram após 60 dias de inatividade.</value>
   </data>
   <data name="Main_Account_SessionManagement_HelpText">
     <value>Gerencie sua sessão. Depois de 60 dias de inatividade a sessão expirará.</value>
@@ -643,7 +643,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Ver mais informações</value>
   </data>
   <data name="Main_Activity_ErrorHeader_Description">
-    <value>Clique para saiba mais sobre esses problemas</value>
+    <value>Clique para saber mais sobre esses problemas</value>
   </data>
   <data name="Main_Activity_ErrorHeader_HelpText">
     <value>Exibir todos os erros na nova seção</value>
@@ -761,7 +761,7 @@ Desative e ative novamente a sincronização para restaurá-lo e eliminar esse e
     <value>Este dispositivo</value>
   </data>
   <data name="Main_MyComputer_Device_Rename_Button_Cancel_HelpText">
-    <value>Cancelar a renomeação de nome de dispositivo</value>
+    <value>Cancelar renomeação do dispositivo</value>
   </data>
   <data name="Main_MyComputer_Device_Rename_Button_Save_HelpText">
     <value>Salvar o nome do dispositivo</value>

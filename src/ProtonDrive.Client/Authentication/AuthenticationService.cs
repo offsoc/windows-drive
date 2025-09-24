@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Proton.Security;
 using ProtonDrive.Client.Authentication.Contracts;
+using ProtonDrive.Client.Authentication.Contracts.Fido2;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Shared.Authentication;
 using ProtonDrive.Shared.Caching;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Logging;
@@ -152,18 +154,19 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
 
             _tempSession = new Session
             {
-                Id = response.Uid,
+                Id = response.SessionId,
+                UserId = response.UserId,
                 AccessToken = response.AccessToken,
                 RefreshToken = response.RefreshToken,
                 Scopes = response.Scopes,
-                TwoFactorEnabled = (response.TwoFactor?.Enabled ?? 0) != 0,
+                MultiFactorEnabled = (response.MultipleFactor?.Methods ?? default) != default,
+                MultiFactor = response.MultipleFactor,
                 PasswordMode = response.PasswordMode,
-                UserId = response.UserId,
             };
 
             if (_tempSession.PasswordMode != PasswordMode.Dual)
             {
-                if (!_tempSession.TwoFactorEnabled)
+                if (!_tempSession.MultiFactorEnabled)
                 {
                     return await UnlockDataAsync(credential.SecurePassword, cancellationToken).ConfigureAwait(false);
                 }
@@ -181,37 +184,34 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
         return FinishStartSession(null);
     }
 
-    public async Task<StartSessionResult> FinishTwoFactorAuthenticationAsync(string secondFactor, CancellationToken cancellationToken)
+    public Task<StartSessionResult> AuthenticateWithTotpAsync(string totp, CancellationToken cancellationToken)
     {
         var session = Session;
         if (session == null)
         {
-            return StartSessionResult.Failure(StartSessionResultCode.SignInRequired);
+            return Task.FromResult(StartSessionResult.Failure(StartSessionResultCode.SignInRequired));
         }
 
-        var authRequestData = new AuthSecondFactorRequest { TwoFactorCode = secondFactor };
-        var response = await _authenticationApiClient.LoginAsync(authRequestData, cancellationToken).Safe().ConfigureAwait(false);
-        if (!response.Succeeded)
+        var authRequest = new MultiFactorAuthenticationRequest { Totp = totp };
+
+        return FinishTwoFactorAuthenticationAsync(authRequest, cancellationToken);
+    }
+
+    public Task<StartSessionResult> AuthenticateWithFido2Async(Fido2AssertionResult fido2Response, CancellationToken cancellationToken)
+    {
+        var authRequest = new MultiFactorAuthenticationRequest
         {
-            if (response.Code == ResponseCode.IncorrectLoginCredentials)
+            Fido2Response = new Fido2Response
             {
-                return StartSessionResult.Failure(StartSessionResultCode.SecondFactorCodeRequired, response);
-            }
+                AuthenticationOptions = fido2Response.AuthenticationOptions,
+                ClientData = fido2Response.ClientData,
+                AuthenticatorData = fido2Response.AuthenticatorData,
+                Signature = fido2Response.Signature,
+                CredentialId = fido2Response.CredentialId.ToList(),
+            },
+        };
 
-            await EndSessionAsync().ConfigureAwait(false);
-
-            return StartSessionResult.Failure(StartSessionResultCode.SignInRequired, response);
-        }
-
-        session = session with { Scopes = response.Scopes, TwoFactorEnabled = false };
-        _tempSession = session;
-
-        if (_tempSession.PasswordMode != PasswordMode.Dual && _password != null)
-        {
-            return await UnlockDataAsync(_password, cancellationToken).ConfigureAwait(false);
-        }
-
-        return FinishStartSession(null);
+        return FinishTwoFactorAuthenticationAsync(authRequest, cancellationToken);
     }
 
     public async Task<StartSessionResult> UnlockDataAsync(SecureString dataPassword, CancellationToken cancellationToken)
@@ -264,7 +264,7 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
                 new ApiResponse
                 {
                     Code = ResponseCode.Unknown,
-                    Error = (ex is ApiException apiException) ? apiException.Message : default,
+                    Error = (ex is ApiException apiException) ? apiException.Message : null,
                 });
         }
 
@@ -285,7 +285,7 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
             var currentRefreshTask = _refreshTask;
             var session = Session;
 
-            return session is not null ? (session, ct => GetRefreshedSessionAsync(session, currentRefreshTask, ct)) : default;
+            return session is not null ? (session, ct => GetRefreshedSessionAsync(session, currentRefreshTask, ct)) : null;
         }
         finally
         {
@@ -359,7 +359,7 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
 
         session = session with
         {
-            /* Id value does not change when refreshing tokens */
+            /* Session ID value does not change when refreshing tokens */
             Id = response.Uid,
             AccessToken = response.AccessToken,
             RefreshToken = response.RefreshToken,
@@ -379,6 +379,40 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
         }
     }
 
+    private async Task<StartSessionResult> FinishTwoFactorAuthenticationAsync(MultiFactorAuthenticationRequest authRequest, CancellationToken cancellationToken)
+    {
+        var session = Session;
+        if (session == null)
+        {
+            return StartSessionResult.Failure(StartSessionResultCode.SignInRequired);
+        }
+
+        var response = await _authenticationApiClient.LoginAsync(authRequest, cancellationToken).Safe().ConfigureAwait(false);
+        if (!response.Succeeded)
+        {
+            // Failed FIDO2 authentication attempt resets the session.
+            // Failed TOTP authentication attempt does not reset the session and can be retried.
+            if (response.Code == ResponseCode.IncorrectLoginCredentials && authRequest.Totp is not null && session.MultiFactor is not null)
+            {
+                return StartSessionResult.SecondFactorAuthenticationRequired(session.MultiFactor, response);
+            }
+
+            await EndSessionAsync().ConfigureAwait(false);
+
+            return StartSessionResult.Failure(StartSessionResultCode.SignInRequired, response);
+        }
+
+        session = session with { Scopes = response.Scopes, MultiFactorEnabled = false };
+        _tempSession = session;
+
+        if (_tempSession.PasswordMode != PasswordMode.Dual && _password != null)
+        {
+            return await UnlockDataAsync(_password, cancellationToken).ConfigureAwait(false);
+        }
+
+        return FinishStartSession(null);
+    }
+
     private StartSessionResult FinishStartSession(ApiResponse? response)
     {
         var session = _tempSession;
@@ -396,9 +430,9 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
             return StartSessionResult.Failure(StartSessionResultCode.Failure, response);
         }
 
-        if (session.TwoFactorEnabled && !session.Scopes.Contains("full"))
+        if (session.MultiFactorEnabled && !session.Scopes.Contains("full"))
         {
-            return StartSessionResult.Failure(StartSessionResultCode.SecondFactorCodeRequired);
+            return StartSessionResult.SecondFactorAuthenticationRequired(session.MultiFactor);
         }
 
         if (session.PasswordMode == PasswordMode.Dual && !_keyPassphraseProvider.ContainsAtLeastOnePassphrase)

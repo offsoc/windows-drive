@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using ProtonDrive.Shared.Net.Http;
 
 namespace ProtonDrive.Client.Authentication;
 
@@ -38,7 +39,7 @@ internal sealed class AuthorizationHandler : DelegatingHandler
             return null;
         }
 
-        return await response.TryReadFromJsonAsync(cancellationToken).ConfigureAwait(false);
+        return await response.TryReadFromJsonAsync<ApiResponse?>(cancellationToken).ConfigureAwait(false);
     }
 
     private static bool IsAccountDisabled([NotNullWhen(true)] ApiResponse? apiResponse)

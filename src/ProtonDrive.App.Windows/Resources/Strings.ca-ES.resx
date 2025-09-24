@@ -1395,13 +1395,13 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
     <value>Obtén més emmagatzematge</value>
   </data>
   <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
-    <value>Ha fallat la importació. Aquest àlbum no existeix.</value>
+    <value>Ha fallat la importació. L'àlbum no existeix.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>No s'ha pogut fer la importació. S'ha assolit el nombre màxim d'àlbums.</value>
+    <value>Ha fallat la importació. S'ha arribat al nombre màxim d'àlbums.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>No s'ha pogut fer la importació. S'ha assolit el nombre màxim de fotos per àlbum.</value>
+    <value>Ha fallat la importació. S'ha arribat al nombre màxim de fotos per àlbum.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
     <value>No s'ha pogut fer la importació. Torneu-ho a provar.</value>

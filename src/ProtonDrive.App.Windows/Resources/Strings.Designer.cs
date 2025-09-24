@@ -3805,6 +3805,33 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Security key.
+        /// </summary>
+        internal static string SecondFactorInputPage_Value_Fido2 {
+            get {
+                return ResourceManager.GetString("SecondFactorInputPage_Value_Fido2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string SecondFactorInputPage_Value_NotSupported {
+            get {
+                return ResourceManager.GetString("SecondFactorInputPage_Value_NotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authenticator app.
+        /// </summary>
+        internal static string SecondFactorInputPage_Value_Totp {
+            get {
+                return ResourceManager.GetString("SecondFactorInputPage_Value_Totp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Signing out....
         /// </summary>
         internal static string SessionStatus_Value_Ending {
@@ -3895,6 +3922,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Learn more.
+        /// </summary>
+        internal static string SignIn_Button_LearnMore {
+            get {
+                return ResourceManager.GetString("SignIn_Button_LearnMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Sign in.
         /// </summary>
         internal static string SignIn_Button_SignIn {
@@ -3940,6 +3976,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No two-factor authentication method found..
+        /// </summary>
+        internal static string SignIn_Text_No2FAMethodFound {
+            get {
+                return ResourceManager.GetString("SignIn_Text_No2FAMethodFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Password.
         /// </summary>
         internal static string SignIn_Text_Password {
@@ -3954,6 +3999,24 @@ namespace ProtonDrive.App.Windows.Resources {
         internal static string SignIn_Text_SecondPassword {
             get {
                 return ResourceManager.GetString("SignIn_Text_SecondPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert a security key linked to your Proton Account..
+        /// </summary>
+        internal static string SignIn_Text_SecurityKey {
+            get {
+                return ResourceManager.GetString("SignIn_Text_SecurityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your system does not support security key.
+        /// </summary>
+        internal static string SignIn_Text_SecurityKeyNotSupported {
+            get {
+                return ResourceManager.GetString("SignIn_Text_SecurityKeyNotSupported", resourceCulture);
             }
         }
         

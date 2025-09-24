@@ -13,9 +13,9 @@ public enum StartSessionResultCode
     SignInRequired,
 
     /// <summary>
-    /// To finish two factor authentication a second factor code is required
+    /// To finish multiple factor authentication a TOTP or FIDO2 verification is required
     /// </summary>
-    SecondFactorCodeRequired,
+    SecondFactorRequired,
 
     /// <summary>
     /// To finish authentication a second (mailbox) password is required

@@ -1395,13 +1395,13 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
     <value>Obtenir plus d'espace de stockage</value>
   </data>
   <data name="PhotoImportErrorCode_Value_AlbumDoesNotExist">
-    <value>L'importation n'a pas abouti. Le registre n'existe pas.</value>
+    <value>L'importation n'a pas abouti. L'album n'existe pas.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfAlbumsReached">
-    <value>L'importation n'a pas abouti. Le nombre de registres maximal a été atteint.</value>
+    <value>L'importation n'a pas abouti. Le nombre maximum d'albums a été atteint.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_MaximumNumberOfPhotosPerAlbumReached">
-    <value>L'importation n'a pas abouti. Le nombre maximal de photos par registre a été atteint.</value>
+    <value>L'importation n'a pas abouti. Le nombre maximal de photos par album a été atteint.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
     <value>L'importation n'a malheureusement pas abouti. Veuillez réessayer.</value>

@@ -122,7 +122,7 @@ internal sealed class OfflineService : IOfflineService, IOfflinePolicyProvider, 
     private async Task<HttpResponseMessage> FallbackAction(DelegateResult<HttpResponseMessage> result, Context context, CancellationToken cancellationToken)
     {
         var response = result.Result;
-        var apiResponse = await response.TryReadFromJsonAsync(cancellationToken).ConfigureAwait(false);
+        var apiResponse = await response.TryReadFromJsonAsync<ApiResponse?>(cancellationToken).ConfigureAwait(false);
 
         if (IsAppUpdateRequired(apiResponse))
         {

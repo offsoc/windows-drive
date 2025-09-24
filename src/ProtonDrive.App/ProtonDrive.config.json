@@ -63,6 +63,7 @@
     "UpgradePlanFromSidebar": "https://account.proton.me/drive/upgrade?ref=upgrade-drive-windows-app-sidebar",
     "ChangePassword": "https://account.proton.me/drive/account-password",
     "ManageSessions": "https://account.proton.me/drive/security#sessions",
+    "HowToUseSecurityKey": "https://proton.me/support/2fa-security-key",
     "HowToImportPhotosFromGoogle": "https://proton.me/support/how-to-import-from-google-photos",
     "HowPhotoImportWorks": "https://proton.me/support/how-photo-import-works",
     "Trash": "https://drive.proton.me/trash",

@@ -4,7 +4,7 @@ public enum SigningInStatus
 {
     None,
     WaitingForAuthenticationPassword,
-    WaitingForSecondFactorCode,
+    WaitingForSecondFactorAuthentication,
     WaitingForDataPassword,
     Authenticating,
 }

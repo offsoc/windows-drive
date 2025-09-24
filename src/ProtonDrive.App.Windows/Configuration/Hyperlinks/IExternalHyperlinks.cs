@@ -14,6 +14,7 @@ public interface IExternalHyperlinks
     IExternalHyperlink UpgradePlanFromSidebar { get; }
     IExternalHyperlink ChangePassword { get; }
     IExternalHyperlink ManageSessions { get; }
+    IExternalHyperlink HowToUseSecurityKey { get; }
     IExternalHyperlink HowToImportPhotosFromGoogle { get; }
     IExternalHyperlink HowPhotoImportWorks { get; }
 }

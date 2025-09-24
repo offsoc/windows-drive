@@ -25,6 +25,7 @@ using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Volumes;
+using ProtonDrive.App.Windows.Authentication;
 using ProtonDrive.App.Windows.Configuration.Hyperlinks;
 using ProtonDrive.App.Windows.Dialogs;
 using ProtonDrive.App.Windows.InterProcessCommunication;
@@ -254,12 +255,15 @@ internal static class AppServices
             .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<NamedPipeBasedIpcServer>())
 
             .AddSingleton<ILivePhotoFileDetector, LivePhotoFileDetector>()
-            .AddSingleton<WinRtFileMetadataGenerator>()
+            .AddSingleton<WinRtFileMetadataExtractor>()
+            .AddSingleton<QuickTimeFileMetadataExtractor>()
             .AddSingleton<IFileMetadataGenerator>(
                 provider =>
                     new LivePhotoMetadataExtractingDecorator(
                         new GoogleTakeoutMetadataExtractingDecorator(
-                            provider.GetRequiredService<WinRtFileMetadataGenerator>(),
+                            new QuickTimeFileMetadataExtractingDecorator(
+                                provider.GetRequiredService<WinRtFileMetadataExtractor>(),
+                                provider.GetRequiredService<QuickTimeFileMetadataExtractor>()),
                             provider.GetRequiredService<IGoogleTakeoutMetadataExtractor>()),
                         provider.GetRequiredService<ILivePhotoFileDetector>()))
 
@@ -277,6 +281,8 @@ internal static class AppServices
             .AddSingleton<ILocalEventLogClientFactory, LocalEventLogClientFactory>()
 
             .AddSingleton<IFileSystemIdentityProvider<long>, FileSystemIdentityProvider>()
+
+            .AddSingleton<IFido2Authenticator, Win32Fido2Authenticator>()
             ;
     }
 }
