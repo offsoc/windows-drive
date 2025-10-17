@@ -11,6 +11,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
@@ -31,52 +32,82 @@
 
     <SolidColorBrush
         x:Key="KeyboardFocusBorderColorBrush"
+        po:Freeze="True"
         Color="{StaticResource WhiteColor}" />
 
     <SolidColorBrush
         x:Key="ComboBoxBackground"
+        po:Freeze="True"
         Color="{StaticResource ControlFillColorDefault}" />
+
     <SolidColorBrush
         x:Key="ComboBoxBackgroundFocused"
+        po:Freeze="True"
         Color="{StaticResource ControlFillColorDefault}" />
+
     <SolidColorBrush
         x:Key="ComboBoxBackgroundPointerOver"
+        po:Freeze="True"
         Color="{StaticResource ControlFillColorSecondary}" />
+
     <SolidColorBrush
         x:Key="ComboBoxBackgroundDisabled"
+        po:Freeze="True"
         Color="{StaticResource ControlFillColorDisabled}" />
+
     <SolidColorBrush
         x:Key="ComboBoxForeground"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorPrimary}" />
+
     <SolidColorBrush
         x:Key="ComboBoxForegroundDisabled"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorDisabled}" />
+
     <SolidColorBrush
         x:Key="ComboBoxBorderBrushDisabled"
+        po:Freeze="True"
         Color="{StaticResource ControlStrokeColorDefault}" />
+
     <SolidColorBrush
         x:Key="ComboBoxBorderBrushFocused"
+        po:Freeze="True"
         Color="{StaticResource PrimaryColor}" />
+
     <SolidColorBrush
         x:Key="ComboBoxDropDownBackground"
+        po:Freeze="True"
         Color="{StaticResource AcrylicBackgroundFillColorDefault}" />
+
     <SolidColorBrush
         x:Key="ComboBoxDropDownGlyphForeground"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorSecondary}" />
+
     <SolidColorBrush
         x:Key="ComboBoxDropDownBorderBrush"
+        po:Freeze="True"
         Color="{StaticResource SurfaceStrokeColorFlyout}" />
+
     <SolidColorBrush
-        x:Key="ComboBoxItemPillFillBrush"
+        x:Key="ComboBoxItemFillBrush"
+        po:Freeze="True"
         Color="{StaticResource PrimaryColor}" />
+
     <SolidColorBrush
         x:Key="ComboBoxItemBackgroundSelected"
+        po:Freeze="True"
         Color="{StaticResource SubtleFillColorSecondary}" />
+
     <SolidColorBrush
         x:Key="ComboBoxItemForeground"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorPrimary}" />
+
     <SolidColorBrush
         x:Key="ComboBoxItemForegroundSelected"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorPrimary}" />
 
     <Thickness x:Key="ComboBoxPadding">10,8,10,8</Thickness>
@@ -202,7 +233,7 @@
                                     Margin="{TemplateBinding Padding}" />
                                 <Rectangle
                                     x:Name="ActiveRectangle"
-                                    Fill="{DynamicResource ComboBoxItemPillFillBrush}"
+                                    Fill="{DynamicResource ComboBoxItemFillBrush}"
                                     RadiusX="2"
                                     RadiusY="2"
                                     Visibility="Collapsed"

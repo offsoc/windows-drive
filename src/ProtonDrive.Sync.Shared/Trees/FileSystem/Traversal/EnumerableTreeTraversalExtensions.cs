@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;

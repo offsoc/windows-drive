@@ -12,6 +12,6 @@ public interface IThumbnailProvider
     /// <summary>
     /// Obtains a thumbnail for a file.
     /// </summary>
-    /// <returns>Thumbnail bytes if obtaining thumbnail succeeded; Empty memory otherwise.</returns>
-    Task<ReadOnlyMemory<byte>> GetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken);
+    /// <returns>Thumbnail bytes if obtaining thumbnail succeeded; <see langword="null"/> otherwise.</returns>
+    Task<ReadOnlyMemory<byte>?> TryGetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken);
 }

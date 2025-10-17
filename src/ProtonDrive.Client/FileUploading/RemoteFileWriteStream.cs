@@ -319,13 +319,13 @@ internal sealed class RemoteFileWriteStream : Stream
         const int maxNumberOfBytesOnRemote = 60 * 1024; // 60 KiB
         const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
 
-        var thumbnail = await _thumbnailProvider.GetThumbnailAsync(IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
-        if (thumbnail.IsEmpty)
+        var thumbnail = await _thumbnailProvider.TryGetThumbnailAsync(IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
+        if (thumbnail == null || thumbnail.Value.IsEmpty)
         {
             return false;
         }
 
-        var thumbnailMemoryOwner = new ThumbnailMemoryOwner(thumbnail);
+        var thumbnailMemoryOwner = new ThumbnailMemoryOwner(thumbnail.Value);
 
         await SendBufferToPipelineAsync(
             ThumbnailBlockIndex,
@@ -342,13 +342,13 @@ internal sealed class RemoteFileWriteStream : Stream
         const int maxNumberOfBytesOnRemote = 1024 * 1024; // 1 MiB
         const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
 
-        var thumbnail = await _thumbnailProvider.GetThumbnailAsync(IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
-        if (thumbnail.IsEmpty)
+        var thumbnail = await _thumbnailProvider.TryGetThumbnailAsync(IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
+        if (thumbnail == null || thumbnail.Value.IsEmpty)
         {
             return false;
         }
 
-        var thumbnailMemoryOwner = new ThumbnailMemoryOwner(thumbnail);
+        var thumbnailMemoryOwner = new ThumbnailMemoryOwner(thumbnail.Value);
 
         await SendBufferToPipelineAsync(
             HdPreviewBlockIndex,

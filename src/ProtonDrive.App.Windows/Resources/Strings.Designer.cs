@@ -817,6 +817,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Live Photo cannot be uploaded..
+        /// </summary>
+        internal static string FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum {
+            get {
+                return ResourceManager.GetString("FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File or folder has diverged.
         /// </summary>
         internal static string FileSystemErrorCode_Value_MetadataMismatch {
@@ -3360,6 +3369,15 @@ namespace ProtonDrive.App.Windows.Resources {
         internal static string MappingErrorCode_Value_LocalFolderNotEmpty {
             get {
                 return ResourceManager.GetString("MappingErrorCode_Value_LocalFolderNotEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local volume serial number has changed. Set up a new sync folder..
+        /// </summary>
+        internal static string MappingErrorCode_Value_LocalVolumeDiverged {
+            get {
+                return ResourceManager.GetString("MappingErrorCode_Value_LocalVolumeDiverged", resourceCulture);
             }
         }
         

@@ -89,6 +89,11 @@ public enum ResponseCode
     /// </remarks>
     MissingRelatedFiles = 202000,
 
+    /// <summary>
+    /// The related file cannot be uploaded because its main image file has already been committed independently and added to an album.
+    /// </summary>
+    MainPhotoAlreadyInAlbum = 200303,
+
     CustomCode = 10000000,
 
     /// <summary>

@@ -21,6 +21,7 @@ using ProtonDrive.App.FileSystem.Local;
 using ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
 using ProtonDrive.App.FileSystem.Remote;
 using ProtonDrive.App.Instrumentation.Observability;
+using ProtonDrive.App.Instrumentation.Observability.TransferPerformance;
 using ProtonDrive.App.Instrumentation.Telemetry;
 using ProtonDrive.App.Instrumentation.Telemetry.MappingSetup;
 using ProtonDrive.App.Instrumentation.Telemetry.Synchronization;
@@ -454,7 +455,14 @@ public static class AppServices
                 .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<DownloadSuccessMeter>())
                 .AddSingleton<IMappingsAware>(provider => provider.GetRequiredService<DownloadSuccessMeter>())
 
+                .AddSingleton<TransferPerformanceMonitors>()
+
+                .AddSingleton<TransferPerformanceMeter>()
+                .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<TransferPerformanceMeter>())
+                .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<TransferPerformanceMeter>())
+
                 .AddSingleton<GenericFileTransferMetricsFactory>()
+                .AddSingleton<GenericTransferPerformanceMetricsFactory>()
 
                 .AddSingleton<ObservabilityService>()
                 .AddSingleton<IRemoteSettingsAware>(provider => provider.GetRequiredService<ObservabilityService>())

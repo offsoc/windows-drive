@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -29,7 +30,9 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
     private bool _isFido2Available;
     private IReadOnlyCollection<SecondFactorInputPage> _enabledPages = [];
     private bool _hasMultipleEnabledPages;
-    private string? _code;
+    private string? _totpCode;
+    private string? _lastAttemptedTotpCode;
+    private bool _requestTotpCodeFocus;
 
     public SecondFactorInputViewModel(
         IAuthenticationService authenticationService,
@@ -48,6 +51,12 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
     public ICommand ContinueSigningInCommand => _continueSigningInCommand;
     public ICommand LearnMoreCommand { get; }
 
+    public bool RequestTotpCodeFocus
+    {
+        get => _requestTotpCodeFocus;
+        private set => SetProperty(ref _requestTotpCodeFocus, value);
+    }
+
     public SecondFactorInputPage CurrentPage
     {
         get => _currentPage;
@@ -55,9 +64,9 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
         {
             if (SetProperty(ref _currentPage, value))
             {
-                Code = null;
-
+                TotpCode = null;
                 _scheduler.Schedule(() => _continueSigningInCommand.NotifyCanExecuteChanged());
+                RequestTotpCodeFocus = value == SecondFactorInputPage.Totp;
             }
         }
     }
@@ -87,12 +96,12 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
     }
 
     [DeferredValidation]
-    public string? Code
+    public string? TotpCode
     {
-        get => _code;
+        get => _totpCode;
         set
         {
-            if (SetProperty(ref _code, value, true))
+            if (SetProperty(ref _totpCode, value, true))
             {
                 _scheduler.Schedule(() => _continueSigningInCommand.NotifyCanExecuteChanged());
             }
@@ -103,7 +112,7 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
     {
         switch (memberName)
         {
-            case nameof(Code):
+            case nameof(TotpCode):
                 var result = LastResponse is not null && LastResponse.Code != ResponseCode.Success
                     ? new ValidationResult(LastResponse.Error ?? "Incorrect code")
                     : ValidationResult.Success;
@@ -125,7 +134,7 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
         // Clear 2FA code only on success; otherwise keep it to show validation errors.
         if (sessionState.Response.Succeeded)
         {
-            Code = null;
+            TotpCode = null;
         }
 
         EnabledPages =
@@ -151,7 +160,7 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
     {
         return CurrentPage switch
         {
-            SecondFactorInputPage.Totp => !string.IsNullOrEmpty(Code),
+            SecondFactorInputPage.Totp => TotpCodeIsValid(),
             SecondFactorInputPage.Fido2 => true,
             SecondFactorInputPage.NotSupported => false,
             _ => throw new ArgumentOutOfRangeException(),
@@ -163,12 +172,14 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
         switch (CurrentPage)
         {
             case SecondFactorInputPage.Totp:
-                if (string.IsNullOrEmpty(Code))
+                if (!TotpCodeIsValid())
                 {
                     return;
                 }
 
-                await AuthenticationService.AuthenticateWithTotpAsync(Code).ConfigureAwait(true);
+                await AuthenticationService.AuthenticateWithTotpAsync(TotpCode).ConfigureAwait(true);
+                _lastAttemptedTotpCode = TotpCode;
+                await _scheduler.ScheduleAsync(() => _continueSigningInCommand.NotifyCanExecuteChanged()).ConfigureAwait(true);
                 break;
 
             case SecondFactorInputPage.Fido2:
@@ -178,6 +189,12 @@ internal sealed class SecondFactorInputViewModel : SessionWorkflowStepViewModelB
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    [MemberNotNullWhen(true, nameof(TotpCode))]
+    private bool TotpCodeIsValid()
+    {
+        return TotpCode is { Length: 6 } && !TotpCode.Equals(_lastAttemptedTotpCode, StringComparison.OrdinalIgnoreCase);
     }
 
     private void LearnMore()

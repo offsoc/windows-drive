@@ -1436,6 +1436,15 @@
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Βελτιώσεις</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Κλειδί ασφαλείας</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Εφαρμογή επαλήθευσης</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Αποσύνδεση...</value>
   </data>
@@ -1470,6 +1479,9 @@
     <value>_Ξεχάσατε τον κωδικό σας;</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Μάθετε περισσότερα</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Σύνδεση</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1487,12 +1499,21 @@
   <data name="SignIn_Text_2FACode">
     <value>Πληκτρολογήστε τον κωδικό από την εφαρμογή ταυτοποίησης</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Δε βρέθηκε μέθοδος ελέγχου ταυτότητας δύο παραγόντων.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Κωδικός Πρόσβασης</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Δεύτερος κωδικός πρόσβασης</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Εισαγάγετε ένα κλειδί ασφαλείας που είναι συνδεδεμένο με τον Proton Λογαριασμό σας.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Το σύστημά σας δεν υποστηρίζει κλειδί ασφαλείας</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>Διεύθυνση ηλεκτρονικού ταχυδρομείου ή όνομα χρήστη</value>

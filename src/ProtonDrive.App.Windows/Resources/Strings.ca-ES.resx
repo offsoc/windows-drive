@@ -1436,6 +1436,15 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Millores</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Clau de seguretat</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Aplicació d'autenticació</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>S'està tancant la sessió...</value>
   </data>
@@ -1470,6 +1479,9 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
     <value>_Heu oblidat la contrasenya?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Per saber-ne més</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Inicia la sessió</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1487,12 +1499,21 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
   <data name="SignIn_Text_2FACode">
     <value>Introduïu el codi de la vostra aplicació d'autenticació.</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>No s'ha trobat cap mètode d'autenticació de doble factor.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Contrasenya</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Segona contrasenya</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Introduïu una clau de seguretat vinculada al vostre compte de Proton.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>El vostre sistema no admet una clau de seguretat</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>Correu electrònic o _nom d'usuari</value>

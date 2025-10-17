@@ -35,10 +35,12 @@
   "MinDelayBeforeFileUpload": "00:00:04",
   "ContactsCacheInvalidationInterval": "12:00:00",
   "ContactsCacheGraceInterval": "00:10:00",
-  "PeriodicTelemetryReportInterval": "00:30:00",
   "DelayBeforeDisplayingSyncInitializationProgress": "00:00:20",
   "NumberOfDaysBeforeRemovingInstallationLogFiles": 90,
+  "PeriodicTelemetryReportInterval": "00:30:00",
   "PeriodicObservabilityReportInterval": "00:00:10",
+  "PeriodicTransferPerformanceReportInterval": "00:01:00",
+  "MaxInactivityPeriodBetweenFileTransfers": "00:00:10",
   "ActivityQueryInterval": "06:00:00",
   "FolderNames": {
     "TempFolderName": "$Temp",

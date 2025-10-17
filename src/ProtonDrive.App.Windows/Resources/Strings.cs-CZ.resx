@@ -1436,6 +1436,15 @@ Obsah souborů bude stažen jen na vyžádání.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Vylepšení</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Bezpečnostní klíč</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Ověřovací aplikace</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Odhlašování...</value>
   </data>
@@ -1470,6 +1479,9 @@ Obsah souborů bude stažen jen na vyžádání.</value>
     <value>_Zapomněli jste heslo?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Více informací</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Přihlásit se</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1487,12 +1499,21 @@ Obsah souborů bude stažen jen na vyžádání.</value>
   <data name="SignIn_Text_2FACode">
     <value>Zadejte kód z vaší ověřovací aplikace</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Nebyla nalezena žádná metoda dvoufázového ověření.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Heslo</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Druhé heslo</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Vložte bezpečnostní klíč spojený s vaším účtem Proton.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Váš systém nepodporuje bezpečnostní klíč</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-mail nebo _uživatelské jméno</value>

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ProtonDrive.Shared;
+using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Adapter.Shared;
 using ProtonDrive.Sync.Adapter.Trees.Adapter;
 using ProtonDrive.Sync.Adapter.UpdateDetection.StateBased.Enumeration;
@@ -95,7 +96,7 @@ internal class DirtyNodeUpdateDetection<TId, TAltId>
 
             var syncActivity = node.GetSyncActivityItemForUpdateDetection(result.Value!);
             var (errorCode, errorMessage) = result.Exception!.GetErrorInfo();
-            _syncActivity.OnChanged(syncActivity, SyncActivityItemStatus.InProgress);
+            _syncActivity.OnProgress(syncActivity, Progress.Zero);
 
             if (errorCode is FileSystemErrorCode.SharingViolation)
             {

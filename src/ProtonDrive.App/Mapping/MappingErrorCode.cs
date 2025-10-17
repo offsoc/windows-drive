@@ -15,6 +15,7 @@ public enum MappingErrorCode
     LocalVolumeNotSupported,
     LocalFolderDoesNotExist,
     LocalFolderDiverged,
+    LocalVolumeDiverged,
     LocalAndRemoteFoldersNotEmpty,
     LocalFolderNotEmpty,
     LocalFolderIncludedByAnAlreadySyncedFolder,

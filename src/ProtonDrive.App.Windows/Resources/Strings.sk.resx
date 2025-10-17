@@ -1436,6 +1436,15 @@ Obsah súborov sa bude sťahovať len na požiadanie.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Vylepšenia</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Bezpečnostný kľúč</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Overovacia aplikácia</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Odhlasovanie...</value>
   </data>
@@ -1470,6 +1479,9 @@ Obsah súborov sa bude sťahovať len na požiadanie.</value>
     <value>_Zabudli ste vaše heslo?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Zistiť viac</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>Pr_ihlásiť sa</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1487,12 +1499,21 @@ Obsah súborov sa bude sťahovať len na požiadanie.</value>
   <data name="SignIn_Text_2FACode">
     <value>Zadajte kód z vašej overovacej aplikácie</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Nebola nájdená žiadna metóda dvojstupňového overenia.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Heslo</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Druhé heslo</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Vložte bezpečnostný kľúč prepojený s vaším Proton účtom.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Váš systém nepodporuje bezpečnostný kľúč</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>Email alebo _používateľské meno</value>

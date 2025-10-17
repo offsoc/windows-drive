@@ -100,7 +100,7 @@ internal sealed class NotifyingExecutionStep<TId, TAltId>
 
         await using (sourceRevision.ConfigureAwait(false))
         {
-            var syncActivity = operation.GetSyncActivityItem(nodeInfo, destinationInfo, sourceRevision);
+            var syncActivity = operation.GetSyncActivityItem(nodeInfo, destinationInfo, sourceRevision, stage: SyncActivityStage.Preparation);
 
             return await WithSyncActivity(syncActivity, InternalExecute).ConfigureAwait(false);
 
@@ -129,7 +129,7 @@ internal sealed class NotifyingExecutionStep<TId, TAltId>
 
     private Task<IRevision> OpenFileForReading(AltIdentifiableFileSystemNodeModel<TId, TId> nodeModel, CancellationToken cancellationToken)
     {
-        // ExecutableOperation.Model.AltId contains file Id on another adapter
+        // ExecutableOperation.Model.AltId contains file ID on another adapter
         return _fileRevisionProvider.OpenFileForReadingAsync(nodeModel.AltId, nodeModel.ContentVersion, cancellationToken);
     }
 
@@ -176,6 +176,14 @@ internal sealed class NotifyingExecutionStep<TId, TAltId>
 
         void NotifyProgressChanged(Progress value)
         {
+            if (syncActivityItem.Stage is not SyncActivityStage.Execution)
+            {
+                syncActivityItem = syncActivityItem with
+                {
+                    Stage = SyncActivityStage.Execution,
+                };
+            }
+
             _syncActivity.OnProgress(syncActivityItem, value);
         }
     }

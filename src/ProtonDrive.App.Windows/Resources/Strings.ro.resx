@@ -1434,6 +1434,15 @@ Conținutul fișierelor va fi descărcat numai la cerere.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Îmbunătățiri</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Cheia de securitate</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Aplicația de autentificare</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Se deconectează…</value>
   </data>
@@ -1468,6 +1477,9 @@ Conținutul fișierelor va fi descărcat numai la cerere.</value>
     <value>_V-ați uitat parola?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Detalii</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Conectare</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1485,12 +1497,21 @@ Conținutul fișierelor va fi descărcat numai la cerere.</value>
   <data name="SignIn_Text_2FACode">
     <value>Introduceți codul din aplicația de autentificare</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Nu sunt disponibile metode de autentificare cu doi factori.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Parola</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Parola secundară</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Inserați o cheie de securitate conectată la contul Proton.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Sistemul actual nu suportă cheia de securitate.</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-mail sau _nume de utilizator</value>

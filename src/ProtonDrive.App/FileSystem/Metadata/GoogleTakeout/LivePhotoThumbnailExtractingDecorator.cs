@@ -17,26 +17,26 @@ public sealed class LivePhotoThumbnailExtractingDecorator : IThumbnailGenerator
         _livePhotoFileDetector = livePhotoFileDetector;
     }
 
-    public async Task<ReadOnlyMemory<byte>> GenerateThumbnailAsync(
+    public async Task<ReadOnlyMemory<byte>?> TryGenerateThumbnailAsync(
         string filePath,
         int numberOfPixelsOnLargestSide,
         int maxNumberOfBytes,
         CancellationToken cancellationToken)
     {
-        var thumbnail = await _decoratedInstance.GenerateThumbnailAsync(
+        var thumbnail = await _decoratedInstance.TryGenerateThumbnailAsync(
             filePath,
             numberOfPixelsOnLargestSide,
             maxNumberOfBytes,
             cancellationToken).ConfigureAwait(false);
 
-        if (!thumbnail.IsEmpty)
+        if (thumbnail != null)
         {
             return thumbnail;
         }
 
         if (_livePhotoFileDetector.TryGetMainLivePhotoPath(filePath, out var relatedPhotoFilePath))
         {
-            return await _decoratedInstance.GenerateThumbnailAsync(
+            return await _decoratedInstance.TryGenerateThumbnailAsync(
                 relatedPhotoFilePath,
                 numberOfPixelsOnLargestSide,
                 maxNumberOfBytes,

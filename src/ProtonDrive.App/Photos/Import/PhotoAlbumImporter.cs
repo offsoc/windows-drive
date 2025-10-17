@@ -268,6 +268,22 @@ internal sealed class PhotoAlbumImporter
 
                 throw;
             }
+            catch (FileSystemClientException exception) when (exception.ErrorCode is FileSystemErrorCode.MainPhotoAlreadyInAlbum)
+            {
+                if (mainPhotoLinkId is null)
+                {
+                    throw;
+                }
+
+                // The related photo cannot be uploaded as part of a Live Photo because its main photo already belongs to an album.
+                // The upload will be retried once as a normal, independent photo.
+                mainPhotoLinkId = null;
+                _logger.LogInformation(
+                    "Failed to upload the related photo \"{Path}\": {Message}. {Details}",
+                    filePathToLog,
+                    exception.CombinedMessage(),
+                    "Retry uploading file as independent photo");
+            }
             catch (Exception exception) when (IsExpectedException(exception))
             {
                 // TODO: Avoid log-and-throw (antipattern)

@@ -7,11 +7,17 @@
 
     <Product>Proton Drive</Product>
     <Company>Proton AG</Company>
-    <Version>1.11.4</Version>
+    <Version>1.11.5</Version>
 
     <Nullable>enable</Nullable>
     <NeutralLanguage>en</NeutralLanguage>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <Using Include="Xunit" />
+    <Using Include="AwesomeAssertions" />
+    <Using Include="NSubstitute" />
+  </ItemGroup>
 
 </Project>

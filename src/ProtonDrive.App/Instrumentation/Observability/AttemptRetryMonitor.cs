@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace ProtonDrive.App.Instrumentation.Observability;
 
 internal sealed class AttemptRetryMonitor<TId>
     where TId : notnull
 {
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
     private readonly Dictionary<TId, AttemptType> _statusByItemId = [];
 
     private int _firstTrySuccesses;

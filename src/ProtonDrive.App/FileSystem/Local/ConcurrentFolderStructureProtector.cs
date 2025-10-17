@@ -23,7 +23,7 @@ internal sealed class ConcurrentFolderStructureProtector<TKey>
 
     public async Task<IAsyncDisposable> UnprotectFolderAsync(TKey key, string folderPath, CancellationToken cancellationToken)
     {
-        using (await _folderProtectionLock.AcquireLockAsync(cancellationToken).ConfigureAwait(false))
+        using (await AsyncLockAcquisition.AcquireLockAsync(_folderProtectionLock, cancellationToken).ConfigureAwait(false))
         {
             if (_folderReferenceCounters.TryGetValue(key, out var refCount))
             {
@@ -40,7 +40,7 @@ internal sealed class ConcurrentFolderStructureProtector<TKey>
         return new AsyncDisposable(async () =>
         {
             // Disposal should be handled regardless of cancellation
-            using (await _folderProtectionLock.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
+            using (await AsyncLockAcquisition.AcquireLockAsync(_folderProtectionLock, CancellationToken.None).ConfigureAwait(false))
             {
                 if (_folderReferenceCounters.TryGetValue(key, out var refCount))
                 {

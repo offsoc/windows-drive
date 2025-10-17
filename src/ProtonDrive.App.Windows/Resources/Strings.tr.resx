@@ -1434,6 +1434,15 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Geliştirmeler</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Güvenlik anahtarı</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Kimlik doğrulama uygulaması</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Oturum kapatılıyor...</value>
   </data>
@@ -1468,6 +1477,9 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
     <value>_Parolamı unuttum</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Ayrıntılı bilgi alın</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Oturum aç</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1485,12 +1497,21 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   <data name="SignIn_Text_2FACode">
     <value>Kimlik doğrulama uygulamanızdan alacağınız kodu yazın</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Herhangi bir iki adımlı doğrulama yöntemi bulunamadı.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Parola</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>İkinci parola</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Proton hesabınızla ilişkilendirilmiş bir güvenlik anahtarı takın.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Sisteminiz güvenlik anahtarını desteklemiyor.</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-posta adresi veya _kullanıcı adı</value>

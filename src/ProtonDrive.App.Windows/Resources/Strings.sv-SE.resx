@@ -1436,6 +1436,15 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Förbättringar</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Säkerhetsnyckel</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Autentiseringsapp</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Loggar ut …</value>
   </data>
@@ -1470,6 +1479,9 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
     <value>_Glömt ditt lösenord?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Lär dig mer</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Logga in</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1487,12 +1499,21 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
   <data name="SignIn_Text_2FACode">
     <value>Ange koden från din autentiseringsapp</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Inga tvåfaktorsautentiseringsmetoder hittades.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Lösenord</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Andra lösenord</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Infoga en säkerhetsnyckel länkat till ditt Proton-konto.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Ditt system stöder inte säkerhetsnyckel</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-post eller _användarnamn</value>

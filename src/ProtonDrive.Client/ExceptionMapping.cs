@@ -55,6 +55,7 @@ internal static class ExceptionMapping
         ResponseCode.TooManyRequests => FileSystemErrorCode.RateLimited,
         ResponseCode.NetworkError => FileSystemErrorCode.NetworkError,
         ResponseCode.ServerError => FileSystemErrorCode.ServerError,
+        ResponseCode.MainPhotoAlreadyInAlbum => FileSystemErrorCode.MainPhotoAlreadyInAlbum,
         _ => FileSystemErrorCode.Unknown,
     };
 }

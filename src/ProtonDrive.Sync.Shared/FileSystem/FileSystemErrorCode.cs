@@ -203,4 +203,10 @@ public enum FileSystemErrorCode
     /// - Working with a FileStream, MemoryMappedFile, or another I/O stream that relies on corrupted or invalid data.
     /// </summary>
     CyclicRedundancyCheck,
+
+    /// <summary>
+    /// The main photo associated with the related photo already belongs to an album,
+    /// therefore the related photo cannot be uploaded.
+    /// </summary>
+    MainPhotoAlreadyInAlbum,
 }

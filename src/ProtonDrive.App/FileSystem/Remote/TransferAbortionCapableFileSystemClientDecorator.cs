@@ -70,9 +70,9 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
         private IFileTransferAbortionStrategy<TAltId> AbortionStrategy { get; }
         private CancellationToken AbortionToken { get; }
 
-        public Task<ReadOnlyMemory<byte>> GetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
+        public Task<ReadOnlyMemory<byte>?> TryGetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
         {
-            return _decoratedInstance.GetThumbnailAsync(numberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken);
+            return _decoratedInstance.TryGetThumbnailAsync(numberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken);
         }
 
         public Task<FileMetadata?> GetMetadataAsync()

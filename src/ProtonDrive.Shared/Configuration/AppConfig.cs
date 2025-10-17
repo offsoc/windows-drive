@@ -29,10 +29,13 @@ public sealed class AppConfig
     public TimeSpan MinDelayBeforeFileUpload { get; set; }
     public TimeSpan ContactsCacheInvalidationInterval { get; set; }
     public TimeSpan ContactsCacheGraceInterval { get; set; }
+    public TimeSpan DelayBeforeDisplayingSyncInitializationProgress { get; internal set; }
 
     public TimeSpan PeriodicTelemetryReportInterval { get; internal set; }
-    public TimeSpan DelayBeforeDisplayingSyncInitializationProgress { get; internal set; }
     public TimeSpan PeriodicObservabilityReportInterval { get; internal set; }
+    public TimeSpan PeriodicTransferPerformanceReportInterval { get; internal set; }
+    public TimeSpan MaxInactivityPeriodBetweenFileTransfers { get; internal set; }
+
     public TimeSpan ActivityQueryInterval { get; internal set; }
     public int NumberOfDaysBeforeRemovingInstallationLogFiles { get; internal set; }
 

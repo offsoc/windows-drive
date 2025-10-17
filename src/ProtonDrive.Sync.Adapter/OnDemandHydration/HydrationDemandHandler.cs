@@ -63,7 +63,7 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
 
         try
         {
-            _syncActivity.OnChanged(syncActivityItem, SyncActivityItemStatus.InProgress);
+            _syncActivity.OnProgress(syncActivityItem, Progress.Zero);
 
             var sourceRevision = await OpenFileForReadingAsync(nodeModel, cancellationToken).ConfigureAwait(false);
 
@@ -72,7 +72,7 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
                 Stage = SyncActivityStage.Execution,
             };
 
-            _syncActivity.OnChanged(syncActivityItem, SyncActivityItemStatus.InProgress);
+            _syncActivity.OnProgress(syncActivityItem, Progress.Zero);
 
             var destinationContent = new ProgressReportingStream(hydrationDemand.HydrationStream, NotifyProgressChanged);
 

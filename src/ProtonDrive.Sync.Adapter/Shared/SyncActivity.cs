@@ -54,7 +54,7 @@ internal sealed class SyncActivity<TId>
         SyncActivityChanged?.Invoke(this, new SyncActivityChangedEventArgs<TId>(item));
     }
 
-    public void OnWarning(SyncActivityItem<TId> item, FileSystemErrorCode errorCode, string? errorMessage = default)
+    public void OnWarning(SyncActivityItem<TId> item, FileSystemErrorCode errorCode, string? errorMessage = null)
     {
         item = item with
         {
@@ -66,7 +66,7 @@ internal sealed class SyncActivity<TId>
         SyncActivityChanged?.Invoke(this, new SyncActivityChangedEventArgs<TId>(item));
     }
 
-    public void OnFailed(SyncActivityItem<TId> item, FileSystemErrorCode errorCode, string? errorMessage = default)
+    public void OnFailed(SyncActivityItem<TId> item, FileSystemErrorCode errorCode, string? errorMessage = null)
     {
         item = item with
         {

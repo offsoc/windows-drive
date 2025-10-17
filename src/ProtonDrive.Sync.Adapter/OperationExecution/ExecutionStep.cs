@@ -144,10 +144,11 @@ internal sealed class ExecutionStep<TId, TAltId>
     {
         if (!destinationRevision.ImmediateHydrationRequired)
         {
-            progressCallback.Invoke(new Progress(50, 100));
-
             return await FinalizeAsync(destinationRevision, updateDetection, cancellationToken).ConfigureAwait(false);
         }
+
+        // Invoking progress callback changes sync activity stage from Preparation into Execution
+        progressCallback.Invoke(Progress.Zero);
 
         var destinationContent = destinationRevision.OpenContentStream();
 

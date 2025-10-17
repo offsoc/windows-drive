@@ -31,16 +31,16 @@ internal sealed class LocalFolderIdentityValidator : IMappingsAware
 
     private MappingErrorCode? ValidateFolderIdentity(int volumeSerialNumber, long folderId, LocalReplica replica, LinkType remoteRootType)
     {
-        if (replica.VolumeSerialNumber != 0 && replica.VolumeSerialNumber != volumeSerialNumber)
-        {
-            _logger.LogWarning("The local volume serial number has diverged from {ExpectedSerialNumber} to {ActualSerialNumber}", replica.VolumeSerialNumber, volumeSerialNumber);
-            return MappingErrorCode.LocalFolderDiverged;
-        }
-
         if (replica.RootFolderId != 0 && replica.RootFolderId != folderId)
         {
             _logger.LogWarning("The local sync folder identity has diverged from {ExpectedId} to {ActualId}", replica.RootFolderId, folderId);
             return MappingErrorCode.LocalFolderDiverged;
+        }
+
+        if (replica.VolumeSerialNumber != 0 && replica.VolumeSerialNumber != volumeSerialNumber)
+        {
+            _logger.LogWarning("The local volume serial number has diverged from {ExpectedSerialNumber} to {ActualSerialNumber}", replica.VolumeSerialNumber, volumeSerialNumber);
+            return MappingErrorCode.LocalVolumeDiverged;
         }
 
         if (remoteRootType is LinkType.Folder)

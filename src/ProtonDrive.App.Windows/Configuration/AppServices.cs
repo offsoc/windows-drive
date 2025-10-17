@@ -49,6 +49,7 @@ using ProtonDrive.App.Windows.Views.SignIn;
 using ProtonDrive.App.Windows.Views.SystemTray;
 using ProtonDrive.Shared.Localization;
 using ProtonDrive.Shared.Offline;
+using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Security.Cryptography;
 using ProtonDrive.Shared.Threading;
@@ -273,7 +274,8 @@ internal static class AppServices
                     new LivePhotoThumbnailExtractingDecorator(
                         new Win32ThumbnailGenerator(
                             provider.GetRequiredService<Shared.IClock>(),
-                            provider.GetRequiredService<ILogger<IThumbnailGenerator>>()),
+                            provider.GetRequiredService<ILogger<IThumbnailGenerator>>(),
+                            provider.GetRequiredService<IErrorReporting>()),
                         provider.GetRequiredService<ILivePhotoFileDetector>()))
 
             .AddSingleton<IPhotoTagsGenerator, PhotoTagsGenerator>()

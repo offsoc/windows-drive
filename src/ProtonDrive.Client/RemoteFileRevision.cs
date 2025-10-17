@@ -41,9 +41,9 @@ internal sealed class RemoteFileRevision : IRevision
         return false;
     }
 
-    public Task<ReadOnlyMemory<byte>> GetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
+    public Task<ReadOnlyMemory<byte>?> TryGetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)
     {
-        return Task.FromResult(ReadOnlyMemory<byte>.Empty);
+        return Task.FromResult<ReadOnlyMemory<byte>?>(null);
     }
 
     public Task<FileMetadata?> GetMetadataAsync()

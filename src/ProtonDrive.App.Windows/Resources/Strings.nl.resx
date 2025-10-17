@@ -1435,6 +1435,15 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Verbeteringen</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Beveiligingssleutel</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Authenticatie app</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Uitloggen...</value>
   </data>
@@ -1469,6 +1478,9 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
     <value>_Wachtwoord vergeten?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Meer informatie</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Aanmelden</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1486,12 +1498,21 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   <data name="SignIn_Text_2FACode">
     <value>Voer de code van uw Authenticator-app in</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Geen tweestapsverificatiemethode gevonden.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Wachtwoord</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Tweede wachtwoord</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Voeg een beveiligingssleutel toe die gekoppeld is aan uw Proton Account.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Uw systeem ondersteunt geen beveiligingssleutel</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-mail of gebruikersnaam</value>

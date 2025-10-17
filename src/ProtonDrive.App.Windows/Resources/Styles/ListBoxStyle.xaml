@@ -5,25 +5,43 @@
 
     <SolidColorBrush
         x:Key="ListBoxItemForeground"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorSecondary}" />
+
     <SolidColorBrush
         x:Key="ListBoxItemMouseOverForegroundThemeBrush"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorPrimary}" />
+
     <SolidColorBrush
         x:Key="ListBoxBackground"
+        po:Freeze="True"
         Color="Transparent" />
+
     <SolidColorBrush
         x:Key="ListBoxItemSelectedBackgroundThemeBrush"
+        po:Freeze="True"
         Color="Transparent" />
+
     <SolidColorBrush
         x:Key="ListBoxItemSelectedForegroundThemeBrush"
+        po:Freeze="True"
         Color="{StaticResource TextFillColorPrimary}" />
+
     <SolidColorBrush
         x:Key="ListBoxItemSelectedBackgroundPointerOverThemeBrush"
+        po:Freeze="True"
         Color="Transparent" />
+
     <SolidColorBrush
         x:Key="ListBoxItemUnselectedBackgroundPointerOverThemeBrush"
+        po:Freeze="True"
         Color="Transparent" />
+
+    <SolidColorBrush
+        x:Key="ListBoxItemFillBrush"
+        po:Freeze="True"
+        Color="{StaticResource WhiteColor}" />
 
     <Style
         x:Key="DefaultListBoxStyle"
@@ -107,6 +125,7 @@
         <Setter Property="Border.CornerRadius" Value="0" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -126,7 +145,7 @@
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                             <Rectangle
                                 x:Name="ActiveRectangle"
-                                Fill="{DynamicResource ComboBoxItemPillFillBrush}"
+                                Fill="{DynamicResource ListBoxItemFillBrush}"
                                 RadiusX="2"
                                 RadiusY="2"
                                 Visibility="Collapsed"

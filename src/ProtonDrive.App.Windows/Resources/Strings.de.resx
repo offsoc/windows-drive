@@ -1433,6 +1433,15 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   <data name="ReleaseNoteType_Value_Improvement">
     <value>Verbesserungen</value>
   </data>
+  <data name="SecondFactorInputPage_Value_Fido2">
+    <value>Sicherheitsschlüssel</value>
+  </data>
+  <data name="SecondFactorInputPage_Value_NotSupported">
+    <value></value>
+  </data>
+  <data name="SecondFactorInputPage_Value_Totp">
+    <value>Authentifizierungs-App</value>
+  </data>
   <data name="SessionStatus_Value_Ending">
     <value>Abmeldung läuft…</value>
   </data>
@@ -1467,6 +1476,9 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
     <value>_Passwort vergessen?</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
+  <data name="SignIn_Button_LearnMore">
+    <value>Mehr erfahren</value>
+  </data>
   <data name="SignIn_Button_SignIn">
     <value>_Anmelden</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
@@ -1484,12 +1496,21 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   <data name="SignIn_Text_2FACode">
     <value>Gib den Code aus deiner Authentifizierungs-App ein</value>
   </data>
+  <data name="SignIn_Text_No2FAMethodFound">
+    <value>Keine Zwei-Faktor-Authentifizierungsmethode gefunden.</value>
+  </data>
   <data name="SignIn_Text_Password">
     <value>_Passwort</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Text_SecondPassword">
     <value>Zweites Passwort</value>
+  </data>
+  <data name="SignIn_Text_SecurityKey">
+    <value>Stecke einen mit deinem Proton Account verknüpften Sicherheitsschlüssel ein.</value>
+  </data>
+  <data name="SignIn_Text_SecurityKeyNotSupported">
+    <value>Dein System unterstützt keinen Sicherheitsschlüssel.</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>E-Mail oder _Benutzername</value>

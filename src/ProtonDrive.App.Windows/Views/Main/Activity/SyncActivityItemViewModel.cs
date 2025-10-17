@@ -18,8 +18,6 @@ namespace ProtonDrive.App.Windows.Views.Main.Activity;
 
 internal sealed class SyncActivityItemViewModel : ObservableObject
 {
-    private static readonly EnumToDisplayTextConverter EnumToDisplayTextConverter = EnumToDisplayTextConverter.Instance;
-
     private readonly IFileSystemDisplayNameAndIconProvider _fileSystemDisplayNameAndIconProvider;
     private readonly ILocalFolderService _localFolderService;
 
@@ -166,7 +164,7 @@ internal sealed class SyncActivityItemViewModel : ObservableObject
             value: DataItem.ActivityType,
             parameter: GetResourceKeyPattern(Status, Replica));
 
-        return displayText as string;
+        return displayText;
     }
 
     private bool CanOpenFolder()

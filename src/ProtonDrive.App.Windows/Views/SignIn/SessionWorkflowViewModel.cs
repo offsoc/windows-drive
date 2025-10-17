@@ -94,7 +94,7 @@ internal sealed class SessionWorkflowViewModel : ObservableObject, ISessionState
     {
         _credentialInputViewModel.Password = null;
         _credentialInputViewModel.FirstLoginAttempt = false;
-        _secondFactorInputViewModel.Code = null;
+        _secondFactorInputViewModel.TotpCode = null;
         _dataPasswordInputViewModel.Password = null;
     }
 }

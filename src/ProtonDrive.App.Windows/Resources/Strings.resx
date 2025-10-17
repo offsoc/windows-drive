@@ -994,9 +994,6 @@ disable storage optimization at any time.</value>
   <data name="MappingErrorCode_Value_LocalFolderDoesNotExist" xml:space="preserve">
     <value>Sync folder not found. It may have been deleted, renamed, or moved. Restore it or set up a new sync folder.</value>
   </data>
-  <data name="MappingErrorCode_Value_LocalVolumeNotSupported" xml:space="preserve">
-    <value>Unsupported local drive type. Try setting up sync folder on a different local drive.</value>
-  </data>
   <data name="MappingErrorCode_Value_LocalAndRemoteFoldersNotEmpty" xml:space="preserve">
     <value>Setting up a sync folder requires an empty Windows or Proton Drive web folder. Please clear one and try again.</value>
   </data>
@@ -1005,6 +1002,12 @@ disable storage optimization at any time.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderIncludedByAnAlreadySyncedFolder" xml:space="preserve">
     <value>The selected folder is already included within another synced folder</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged" xml:space="preserve">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeNotSupported" xml:space="preserve">
+    <value>Unsupported local drive type. Try setting up sync folder on a different local drive.</value>
   </data>
   <data name="MappingErrorCode_Value_OnDemandSyncRootNotRegistered" xml:space="preserve">
     <value>Sync folder was unexpectedly unregistered. Set up a new sync folder.</value>
@@ -1191,6 +1194,9 @@ disable storage optimization at any time.</value>
   </data>
   <data name="FileSystemErrorCode_Value_CyclicRedundancyCheck" xml:space="preserve">
     <value>Data error (cyclic redundancy check). Please, check your drive (USB, disk etc...) for file system errors and bad sectors.</value>
+  </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum" xml:space="preserve">
+    <value>Live Photo cannot be uploaded.</value>
   </data>
   <data name="FileSystemErrorCode_Value_Unknown" xml:space="preserve">
     <value>Something went wrong</value>

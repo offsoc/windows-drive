@@ -4,6 +4,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Media;
+using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.Windows.Services;
@@ -15,12 +16,14 @@ internal sealed class Win32ThumbnailGenerationValidator
     private readonly string _filePath;
     private readonly string _extension;
     private readonly ILogger _logger;
+    private readonly IErrorReporting _errorReporting;
 
-    public Win32ThumbnailGenerationValidator(string filePath, string extension, ILogger logger)
+    public Win32ThumbnailGenerationValidator(string filePath, string extension, ILogger logger, IErrorReporting errorReporting)
     {
         _filePath = filePath;
         _extension = extension;
         _logger = logger;
+        _errorReporting = errorReporting;
     }
 
     public bool IsHdPreviewAllowed()
@@ -30,12 +33,18 @@ internal sealed class Win32ThumbnailGenerationValidator
             _logger.LogInformation(
                 "HD preview generation skipped: File extension \"{Extension}\" not supported",
                 _extension[^Math.Min(_extension.Length, 5)..]);
-
             return false;
         }
 
         if (!TryGetNumberOfPixelsOnLargestSide(out var imageNumberOfPixelsOnLargestSide))
         {
+            var fileExtensionToReport = _extension[^Math.Min(_extension.Length, 5)..];
+            _logger.LogWarning(
+                "Thumbnail generation failed for file extension \"{fileExtensionToReport}\": failed to determine image dimensions",
+                fileExtensionToReport);
+
+            var errorMessage = $"Thumbnail generation failed for file extension \"{fileExtensionToReport}\": failed to determine file size";
+            _errorReporting.CaptureError(errorMessage);
             return false;
         }
 
