@@ -31,9 +31,9 @@ internal class StorageReservingRevisionCreationProcessDecorator : IRevisionCreat
 
     public bool ImmediateHydrationRequired => _decoratedInstance.ImmediateHydrationRequired;
 
-    public Stream OpenContentStream()
+    public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
-        return _decoratedInstance.OpenContentStream();
+        return _decoratedInstance.WriteContentAsync(source, cancellationToken);
     }
 
     public async Task<NodeInfo<string>> FinishAsync(CancellationToken cancellationToken)

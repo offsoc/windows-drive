@@ -1,25 +1,22 @@
-﻿using Proton.Security.Cryptography.Abstractions;
+﻿using Proton.Cryptography.Pgp;
+using ProtonDrive.Client.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.Cryptography;
 
-public interface IPgpTransformerFactory
+internal interface IPgpTransformerFactory
 {
-    IPgpMessageProducer CreateMessageProducingEncrypter(PublicPgpKey publicKey, Func<DateTimeOffset> getTimestampFunction);
+    ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
+        PgpPublicKey publicKey,
+        PgpPrivateKey signaturePrivateKey);
 
     ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
-        PublicPgpKey publicKey,
-        PrivatePgpKey signaturePrivateKey,
-        Func<DateTimeOffset> getTimestampFunction);
-
-    ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
-        PublicPgpKey publicKey,
+        PgpPublicKey publicKey,
         PgpSessionKey sessionKey,
-        PrivatePgpKey signaturePrivateKey,
-        Func<DateTimeOffset> getTimestampFunction);
+        PgpPrivateKey signaturePrivateKey);
 
-    IPgpDecrypter CreateDecrypter(IReadOnlyCollection<PrivatePgpKey> privateKeyRing);
+    IPgpDecrypter CreateDecrypter(IReadOnlyList<PgpPrivateKey> privateKeyRing);
 
     IVerificationCapablePgpDecrypter CreateVerificationCapableDecrypter(
-        IReadOnlyCollection<PrivatePgpKey> privateKeyRing,
-        IReadOnlyCollection<PublicPgpKey> verificationPublicKeyRing);
+        IReadOnlyList<PgpPrivateKey> privateKeyRing,
+        IReadOnlyList<PgpPublicKey> verificationPublicKeyRing);
 }

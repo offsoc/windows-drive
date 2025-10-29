@@ -6,6 +6,7 @@ using ProtonDrive.App.Sync;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Windows.Toolkit;
 using ProtonDrive.App.Windows.Toolkit.Converters;
+using ProtonDrive.Client;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Shared.SyncActivity;
@@ -18,7 +19,7 @@ internal sealed class RenameRemoteNodeViewModel : ObservableValidator, IDialogVi
 {
     private readonly ISyncService _syncService;
     private readonly IRemoteIdsFromNodeIdProvider _remoteIdsProvider;
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
+    private readonly IRemoteFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly INumberSuffixedNameGenerator _numberSuffixedNameGenerator;
     private readonly ILogger<RenameRemoteNodeViewModel> _logger;
 
@@ -31,7 +32,7 @@ internal sealed class RenameRemoteNodeViewModel : ObservableValidator, IDialogVi
     public RenameRemoteNodeViewModel(
         ISyncService syncService,
         IRemoteIdsFromNodeIdProvider remoteIdsProvider,
-        Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
+        IRemoteFileSystemClientFactory remoteFileSystemClientFactory,
         INumberSuffixedNameGenerator numberSuffixedNameGenerator,
         ILogger<RenameRemoteNodeViewModel> logger)
     {
@@ -138,7 +139,7 @@ internal sealed class RenameRemoteNodeViewModel : ObservableValidator, IDialogVi
         try
         {
             var clientParameters = new FileSystemClientParameters(remoteIds.Value.VolumeId, remoteIds.Value.ShareId);
-            var client = _remoteFileSystemClientFactory.Invoke(clientParameters);
+            var client = _remoteFileSystemClientFactory.CreateClient(clientParameters);
 
             var nodeInfo = (SyncActivityItem.NodeType is NodeType.Directory ? NodeInfo<string>.Directory() : NodeInfo<string>.File())
                 .WithId(remoteIds.Value.LinkId)

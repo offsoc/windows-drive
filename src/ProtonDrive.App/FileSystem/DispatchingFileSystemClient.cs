@@ -204,9 +204,9 @@ internal sealed class DispatchingFileSystemClient<TId> : IFileSystemClient<TId>
 
         public bool ImmediateHydrationRequired => _origin.ImmediateHydrationRequired;
 
-        public Stream OpenContentStream()
+        public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
         {
-            return _origin.OpenContentStream();
+            return _origin.WriteContentAsync(source, cancellationToken);
         }
 
         public async Task<NodeInfo<TId>> FinishAsync(CancellationToken cancellationToken)

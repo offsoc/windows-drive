@@ -3,15 +3,16 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Proton.Security;
-using ProtonDrive.BlockVerification;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Authentication.Sessions;
+using ProtonDrive.Client.Authentication.Srp;
+using ProtonDrive.Client.BlockVerification;
 using ProtonDrive.Client.BugReport;
 using ProtonDrive.Client.Contacts;
 using ProtonDrive.Client.Core.Events;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.TimeProvision;
 using ProtonDrive.Client.Devices;
 using ProtonDrive.Client.Features;
 using ProtonDrive.Client.FileUploading;
@@ -32,11 +33,9 @@ using ProtonDrive.Client.TlsPinning.Reporting;
 using ProtonDrive.Client.Volumes;
 using ProtonDrive.Client.Volumes.Events;
 using ProtonDrive.Shared.Configuration;
-using ProtonDrive.Shared.Devices;
 using ProtonDrive.Shared.Localization;
 using ProtonDrive.Shared.Net.Http.TlsPinning;
 using ProtonDrive.Shared.Offline;
-using ProtonDrive.Shared.Reporting;
 using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Threading;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -70,26 +69,7 @@ public static class ApiClientConfigurator
     {
         services.AddSingleton<IFileContentTypeProvider, FileContentTypeProvider>();
 
-        services.AddSingleton<Func<FileSystemClientParameters, IFileSystemClient<string>>>(
-            sp => fileSystemClientParameters => new RemoteFileSystemClient(
-                sp.GetRequiredService<DriveApiConfig>(),
-                fileSystemClientParameters,
-                sp.GetRequiredService<IFileContentTypeProvider>(),
-                sp.GetRequiredService<IClientInstanceIdentityProvider>(),
-                sp.GetRequiredService<IRemoteNodeService>(),
-                sp.GetRequiredService<ILinkApiClient>(),
-                sp.GetRequiredService<IFolderApiClient>(),
-                sp.GetRequiredService<IFileApiClient>(),
-                sp.GetRequiredService<IPhotoApiClient>(),
-                sp.GetRequiredService<IVolumeApiClient>(),
-                sp.GetRequiredService<ICryptographyService>(),
-                sp.GetRequiredService<IHttpClientFactory>(),
-                sp.GetRequiredService<IRevisionSealerFactory>(),
-                sp.GetRequiredService<IRevisionManifestCreator>(),
-                sp.GetRequiredService<IBlockVerifierFactory>(),
-                sp.GetRequiredService<ILoggerFactory>(),
-                sp.GetRequiredService<IErrorReporting>().CaptureException));
-
+        services.AddSingleton<IRemoteFileSystemClientFactory, RemoteFileSystemClientFactory>();
         services.AddSingleton<IRemoteEventLogClientFactory, RemoteEventLogClientFactory>();
 
         services.AddSingleton<IRevisionManifestCreator, RevisionManifestCreator>();
@@ -107,15 +87,13 @@ public static class ApiClientConfigurator
 
         services.AddSingleton<IErrorReportingHttpClientConfigurator>(provider => new ErrorReportingHttpClientConfigurator(provider));
         services.AddSingleton<AuthenticationService>();
+        services.AddSingleton<ISrpClientFactory, SrpClientFactory>();
         services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<AuthenticationService>());
         services.AddSingleton<ISessionProvider>(sp => sp.GetRequiredService<AuthenticationService>());
         services.AddSingleton(sp => new Lazy<IAuthenticationService>(sp.GetRequiredService<IAuthenticationService>));
         services.AddSingleton(sp => new Lazy<ISessionProvider>(sp.GetRequiredService<ISessionProvider>));
 
         services.AddSingleton<ISessionClient, SessionClient>();
-
-        services.AddSingleton<ServerTimeCache>();
-        services.AddSingleton<IServerTimeProvider>(sp => sp.GetRequiredService<ServerTimeCache>());
 
         services.AddSingleton<OfflineService>();
         services.AddSingleton<IOfflineService>(sp => sp.GetRequiredService<OfflineService>());
@@ -130,11 +108,10 @@ public static class ApiClientConfigurator
         services.AddTransient<AuthorizationHandler>();
         services.AddTransient<OfflineHandler>();
         services.AddTransient<ChunkedTransferEncodingHandler>();
-        services.AddTransient<ServerTimeRecordingHandler>();
 
-        services.AddSingleton<ISrpClient, SrpClient>();
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-        services.AddSingleton<ISrpVerifierGenerator, SrpVerifierGenerator>();
+        services.AddSingleton<CryptographyTimeProvider>();
+        services.AddTransient<CryptographyTimeProvisionHandler>();
+
         services.AddSingleton<IPgpTransformerFactory, PgpTransformerFactory>();
         services.AddSingleton<IKeyPassphraseProvider, KeyPassphraseProvider>();
 
@@ -297,6 +274,8 @@ public static class ApiClientConfigurator
     {
         // UserAddressChangeHandler is not directly referenced, therefore it is instantiated explicitly
         provider.GetRequiredService<UserAddressChangeHandler>();
+
+        PgpEnvironment.DefaultTimeProviderOverride = provider.GetRequiredService<CryptographyTimeProvider>();
     }
 
     private static ApiClientBuilder AddApiHttpClients(

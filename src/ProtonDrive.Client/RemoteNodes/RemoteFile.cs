@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net.Mime;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Sync.Shared;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -12,7 +12,7 @@ internal sealed record RemoteFile(
     string Name,
     PgpSessionKey NameSessionKey,
     string? ParentPath,
-    PrivatePgpKey PrivateKey,
+    PgpPrivateKey PrivateKey,
     ReadOnlyMemory<byte> Passphrase,
     PgpSessionKey PassphraseSessionKey,
     PgpSessionKey ContentSessionKey,

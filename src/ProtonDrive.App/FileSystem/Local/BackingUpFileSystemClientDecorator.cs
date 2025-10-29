@@ -93,7 +93,10 @@ internal sealed class BackingUpFileSystemClientDecorator<TId> : FileSystemClient
 
         public bool ImmediateHydrationRequired => _decoratedInstance.ImmediateHydrationRequired;
 
-        public Stream OpenContentStream() => _decoratedInstance.OpenContentStream();
+        public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
+        {
+            return _decoratedInstance.WriteContentAsync(source, cancellationToken);
+        }
 
         public Task<NodeInfo<TId>> FinishAsync(CancellationToken cancellationToken)
         {

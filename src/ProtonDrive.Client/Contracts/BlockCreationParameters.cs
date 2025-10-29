@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ProtonDrive.BlockVerification;
+using ProtonDrive.Client.BlockVerification;
 
 namespace ProtonDrive.Client.Contracts;
 

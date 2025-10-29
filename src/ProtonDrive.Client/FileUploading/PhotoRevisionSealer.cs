@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography.Abstractions;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 using ProtonDrive.Client.Photos.Contracts;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.FileSystem;

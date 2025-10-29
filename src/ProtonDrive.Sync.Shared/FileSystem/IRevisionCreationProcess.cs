@@ -7,6 +7,6 @@ public interface IRevisionCreationProcess<TId> : IAsyncDisposable
     NodeInfo<TId> BackupInfo { get; set; }
     bool ImmediateHydrationRequired { get; }
 
-    Stream OpenContentStream();
+    Task WriteContentAsync(Stream source, CancellationToken cancellationToken);
     Task<NodeInfo<TId>> FinishAsync(CancellationToken cancellationToken);
 }

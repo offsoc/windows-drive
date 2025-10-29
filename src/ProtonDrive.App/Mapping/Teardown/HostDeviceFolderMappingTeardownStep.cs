@@ -2,6 +2,7 @@
 using ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
+using ProtonDrive.Client;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -12,14 +13,14 @@ internal sealed class HostDeviceFolderMappingTeardownStep
     private readonly ILocalSpecialSubfoldersDeletionStep _specialFoldersDeletion;
     private readonly IOnDemandSyncRootRegistry _onDemandSyncRootRegistry;
     private readonly IPlaceholderToRegularItemConverter _placeholderConverter;
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
+    private readonly IRemoteFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly ILogger<HostDeviceFolderMappingFoldersSetupStep> _logger;
 
     public HostDeviceFolderMappingTeardownStep(
         ILocalSpecialSubfoldersDeletionStep specialFoldersDeletion,
         IOnDemandSyncRootRegistry onDemandSyncRootRegistry,
         IPlaceholderToRegularItemConverter placeholderConverter,
-        Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
+        IRemoteFileSystemClientFactory remoteFileSystemClientFactory,
         ILogger<HostDeviceFolderMappingFoldersSetupStep> logger)
     {
         _specialFoldersDeletion = specialFoldersDeletion;
@@ -71,7 +72,7 @@ internal sealed class HostDeviceFolderMappingTeardownStep
     private async Task DeleteDeviceFolderAsync(string volumeId, string shareId, string id, CancellationToken cancellationToken)
     {
         var parameters = new FileSystemClientParameters(volumeId, shareId);
-        var fileSystemClient = _remoteFileSystemClientFactory.Invoke(parameters);
+        var fileSystemClient = _remoteFileSystemClientFactory.CreateClient(parameters);
 
         var folderInfo = NodeInfo<string>.Directory().WithId(id);
 

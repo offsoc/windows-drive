@@ -146,18 +146,9 @@ internal sealed class ExecutionStep<TId, TAltId>
         // Invoking progress callback changes sync activity stage from Preparation into Execution
         progressCallback.Invoke(Progress.Zero);
 
-        var destinationContent = destinationRevision.OpenContentStream();
+        await destinationRevision.WriteContentAsync(sourceRevision.GetContentStream(), cancellationToken).ConfigureAwait(false);
 
-        await using (destinationContent.ConfigureAwait(false))
-        {
-            var sourceContent = sourceRevision.GetContentStream();
-            await using (sourceContent.ConfigureAwait(false))
-            {
-                await CopyFileContentAsync(destinationContent, sourceContent, cancellationToken).ConfigureAwait(false);
-            }
-
-            return await FinalizeAsync(destinationRevision, updateDetection, cancellationToken).ConfigureAwait(false);
-        }
+        return await FinalizeAsync(destinationRevision, updateDetection, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<NodeInfo<TAltId>> MoveAsync(
@@ -179,24 +170,6 @@ internal sealed class ExecutionStep<TId, TAltId>
         await _fileSystemClient.Delete(nodeInfo, cancellationToken).ConfigureAwait(false);
 
         return nodeInfo;
-    }
-
-    private async Task CopyFileContentAsync(Stream destination, Stream source, CancellationToken cancellationToken)
-    {
-        // The Drive encrypted file write stream requires the Length to be set before copying the content.
-        // The Drive encrypted file read stream can report Length value different from the length of the unencrypted data.
-        destination.SetLength(source.Length);
-        await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
-
-        // Set the Length to the real number of bytes copied.
-        if (destination.Position != destination.Length)
-        {
-            destination.SetLength(destination.Position);
-        }
-
-        // Destination should be flushed but not closed so that the local file remains locked.
-        // It is needed to set last write time and read the file metadata before releasing the file lock.
-        await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private string GetTempFileName(FileSystemNodeModel<TId> nodeModel)

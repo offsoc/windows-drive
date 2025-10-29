@@ -1,8 +1,6 @@
-﻿using ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem.Photos;
 
-namespace ProtonDrive.App.Photos.Import;
-
-internal class PhotoImportException : Exception
+public class PhotoImportException : Exception
 {
     public PhotoImportException()
     {

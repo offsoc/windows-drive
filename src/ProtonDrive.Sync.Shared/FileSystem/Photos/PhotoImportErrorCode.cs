@@ -1,4 +1,4 @@
-﻿namespace ProtonDrive.App.Photos.Import;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 public enum PhotoImportErrorCode
 {

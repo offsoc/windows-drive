@@ -21,7 +21,7 @@ internal sealed class BackingUpOnDemandRevisionCreationProcess : IRevisionCreati
 
     public IThumbnailProvider? ThumbnailProvider { get; set; }
 
-    public Stream OpenContentStream()
+    public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();
     }

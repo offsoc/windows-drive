@@ -1,7 +1,6 @@
 ﻿using ProtonDrive.Shared.Repository;
-using ProtonDrive.Sync.Shared.FileSystem;
 
-namespace ProtonDrive.Client;
+namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public interface IRemoteEventLogClientFactory
 {

@@ -1,40 +1,33 @@
-﻿using Proton.Security.Cryptography.Abstractions;
-using Proton.Security.Cryptography.GopenPgp;
+﻿using Proton.Cryptography.Pgp;
+using ProtonDrive.Client.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.Cryptography;
 
 internal sealed class PgpTransformerFactory : IPgpTransformerFactory
 {
-    public IPgpMessageProducer CreateMessageProducingEncrypter(PublicPgpKey publicKey, Func<DateTimeOffset> getTimestampFunction)
+    public ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
+        PgpPublicKey publicKey,
+        PgpPrivateKey signaturePrivateKey)
     {
-        return new KeyBasedPgpMessageProducer(publicKey, getTimestampFunction);
+        return new SigningCapablePgpMessageProducer(publicKey, signaturePrivateKey);
     }
 
     public ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
-        PublicPgpKey publicKey,
-        PrivatePgpKey signaturePrivateKey,
-        Func<DateTimeOffset> getTimestampFunction)
-    {
-        return new SigningCapablePgpMessageProducer(publicKey, signaturePrivateKey, getTimestampFunction);
-    }
-
-    public ISigningCapablePgpMessageProducer CreateMessageAndSignatureProducingEncrypter(
-        PublicPgpKey publicKey,
+        PgpPublicKey publicKey,
         PgpSessionKey sessionKey,
-        PrivatePgpKey signaturePrivateKey,
-        Func<DateTimeOffset> getTimestampFunction)
+        PgpPrivateKey signaturePrivateKey)
     {
-        return new SigningCapablePgpMessageProducer(publicKey, sessionKey, signaturePrivateKey, getTimestampFunction);
+        return new SigningCapablePgpMessageProducer(publicKey, sessionKey, signaturePrivateKey);
     }
 
-    public IPgpDecrypter CreateDecrypter(IReadOnlyCollection<PrivatePgpKey> privateKeyRing)
+    public IPgpDecrypter CreateDecrypter(IReadOnlyList<PgpPrivateKey> privateKeyRing)
     {
         return new KeyBasedPgpDecrypter(privateKeyRing);
     }
 
     public IVerificationCapablePgpDecrypter CreateVerificationCapableDecrypter(
-        IReadOnlyCollection<PrivatePgpKey> privateKeyRing,
-        IReadOnlyCollection<PublicPgpKey> verificationPublicKeyRing)
+        IReadOnlyList<PgpPrivateKey> privateKeyRing,
+        IReadOnlyList<PgpPublicKey> verificationPublicKeyRing)
     {
         return new VerificationCapablePgpDecrypter(privateKeyRing, verificationPublicKeyRing);
     }

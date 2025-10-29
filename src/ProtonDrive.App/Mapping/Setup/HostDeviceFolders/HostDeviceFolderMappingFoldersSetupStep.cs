@@ -15,7 +15,7 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
 {
     private readonly IDeviceService _deviceService;
     private readonly ILocalFolderSetupAssistant _localFolderSetupAssistant;
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
+    private readonly IRemoteFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly RemoteFolderNameValidator _remoteFolderNameValidator;
     private readonly VolumeIdentityProvider _volumeIdentityProvider;
     private readonly INumberSuffixedNameGenerator _numberSuffixedNameGenerator;
@@ -24,7 +24,7 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
     public HostDeviceFolderMappingFoldersSetupStep(
         IDeviceService deviceService,
         ILocalFolderSetupAssistant localFolderSetupAssistant,
-        Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
+        IRemoteFileSystemClientFactory remoteFileSystemClientFactory,
         RemoteFolderNameValidator remoteFolderNameValidator,
         VolumeIdentityProvider volumeIdentityProvider,
         INumberSuffixedNameGenerator numberSuffixedNameGenerator,
@@ -178,7 +178,7 @@ internal sealed class HostDeviceFolderMappingFoldersSetupStep
         CancellationToken cancellationToken)
     {
         var parameters = new FileSystemClientParameters(device.DataItem.VolumeId, device.DataItem.ShareId);
-        var fileSystemClient = _remoteFileSystemClientFactory.Invoke(parameters);
+        var fileSystemClient = _remoteFileSystemClientFactory.CreateClient(parameters);
 
         foreach (var name in _numberSuffixedNameGenerator.GenerateNames(baseName, NameType.Folder))
         {

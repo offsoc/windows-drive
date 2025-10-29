@@ -22,7 +22,7 @@ internal sealed class OnDemandRevisionCreationProcess : IRevisionCreationProcess
 
     public IThumbnailProvider? ThumbnailProvider { get; set; }
 
-    public Stream OpenContentStream()
+    public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();
     }

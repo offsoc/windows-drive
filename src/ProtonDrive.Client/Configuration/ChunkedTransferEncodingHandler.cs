@@ -11,7 +11,7 @@ internal sealed class ChunkedTransferEncodingHandler : DelegatingHandler
     {
         if (request.Content is not null && request.Content.Headers.ContentLength is null)
         {
-            await request.Content.LoadIntoBufferAsync().ConfigureAwait(false);
+            await request.Content.LoadIntoBufferAsync(cancellationToken).ConfigureAwait(false);
         }
 
         return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);

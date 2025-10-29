@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -24,7 +24,7 @@ internal sealed class ExtendedAttributesBuilder : IExtendedAttributesBuilder
         _logger = logger;
     }
 
-    public PublicPgpKey? NodeKey { get; init; }
+    public PgpPublicKey? NodeKey { get; init; }
     public Address? SignatureAddress { get; init; }
 
     public long? Size { get; set; }
@@ -67,7 +67,7 @@ internal sealed class ExtendedAttributesBuilder : IExtendedAttributesBuilder
 
         try
         {
-            var encrypter = _cryptographyService.CreateExtendedAttributesEncrypter(NodeKey, SignatureAddress);
+            var encrypter = _cryptographyService.CreateExtendedAttributesEncrypter(NodeKey.Value, SignatureAddress);
 
             var commonExtendedAttributes = GetCommonExtendedAttributes();
 
@@ -87,20 +87,13 @@ internal sealed class ExtendedAttributesBuilder : IExtendedAttributesBuilder
 
             var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(extendedAttributes);
 
-            var jsonStream = new MemoryStream(jsonBytes);
+            var messageStream = encrypter.GetEncryptingAndSigningStream(jsonBytes, PgpEncoding.AsciiArmor, PgpCompression.Default);
 
-            var plainDataSource = new PlainDataSource(jsonStream);
+            using var messageStreamReader = new StreamReader(messageStream, Encoding.ASCII);
 
-            await using (plainDataSource.ConfigureAwait(false))
-            {
-                var messageStream = encrypter.GetEncryptingAndSigningStream(plainDataSource, PgpArmoring.Ascii, PgpCompression.Deflate);
+            var result = await messageStreamReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
-                using var messageStreamReader = new StreamReader(messageStream, Encoding.ASCII);
-
-                var result = await messageStreamReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-
-                return result;
-            }
+            return result;
         }
         catch (Exception exception)
         {

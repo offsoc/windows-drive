@@ -9,7 +9,7 @@ namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
 {
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
+    private readonly IRemoteFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly ILocalFileSystemClientFactory _localFileSystemClientFactory;
     private readonly PhotoFileImporterFactory _photoFileImporterFactory;
     private readonly PhotoAlbumServiceFactory _photoAlbumServiceFactory;
@@ -20,7 +20,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
     private readonly int _maxNumberOfConcurrentFileTransfers;
 
     public PhotoImportEngineFactory(
-        Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
+        IRemoteFileSystemClientFactory remoteFileSystemClientFactory,
         ILocalFileSystemClientFactory localFileSystemClientFactory,
         PhotoFileImporterFactory photoFileImporterFactory,
         PhotoAlbumServiceFactory photoAlbumServiceFactory,
@@ -45,7 +45,7 @@ internal sealed class PhotoImportEngineFactory : IPhotoImportEngineFactory
     {
         var volumeId = mapping.Remote.VolumeId ?? throw new ArgumentNullException(nameof(mapping), "Volume ID is required");
         var shareId = mapping.Remote.ShareId ?? throw new ArgumentNullException(nameof(mapping), "Share ID is required");
-        var remoteFileSystemClient = _remoteFileSystemClientFactory.Invoke(new FileSystemClientParameters(volumeId, shareId, IsPhotoClient: true));
+        var remoteFileSystemClient = _remoteFileSystemClientFactory.CreateClient(new FileSystemClientParameters(volumeId, shareId, IsPhotoClient: true));
 
         var photoAlbumService = _photoAlbumServiceFactory.CreatePhotoAlbumService(remoteFileSystemClient);
 

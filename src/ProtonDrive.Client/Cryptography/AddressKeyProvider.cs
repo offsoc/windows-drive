@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Shared.Caching;
@@ -19,7 +19,6 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
     private readonly IUserClient _userClient;
     private readonly IKeyApiClient _keyApiClient;
     private readonly IKeyPassphraseProvider _keyPassphraseProvider;
-    private readonly IPgpTransformerFactory _pgpTransformerFactory;
     private readonly IMemoryCache _cache;
     private readonly ILogger<AddressKeyProvider> _logger;
 
@@ -30,7 +29,6 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
         IUserClient userClient,
         IKeyApiClient keyApiClient,
         IKeyPassphraseProvider keyPassphraseProvider,
-        IPgpTransformerFactory pgpTransformerFactory,
         IMemoryCache cache,
         ILogger<AddressKeyProvider> logger)
     {
@@ -38,7 +36,6 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
         _userClient = userClient;
         _keyApiClient = keyApiClient;
         _keyPassphraseProvider = keyPassphraseProvider;
-        _pgpTransformerFactory = pgpTransformerFactory;
         _cache = cache;
         _logger = logger;
     }
@@ -78,26 +75,9 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
         return addressKeysQuery.ToList().AsReadOnly();
     }
 
-    public async Task<IReadOnlyCollection<AddressKey>> GetAddressKeysForEmailAddressesAsync(
-        IReadOnlyCollection<string> emailAddresses,
-        CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<PgpPublicKey>> GetPublicKeysForEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
     {
-        var addresses = await GetUserAddressesAsync(cancellationToken).ConfigureAwait(false);
-
-        var addressKeysQuery =
-            from emailAddress in emailAddresses
-            join address in addresses.Values
-                on emailAddress equals address.EmailAddress
-            select address.Keys into keys
-            from key in keys
-            select key;
-
-        return addressKeysQuery.ToList().AsReadOnly();
-    }
-
-    public async Task<IReadOnlyList<PublicPgpKey>> GetPublicKeysForEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
-    {
-        return await _cache.GetOrExclusivelyCreateAsync<IReadOnlyList<PublicPgpKey>>(
+        return await _cache.GetOrExclusivelyCreateAsync<IReadOnlyList<PgpPublicKey>>(
             new PublicKeysCacheKey(emailAddress),
             async () =>
             {
@@ -108,11 +88,16 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
                         .ThrowOnFailure()
                         .ConfigureAwait(false);
 
-                    var publicKeys = new List<PublicPgpKey>(publicKeysResponse.Address.Keys.Count);
+                    var publicKeys = new List<PgpPublicKey>(publicKeysResponse.Address.Keys.Count);
                     publicKeys.AddRange(
                         publicKeysResponse.Address.Keys
                             .Where(keyEntry => keyEntry.Flags.HasFlag(PublicKeyFlags.IsNotCompromised))
-                            .Select(entry => PublicPgpKey.FromArmored(entry.PublicKey)));
+                            .Select(entry =>
+                            {
+                                Span<byte> publicKeyBytes = stackalloc byte[entry.PublicKey.Length];
+                                Encoding.ASCII.GetBytes(entry.PublicKey, publicKeyBytes);
+                                return PgpPublicKey.Import(publicKeyBytes, PgpEncoding.AsciiArmor);
+                            }));
 
                     return publicKeys.AsReadOnly();
                 }
@@ -193,14 +178,30 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
                                     ? GetPassphrase(key.Id, key.Token!, key.Signature!, activeUserKeys)
                                     : GetLegacyPassphrase(key.Id);
 
-                                var privateKey = PrivatePgpKey.FromArmored(key.PrivateKey, passphrase);
+                                Span<byte> privateKeyBytes = stackalloc byte[key.PrivateKey.Length];
 
-                                return new AddressKey(key.Id, privateKey, (key.Flags & AddressKeyFlags.IsAllowedForEncryption) > 0);
+                                Encoding.ASCII.GetBytes(key.PrivateKey, privateKeyBytes);
+
+                                PgpPrivateKey privateKey;
+                                bool privateKeyIsUnlocked;
+
+                                try
+                                {
+                                    privateKey = PgpPrivateKey.ImportAndUnlock(privateKeyBytes, passphrase.Span, PgpEncoding.AsciiArmor);
+                                    privateKeyIsUnlocked = true;
+                                }
+                                catch
+                                {
+                                    privateKey = PgpPrivateKey.Import(privateKeyBytes, PgpEncoding.AsciiArmor);
+                                    privateKeyIsUnlocked = false;
+                                }
+
+                                return new AddressKey(key.Id, privateKey, (key.Flags & AddressKeyFlags.IsAllowedForEncryption) > 0, privateKeyIsUnlocked);
                             }));
 
                     _cache.Set(
                         new PublicKeysCacheKey(address.EmailAddress),
-                        addressKeys.ConvertAll(addressKey => addressKey.PrivateKey.PublicKey).AsReadOnly());
+                        addressKeys.ConvertAll(addressKey => addressKey.PrivateKey.ToPublic()).AsReadOnly());
 
                     if (address.Status != AddressStatus.Enabled)
                     {
@@ -231,21 +232,29 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
 
     private ReadOnlyMemory<byte> GetPassphrase(string addressKeyId, string token, string signature, IReadOnlyCollection<UserKey> userKeys)
     {
-        var userPrivateKeys = userKeys.Select(
-            userKey =>
-            {
-                var userPrivateKeyPassphrase = _keyPassphraseProvider.GetPassphrase(userKey.Id);
-                return PrivatePgpKey.FromArmored(userKey.PrivateKey, userPrivateKeyPassphrase);
-            }).ToList();
-
-        var addressKeyPassphraseDecrypter =
-            _pgpTransformerFactory.CreateVerificationCapableDecrypter(userPrivateKeys, userPrivateKeys.Select(key => key.PublicKey));
+        var userPrivateKeys = userKeys.Select(userKey =>
+        {
+            var userPrivateKeyPassphrase = _keyPassphraseProvider.GetPassphrase(userKey.Id);
+            Span<byte> privateKeyBytes = stackalloc byte[userKey.PrivateKey.Length];
+            Encoding.ASCII.GetBytes(userKey.PrivateKey, privateKeyBytes);
+            return PgpPrivateKey.ImportAndUnlock(privateKeyBytes, userPrivateKeyPassphrase.Span, PgpEncoding.AsciiArmor);
+        }).ToList();
 
         try
         {
-            var result = addressKeyPassphraseDecrypter.DecryptAndVerify(token, signature, out var verificationVerdict);
+            Span<byte> tokenSpan = stackalloc byte[Encoding.UTF8.GetMaxByteCount(token.Length)];
+            var tokenByteCount = Encoding.UTF8.GetBytes(token, tokenSpan);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
 
-            LogIfSignatureIsInvalid(verificationVerdict, addressKeyId);
+            var result = new PgpPrivateKeyRing(userPrivateKeys).DecryptAndVerify(
+                tokenSpan[..tokenByteCount],
+                signatureBytes,
+                new PgpKeyRing(userPrivateKeys),
+                out var verificationResult,
+                PgpEncoding.AsciiArmor,
+                PgpEncoding.AsciiArmor);
+
+            LogIfSignatureIsInvalid(verificationResult.Status, addressKeyId);
 
             return result;
         }
@@ -260,9 +269,9 @@ internal sealed class AddressKeyProvider : IAddressKeyProvider
         return _keyPassphraseProvider.GetPassphrase(addressKeyId);
     }
 
-    private void LogIfSignatureIsInvalid(VerificationVerdict verdict, string addressKeyId)
+    private void LogIfSignatureIsInvalid(PgpVerificationStatus verdict, string addressKeyId)
     {
-        if (verdict == VerificationVerdict.ValidSignature)
+        if (verdict == PgpVerificationStatus.Ok)
         {
             return;
         }

@@ -1,15 +1,14 @@
 ﻿using System.Text;
-using Proton.Security;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
+using ProtonDrive.Client.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.Cryptography;
 
-public static class PgpEncrypterExtensions
+internal static class PgpEncrypterExtensions
 {
     public static string EncryptHashKey(this ISigningCapablePgpMessageProducer encrypter, ReadOnlyMemory<byte> plainData)
     {
-        using var plainDataSource = new PlainDataSource(plainData.AsReadOnlyStream());
-        using var encryptingStream = encrypter.GetEncryptingAndSigningStream(plainDataSource, PgpArmoring.Ascii);
+        using var encryptingStream = encrypter.GetEncryptingAndSigningStream(plainData, PgpEncoding.AsciiArmor);
 
         using var messageStreamReader = new StreamReader(encryptingStream, Encoding.ASCII);
 
@@ -21,15 +20,17 @@ public static class PgpEncrypterExtensions
         this ISigningCapablePgpMessageProducer encrypter,
         ReadOnlyMemory<byte> plainData)
     {
-        using var plainDataSource = new PlainDataSource(plainData.AsReadOnlyStream());
         var (encryptingStream, signatureStream, sessionKey) = encrypter.GetEncryptingAndSignatureStreamsWithSessionKey(
-            plainDataSource,
-            DetachedSignatureParameters.ArmoredPlain,
-            PgpArmoring.Ascii);
+            plainData,
+            signatureIsEncrypted: false,
+            signatureEncoding: PgpEncoding.AsciiArmor,
+            outputEncoding: PgpEncoding.AsciiArmor);
 
         using var messageStreamReader = new StreamReader(encryptingStream, Encoding.ASCII);
         var message = messageStreamReader.ReadToEnd();
 
+        encryptingStream.Dispose();
+        signatureStream.Seek(0, SeekOrigin.Begin);
         using var signatureStreamReader = new StreamReader(signatureStream, Encoding.ASCII);
         var signature = signatureStreamReader.ReadToEnd();
 
@@ -39,8 +40,7 @@ public static class PgpEncrypterExtensions
     public static string EncryptNodeName(this ISigningCapablePgpMessageProducer encrypter, string plainText)
     {
         var plainData = Encoding.UTF8.GetBytes(plainText);
-        using var plainDataSource = new PlainDataSource(new MemoryStream(plainData));
-        using var encryptingStream = encrypter.GetEncryptingAndSigningStream(plainDataSource, PgpArmoring.Ascii);
+        using var encryptingStream = encrypter.GetEncryptingAndSigningStream(plainData, PgpEncoding.AsciiArmor);
 
         using var messageStreamReader = new StreamReader(encryptingStream, Encoding.ASCII);
 

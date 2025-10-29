@@ -9,13 +9,13 @@ namespace ProtonDrive.App.FileSystem.Remote;
 
 internal sealed class RemoteDecoratedFileSystemClientFactory
 {
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _undecoratedClientFactory;
+    private readonly IRemoteFileSystemClientFactory _undecoratedClientFactory;
     private readonly IUserService _userService;
     private readonly ISwitchingToVolumeEventsHandler _switchingToVolumeEventsHandler;
     private readonly ILoggerFactory _loggerFactory;
 
     public RemoteDecoratedFileSystemClientFactory(
-        Func<FileSystemClientParameters, IFileSystemClient<string>> undecoratedClientFactory,
+        IRemoteFileSystemClientFactory undecoratedClientFactory,
         IUserService userService,
         ISwitchingToVolumeEventsHandler switchingToVolumeEventsHandler,
         ILoggerFactory loggerFactory)
@@ -125,8 +125,9 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
     {
         var parameters = new FileSystemClientParameters(volumeId, shareId);
 
-        var undecoratedClient = CreateUndecoratedClient(parameters);
+        var undecoratedClient = _undecoratedClientFactory.CreateClient(parameters);
 
+        // TODO: use this decorator only for legacy (non-SDK) file system clients
         var draftCleaningClient = new DraftCleaningFileSystemClientDecorator(revisionUploadAttemptRepository, undecoratedClient);
 
         return new RemoteSpaceCheckingFileSystemClientDecorator(_userService, new StorageReservationHandler(), draftCleaningClient);
@@ -161,17 +162,12 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
             var linkName = Path.GetFileName(mapping.Local.Path.AsSpan()).ToString();
             var parameters = new FileSystemClientParameters(volumeId, shareId, virtualFolderId, linkId, linkName);
 
-            return CreateUndecoratedClient(parameters);
+            return _undecoratedClientFactory.CreateClient(parameters);
         }
 
         IFileSystemClient<string> CreateUndecoratedClientForFolder()
         {
-            return CreateUndecoratedClient(new FileSystemClientParameters(volumeId, shareId));
+            return _undecoratedClientFactory.CreateClient(new FileSystemClientParameters(volumeId, shareId));
         }
-    }
-
-    private IFileSystemClient<string> CreateUndecoratedClient(FileSystemClientParameters parameters)
-    {
-        return _undecoratedClientFactory.Invoke(parameters);
     }
 }

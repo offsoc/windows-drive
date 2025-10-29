@@ -11,14 +11,14 @@ namespace ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
 internal sealed class HostDeviceFolderMappingFolderValidationStep
 {
     private readonly IDeviceService _deviceService;
-    private readonly Func<FileSystemClientParameters, IFileSystemClient<string>> _remoteFileSystemClientFactory;
+    private readonly IRemoteFileSystemClientFactory _remoteFileSystemClientFactory;
     private readonly ILocalFolderValidationStep _localFolderValidation;
     private readonly VolumeIdentityProvider _volumeIdentityProvider;
     private readonly ILogger<HostDeviceFolderMappingFolderValidationStep> _logger;
 
     public HostDeviceFolderMappingFolderValidationStep(
         IDeviceService deviceService,
-        Func<FileSystemClientParameters, IFileSystemClient<string>> remoteFileSystemClientFactory,
+        IRemoteFileSystemClientFactory remoteFileSystemClientFactory,
         ILocalFolderValidationStep localFolderValidation,
         VolumeIdentityProvider volumeIdentityProvider,
         ILogger<HostDeviceFolderMappingFolderValidationStep> logger)
@@ -101,7 +101,7 @@ internal sealed class HostDeviceFolderMappingFolderValidationStep
             }
 
             var parameters = new FileSystemClientParameters(replica.VolumeId, replica.ShareId);
-            var remoteFileSystemClient = _remoteFileSystemClientFactory.Invoke(parameters);
+            var remoteFileSystemClient = _remoteFileSystemClientFactory.CreateClient(parameters);
             var folderInfo = NodeInfo<string>.Directory().WithId(replica.RootLinkId);
 
             try

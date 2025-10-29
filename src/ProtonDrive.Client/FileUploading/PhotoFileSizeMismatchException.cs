@@ -1,6 +1,8 @@
-﻿namespace ProtonDrive.App.Photos.Import;
+﻿using ProtonDrive.Sync.Shared.FileSystem.Photos;
 
-internal sealed class PhotoFileSizeMismatchException : PhotoImportException
+namespace ProtonDrive.Client.FileUploading;
+
+public sealed class PhotoFileSizeMismatchException : PhotoImportException
 {
     public PhotoFileSizeMismatchException()
     {

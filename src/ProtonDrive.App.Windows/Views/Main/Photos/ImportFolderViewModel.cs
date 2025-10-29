@@ -4,6 +4,7 @@ using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Windows.Views.Shared;
 using ProtonDrive.Shared;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 namespace ProtonDrive.App.Windows.Views.Main.Photos;
 

@@ -2,6 +2,7 @@
 using Polly;
 using Polly.Extensions.Http;
 using ProtonDrive.Client.Authentication;
+using ProtonDrive.Client.Cryptography.TimeProvision;
 using ProtonDrive.Client.Offline;
 using ProtonDrive.Shared.Net.Http;
 
@@ -30,7 +31,6 @@ public static class HttpClientConfigurator
         bool useOfflinePolicy = true)
     {
         builder
-            .AddHttpMessageHandler<ServerTimeRecordingHandler>()
             .AddHttpMessageHandler<TooManyRequestsHandler>()
             .AddHttpMessageHandler<ChunkedTransferEncodingHandler>()
             .AddHttpMessageHandler<AuthorizationHandler>();
@@ -44,6 +44,7 @@ public static class HttpClientConfigurator
 
         return builder
             .AddPolicyHandler((provider, _) => GetRetryPolicy(provider, numberOfRetriesSelector))
+            .AddHttpMessageHandler<CryptographyTimeProvisionHandler>()
             .AddTimeoutHandler(provider => timeoutSelector.Invoke(provider.GetRequiredService<DriveApiConfig>()));
     }
 

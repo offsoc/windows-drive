@@ -8,14 +8,14 @@ namespace ProtonDrive.Client.FileUploading;
 
 internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 {
-    private readonly HashingStream _contentStream;
+    private readonly HashingStream _destinationStream;
     private readonly IReadOnlyCollection<UploadedBlock> _uploadedBlocks;
     private readonly int _blockSize;
     private readonly IRevisionSealer _revisionSealer;
 
     public RemoteRevisionCreationProcess(
         NodeInfo<string> fileInfo,
-        Stream contentStream,
+        Stream destinationStream,
         IReadOnlyCollection<UploadedBlock> uploadedBlocks,
         int blockSize,
         IRevisionSealer revisionSealer)
@@ -24,7 +24,7 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 
         FileInfo = fileInfo;
 
-        _contentStream = new HashingStream(contentStream, HashAlgorithmName.SHA1);
+        _destinationStream = new HashingStream(destinationStream, HashAlgorithmName.SHA1);
         _uploadedBlocks = uploadedBlocks;
         _blockSize = blockSize;
 
@@ -35,9 +35,11 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
     public NodeInfo<string> BackupInfo { get; set; } = NodeInfo<string>.Empty();
     public bool ImmediateHydrationRequired => true;
 
-    public Stream OpenContentStream()
+    public async Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
-        return new SafeRemoteFileStream(_contentStream, FileInfo.Id);
+        var destination = new SafeRemoteFileStream(_destinationStream, FileInfo.Id);
+
+        await CopyFileContentAsync(destination, source, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<NodeInfo<string>> FinishAsync(CancellationToken cancellationToken)
@@ -61,12 +63,12 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 
     public void Dispose()
     {
-        _contentStream.Dispose();
+        _destinationStream.Dispose();
     }
 
     public ValueTask DisposeAsync()
     {
-        return _contentStream.DisposeAsync();
+        return _destinationStream.DisposeAsync();
     }
 
     protected virtual RevisionSealingParameters GetRevisionSealingParameters()
@@ -76,6 +78,23 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
             Blocks = _uploadedBlocks,
             Sha1Digest = GetSha1Digest(),
         };
+    }
+
+    protected virtual async Task CopyFileContentAsync(Stream destination, Stream source, CancellationToken cancellationToken)
+    {
+        // The Drive encrypted file read stream can report Length value different from the length of the unencrypted data.
+        // The Drive encrypted file write stream requires the Length to be set before copying the content.
+        destination.SetLength(source.Length);
+        await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
+
+        // Set the Length to the real number of bytes copied.
+        if (destination.Position != destination.Length)
+        {
+            // TODO: throw meaningful exception here instead of relying on RemoteFileWriteStream to do that.
+            destination.SetLength(destination.Position);
+        }
+
+        await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private void ValidateUpload()
@@ -104,7 +123,7 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
     private string GetSha1Digest()
     {
         Span<byte> digestSpan = stackalloc byte[SHA1.HashSizeInBytes];
-        _contentStream.GetCurrentHash(digestSpan);
+        _destinationStream.GetCurrentHash(digestSpan);
         return Convert.ToHexStringLower(digestSpan);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace ProtonDrive.App.Photos.Import;
+﻿using ProtonDrive.Sync.Shared.FileSystem.Photos;
+
+namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class PhotoAlbumCreationException : PhotoImportException
 {

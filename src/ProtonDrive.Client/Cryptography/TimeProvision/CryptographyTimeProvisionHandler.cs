@@ -1,12 +1,12 @@
-﻿namespace ProtonDrive.Client.Configuration;
+﻿namespace ProtonDrive.Client.Cryptography.TimeProvision;
 
-internal sealed class ServerTimeRecordingHandler : DelegatingHandler
+internal sealed class CryptographyTimeProvisionHandler : DelegatingHandler
 {
-    private readonly ServerTimeCache _serverTimeCache;
+    private readonly CryptographyTimeProvider _timeProvider;
 
-    public ServerTimeRecordingHandler(ServerTimeCache serverTimeCache)
+    public CryptographyTimeProvisionHandler(CryptographyTimeProvider timeProvider)
     {
-        _serverTimeCache = serverTimeCache;
+        _timeProvider = timeProvider;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -15,7 +15,7 @@ internal sealed class ServerTimeRecordingHandler : DelegatingHandler
 
         if (responseMessage.Headers.Date is { } time)
         {
-            _serverTimeCache.ServerTime = time;
+            _timeProvider.UpdateTime(time);
         }
 
         return responseMessage;

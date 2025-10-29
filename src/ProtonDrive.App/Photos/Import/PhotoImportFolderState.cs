@@ -1,4 +1,7 @@
-﻿namespace ProtonDrive.App.Photos.Import;
+﻿using ProtonDrive.Client.FileUploading;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
+
+namespace ProtonDrive.App.Photos.Import;
 
 public sealed class PhotoImportFolderState
 {
