@@ -998,6 +998,9 @@ Schalte ihre Synchronisierung aus und wieder ein, um sie wiederherzustellen und 
   <data name="Main_Photos_Import_Title">
     <value>Fotos importieren</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Wir importieren nur Neues — Duplikate werden automatisch übersprungen.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
   </data>

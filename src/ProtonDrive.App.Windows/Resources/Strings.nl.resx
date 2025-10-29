@@ -1000,6 +1000,9 @@ opslag optimalisatie op elk gewenst moment uitschakelen.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importeer foto's</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>We importeren alleen wat nieuw is — dubbele items worden automatisch overgeslagen.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Foto's</value>
   </data>

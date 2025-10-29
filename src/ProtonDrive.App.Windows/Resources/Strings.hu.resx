@@ -997,6 +997,9 @@
   <data name="Main_Photos_Import_Title">
     <value>Fényképek importálása</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>We'll only import what's new — duplicates are skipped automatically.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fényképek</value>
   </data>

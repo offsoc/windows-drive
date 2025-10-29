@@ -1001,6 +1001,9 @@ desative a otimização de armazenamento a qualquer momento.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importar fotos</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Somente importaremos o que for novo — duplicatas são automaticamente puladas.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
   </data>

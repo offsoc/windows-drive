@@ -30,7 +30,7 @@ public static class HttpClientConfigurator
         bool useOfflinePolicy = true)
     {
         builder
-            .AddHttpMessageHandler<CryptographyTimeProvisionHandler>()
+            .AddHttpMessageHandler<ServerTimeRecordingHandler>()
             .AddHttpMessageHandler<TooManyRequestsHandler>()
             .AddHttpMessageHandler<ChunkedTransferEncodingHandler>()
             .AddHttpMessageHandler<AuthorizationHandler>();

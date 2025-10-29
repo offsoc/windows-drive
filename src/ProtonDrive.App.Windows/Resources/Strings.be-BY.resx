@@ -1001,6 +1001,9 @@
   <data name="Main_Photos_Import_Title">
     <value>Імпартаваць фатаграфіі</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Будуць імпартавацца толькі новыя элементы, а дублікаты прапускаюцца аўтаматычна.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Фатаграфіі</value>
   </data>

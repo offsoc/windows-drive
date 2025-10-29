@@ -1001,6 +1001,9 @@ deaktivere lagringsoptimalisering når som helst.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importer bilder</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Vi importerer bare det som er nytt – duplikater hoppes over automatisk.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Bilder</value>
   </data>

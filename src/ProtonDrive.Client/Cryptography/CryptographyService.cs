@@ -1,36 +1,36 @@
-﻿using System.Buffers.Text;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Proton.Cryptography.Pgp;
-using Proton.Cryptography.Srp;
-using ProtonDrive.Client.Cryptography.Pgp;
+using Proton.Security;
+using Proton.Security.Cryptography;
+using Proton.Security.Cryptography.Abstractions;
+using Proton.Security.Cryptography.GopenPgp;
+using ProtonDrive.Client.Configuration;
 using ProtonDrive.Shared.Extensions;
 
 namespace ProtonDrive.Client.Cryptography;
 
 internal sealed class CryptographyService : ICryptographyService
 {
-    private const int PassphraseRandomBytesLength = 32;
-    private const int HashKeyRandomBytesLength = 32;
-
-    private static readonly int PassphraseMaxUtf8Length = Base64.GetMaxEncodedToUtf8Length(PassphraseRandomBytesLength);
-    private static readonly int HashKeyMaxUtf8Length = Base64.GetMaxEncodedToUtf8Length(HashKeyRandomBytesLength);
-
     private readonly IPgpTransformerFactory _pgpTransformerFactory;
     private readonly Lazy<IAddressKeyProvider> _addressKeyProvider;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly Func<DateTimeOffset> _getTimestampFunction;
     private readonly ILogger<CryptographyService> _logger;
 
     public CryptographyService(
         IPgpTransformerFactory pgpTransformerFactory,
         Func<IAddressKeyProvider> addressKeyProviderFactory,
+        IPasswordHasher passwordHasher,
+        IServerTimeProvider serverTimeProvider,
         ILogger<CryptographyService> logger)
     {
         _pgpTransformerFactory = pgpTransformerFactory;
         _addressKeyProvider = new Lazy<IAddressKeyProvider>(addressKeyProviderFactory);
+        _passwordHasher = passwordHasher;
+        _getTimestampFunction = serverTimeProvider.GetServerTime;
         _logger = logger;
     }
 
@@ -41,8 +41,9 @@ internal sealed class CryptographyService : ICryptographyService
         var primaryAddressKey = address.GetPrimaryKey();
 
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
-            primaryAddressKey.PrivateKey.ToPublic(),
-            primaryAddressKey.PrivateKey);
+            primaryAddressKey.PrivateKey.PublicKey,
+            primaryAddressKey.PrivateKey,
+            _getTimestampFunction);
         return (encrypter, address);
     }
 
@@ -54,14 +55,15 @@ internal sealed class CryptographyService : ICryptographyService
         var primaryAddressKey = address.GetPrimaryKey();
 
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
-            primaryAddressKey.PrivateKey.ToPublic(),
-            primaryAddressKey.PrivateKey);
+            primaryAddressKey.PrivateKey.PublicKey,
+            primaryAddressKey.PrivateKey,
+            _getTimestampFunction);
 
         return (encrypter, address);
     }
 
     public async Task<(ISigningCapablePgpMessageProducer Encrypter, Address SignatureAddress)> CreateNodeNameAndKeyPassphraseEncrypterAsync(
-        PgpPublicKey publicKey,
+        PublicPgpKey publicKey,
         string signatureAddressId,
         CancellationToken cancellationToken)
     {
@@ -69,30 +71,32 @@ internal sealed class CryptographyService : ICryptographyService
 
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
             publicKey,
-            signatureAddress.GetPrimaryKey().PrivateKey);
+            signatureAddress.GetPrimaryKey().PrivateKey,
+            _getTimestampFunction);
 
         return (encrypter, signatureAddress);
     }
 
-    public ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PgpPublicKey publicKey, PgpPrivateKey signatureKey)
+    public ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PublicPgpKey publicKey, PrivatePgpKey signatureKey)
     {
-        return _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(publicKey, signatureKey);
+        return _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(publicKey, signatureKey, _getTimestampFunction);
     }
 
-    public ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PgpPublicKey publicKey, PgpSessionKey sessionKey, Address signatureAddress)
+    public ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PublicPgpKey publicKey, PgpSessionKey sessionKey, Address signatureAddress)
     {
         var primaryAddressKey = signatureAddress.GetPrimaryKey();
 
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
             publicKey,
             sessionKey,
-            primaryAddressKey.PrivateKey);
+            primaryAddressKey.PrivateKey,
+            _getTimestampFunction);
 
         return encrypter;
     }
 
     public async Task<(ISigningCapablePgpMessageProducer Encrypter, Address SignatureAddress)> CreateNodeNameAndKeyPassphraseEncrypterAsync(
-        PgpPublicKey publicKey,
+        PublicPgpKey publicKey,
         PgpSessionKey sessionKey,
         string signatureAddressId,
         CancellationToken cancellationToken)
@@ -102,52 +106,64 @@ internal sealed class CryptographyService : ICryptographyService
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
             publicKey,
             sessionKey,
-            signatureAddress.GetPrimaryKey().PrivateKey);
+            signatureAddress.GetPrimaryKey().PrivateKey,
+            _getTimestampFunction);
 
         return (encrypter, signatureAddress);
     }
 
-    public ISigningCapablePgpMessageProducer CreateExtendedAttributesEncrypter(PgpPublicKey publicKey, Address signatureAddress)
+    public ISigningCapablePgpMessageProducer CreateExtendedAttributesEncrypter(PublicPgpKey publicKey, Address signatureAddress)
     {
         var encrypter = _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(
             publicKey,
-            signatureAddress.GetPrimaryKey().PrivateKey);
+            signatureAddress.GetPrimaryKey().PrivateKey,
+            _getTimestampFunction);
 
         return encrypter;
     }
 
-    public ISigningCapablePgpMessageProducer CreateHashKeyEncrypter(PgpPublicKey encryptionKey, PgpPrivateKey signatureKey)
+    public ISigningCapablePgpMessageProducer CreateHashKeyEncrypter(PublicPgpKey encryptionKey, PrivatePgpKey signatureKey)
     {
-        return _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(encryptionKey, signatureKey);
+        return _pgpTransformerFactory.CreateMessageAndSignatureProducingEncrypter(encryptionKey, signatureKey, _getTimestampFunction);
     }
 
     public ISigningCapablePgpDataPacketProducer CreateFileBlockEncrypter(
         PgpSessionKey contentSessionKey,
-        PgpPublicKey signaturePublicKey,
+        PublicPgpKey signaturePublicKey,
         Address signatureAddress)
     {
-        var contentEncrypter = new SigningCapablePgpDataPacketProducer(
+        var contentEncrypter = new SigningCapablePgpKeyAndDataPacketProducer(
             contentSessionKey,
             signatureAddress.GetPrimaryKey().PrivateKey,
-            signaturePublicKey);
+            signaturePublicKey,
+            _getTimestampFunction);
 
         return contentEncrypter;
     }
 
     public async Task<(ISigningCapablePgpDataPacketProducer Encrypter, Address SignatureAddress)> CreateFileBlockEncrypterAsync(
         PgpSessionKey contentSessionKey,
-        PgpPublicKey signaturePublicKey,
+        PublicPgpKey signaturePublicKey,
         string signatureAddressId,
         CancellationToken cancellationToken)
     {
         var signatureAddress = await _addressKeyProvider.Value.GetAddressAsync(signatureAddressId, cancellationToken).ConfigureAwait(false);
 
-        var contentEncrypter = new SigningCapablePgpDataPacketProducer(
+        var contentEncrypter = new SigningCapablePgpKeyAndDataPacketProducer(
             contentSessionKey,
             signatureAddress.GetPrimaryKey().PrivateKey,
-            signaturePublicKey);
+            signaturePublicKey,
+            _getTimestampFunction);
 
         return (contentEncrypter, signatureAddress);
+    }
+
+    public async Task<IPgpMessageProducer> CreateShareUrlPasswordEncrypterAsync(CancellationToken cancellationToken)
+    {
+        var address = await _addressKeyProvider.Value.GetUserDefaultAddressAsync(cancellationToken).ConfigureAwait(false);
+        var primaryAddressKey = address.GetPrimaryKey();
+
+        return new KeyBasedPgpMessageProducer(primaryAddressKey.PrivateKey.PublicKey, _getTimestampFunction);
     }
 
     public async Task<IVerificationCapablePgpDecrypter> CreateShareKeyPassphraseDecrypterAsync(
@@ -159,28 +175,53 @@ internal sealed class CryptographyService : ICryptographyService
         var publicAddressKeys = await _addressKeyProvider.Value.GetPublicKeysForEmailAddressAsync(signatureEmailAddress, cancellationToken)
             .ConfigureAwait(false);
 
-        return _pgpTransformerFactory.CreateVerificationCapableDecrypter(addressKeys.Select(x => x.PrivateKey).ToList(), publicAddressKeys);
+        return _pgpTransformerFactory.CreateVerificationCapableDecrypter(addressKeys.Select(x => x.PrivateKey), publicAddressKeys);
+    }
+
+    public async Task<PgpSessionKey> DecryptShareKeyPassphraseSessionKeyAsync(
+        string shareId,
+        string addressId,
+        string signatureEmailAddress,
+        string passphraseMessage,
+        string passphraseSignature,
+        CancellationToken cancellationToken)
+    {
+        var decrypter = await CreateShareKeyPassphraseDecrypterAsync([addressId], signatureEmailAddress, cancellationToken).ConfigureAwait(false);
+
+        var messageSource = new PgpMessageSource(new AsciiStream(passphraseMessage), PgpArmoring.Ascii);
+        var signatureSource = new PgpSignatureSource(new AsciiStream(passphraseSignature), PgpArmoring.Ascii);
+
+        await using (messageSource.ConfigureAwait(false))
+        await using (signatureSource.ConfigureAwait(false))
+        {
+            var (stream, verificationTask, sessionKey) = decrypter.GetDecryptingAndVerifyingStreamWithSessionKey(messageSource, signatureSource);
+            stream.ReadByte();
+
+            LogIfShareKeyPassphraseIsInvalid(verificationTask, shareId);
+
+            return sessionKey.Result;
+        }
     }
 
     public async Task<IVerificationCapablePgpDecrypter> CreateNodeNameAndKeyPassphraseDecrypterAsync(
-        PgpPrivateKey parentNodeOrShareKey,
+        PrivatePgpKey parentNodeOrShareKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken)
     {
         var verificationKeys = !string.IsNullOrEmpty(signatureEmailAddress)
             ? await _addressKeyProvider.Value.GetPublicKeysForEmailAddressAsync(signatureEmailAddress, cancellationToken).ConfigureAwait(false)
-            : [parentNodeOrShareKey.ToPublic()];
+            : [parentNodeOrShareKey.PublicKey];
 
         return _pgpTransformerFactory.CreateVerificationCapableDecrypter([parentNodeOrShareKey], verificationKeys);
     }
 
-    public IVerificationCapablePgpDecrypter CreateHashKeyDecrypter(PgpPrivateKey privateKey, PgpPublicKey verificationKey)
+    public IVerificationCapablePgpDecrypter CreateHashKeyDecrypter(PrivatePgpKey privateKey, PublicPgpKey verificationKey)
     {
         return _pgpTransformerFactory.CreateVerificationCapableDecrypter([privateKey], [verificationKey]);
     }
 
     public async Task<IVerificationCapablePgpDecrypter> CreateFileContentsBlockKeyDecrypterAsync(
-        PgpPrivateKey nodeKey,
+        PrivatePgpKey nodeKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken)
     {
@@ -191,66 +232,114 @@ internal sealed class CryptographyService : ICryptographyService
         // The signature e-mail address keys are included for signature verification,
         // because we were singing with the address key in the past, but later switched
         // to signing with the node key.
-        var verificationKeys = addressKeys.Prepend(nodeKey.ToPublic());
+        var verificationKeys = addressKeys.Prepend(nodeKey.PublicKey);
 
-        return _pgpTransformerFactory.CreateVerificationCapableDecrypter([nodeKey], verificationKeys.ToList());
+        return _pgpTransformerFactory.CreateVerificationCapableDecrypter([nodeKey], verificationKeys);
     }
 
-    public IPgpDecrypter CreateFileContentsBlockDecrypter(PgpPrivateKey nodeKey)
+    public IPgpDecrypter CreateFileContentsBlockDecrypter(PrivatePgpKey nodeKey)
     {
         return _pgpTransformerFactory.CreateDecrypter([nodeKey]);
     }
 
-    public async Task<PgpVerificationStatus> VerifyManifestAsync(
+    public async Task<IPgpDecrypter> CreateShareUrlPasswordDecrypterAsync(IReadOnlyCollection<string> emailAddresses, CancellationToken cancellationToken)
+    {
+        // TODO: Raise exception if list is empty or email addresses are invalid
+        var privateKeys = await _addressKeyProvider.Value.GetAddressKeysForEmailAddressesAsync(emailAddresses, cancellationToken).ConfigureAwait(false);
+        return _pgpTransformerFactory.CreateDecrypter(privateKeys.Select(x => x.PrivateKey));
+    }
+
+    public ReadOnlyMemory<byte> EncryptSessionKey(PgpSessionKey sessionKey, PublicPgpKey publicKey)
+    {
+        var keyPacketProducer = new PgpKeyAndDataPacketProducer(sessionKey, _getTimestampFunction);
+        var newKeyPacket = keyPacketProducer.GetKeyPacket(publicKey);
+        return newKeyPacket;
+    }
+
+    public ReadOnlyMemory<byte> EncryptSessionKey(PgpSessionKey sessionKey, SecureString password)
+    {
+        var keyPacketProducer = new PgpKeyAndDataPacketProducer(sessionKey, _getTimestampFunction);
+        var newKeyPacket = keyPacketProducer.GetKeyPacket(password);
+        return newKeyPacket;
+    }
+
+    public PgpSessionKey DecryptSessionKey(ReadOnlyMemory<byte> keyPacket, PrivatePgpKey privateKey)
+    {
+        var decrypter = new KeyBasedPgpDecrypter([privateKey]);
+        var sessionKey = decrypter.DecryptSessionKey(keyPacket);
+        return sessionKey;
+    }
+
+    public PgpSessionKey DecryptSessionKey(ReadOnlyMemory<byte> keyPacket, SecureString password)
+    {
+        var decrypter = new PasswordBasedPgpDecrypter(password);
+        var sessionKey = decrypter.DecryptSessionKey(keyPacket);
+        return sessionKey;
+    }
+
+    public async Task<VerificationVerdict> VerifyManifestAsync(
         ReadOnlyMemory<byte> manifest,
         string manifestSignature,
-        PgpPrivateKey nodeKey,
+        PrivatePgpKey nodeKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken)
     {
-        var verificationKeys = !string.IsNullOrEmpty(signatureEmailAddress)
+        var publicKeysForVerification = !string.IsNullOrEmpty(signatureEmailAddress)
             ? await _addressKeyProvider.Value.GetPublicKeysForEmailAddressAsync(signatureEmailAddress, cancellationToken).ConfigureAwait(false)
-            : [nodeKey.ToPublic()];
+            : [nodeKey.PublicKey];
 
-        var armoredSignatureBytes = Encoding.ASCII.GetBytes(manifestSignature);
-        var verificationResult = new PgpKeyRing(verificationKeys).Verify(manifest.Span, armoredSignatureBytes, PgpEncoding.AsciiArmor);
+        var verifier = _pgpTransformerFactory.CreateVerificationCapableDecrypter([], publicKeysForVerification);
 
-        return verificationResult.Status;
+        var verificationVerdict = await verifier.VerifyAsync(
+            manifest,
+            new PgpSignatureSource(new AsciiStream(manifestSignature), PgpArmoring.Ascii),
+            cancellationToken).ConfigureAwait(false);
+
+        return verificationVerdict;
     }
 
-    public PgpPrivateKey GenerateShareOrNodeKey()
+    public bool PrivateKeyIsValid(PrivatePgpKey privateKey) => privateKey.IsValid();
+
+    public PrivatePgpKey GenerateShareOrNodeKey(ReadOnlyMemory<byte> passphrase)
     {
-        return PgpPrivateKey.Generate("Drive key", "no-reply@proton.me", KeyGenerationAlgorithm.Default);
+        return PgpGenerator.GeneratePrivateKey("Drive key", "no-reply@proton.me", passphrase, KeySpecification.X25519(), _getTimestampFunction.Invoke());
     }
 
     public (ReadOnlyMemory<byte> KeyPacket, PgpSessionKey SessionKey, string SessionKeySignature) GenerateFileContentKeyPacket(
-        PgpPublicKey publicKey,
-        PgpPrivateKey signatureKey,
+        PublicPgpKey publicKey,
+        PrivatePgpKey signatureKey,
         string? fileName = null)
     {
-        var sessionKey = PgpSessionKey.Generate();
-        var keyPacket = publicKey.EncryptSessionKey(sessionKey);
-        var (sessionKeyToken, _) = sessionKey.Export();
-        var sessionKeySignature = signatureKey.Sign(sessionKeyToken);
-        var armoredSessionKeySignature = PgpArmorEncoder.Encode(sessionKeySignature, PgpBlockType.Signature);
+        var (keyPacket, sessionKey) = PgpGenerator.GenerateKeyPacket(publicKey);
 
-        return (keyPacket, sessionKey, Encoding.ASCII.GetString(armoredSessionKeySignature));
+        var encrypter = new SigningCapablePgpMessageProducer(publicKey, signatureKey, _getTimestampFunction);
+        var sessionKeySource = new PlainDataSource(sessionKey.Data.AsReadOnlyStream());
+        using var sessionKeySignatureStream = encrypter.GetSignatureStream(sessionKeySource, DetachedSignatureParameters.ArmoredPlain);
+
+        using var sessionKeySignatureReader = new StreamReader(sessionKeySignatureStream, Encoding.ASCII);
+        var sessionKeySignature = sessionKeySignatureReader.ReadToEnd();
+
+        return (keyPacket, sessionKey, sessionKeySignature);
     }
 
     public ReadOnlyMemory<byte> GeneratePassphrase()
     {
-        var randomBytes = new byte[PassphraseMaxUtf8Length];
-        RandomNumberGenerator.Fill(randomBytes.AsSpan(0, PassphraseRandomBytesLength));
-        Base64.EncodeToUtf8InPlace(randomBytes, PassphraseRandomBytesLength, out var length);
-        return randomBytes.AsMemory(0, length);
+        return GetRandomBase64Bytes(32);
+    }
+
+    public ReadOnlyMemory<byte> GenerateSrpSalt()
+    {
+        return PgpGenerator.GenerateRandomToken(10);
+    }
+
+    public ReadOnlyMemory<byte> GenerateEncryptionPasswordSalt()
+    {
+        return PgpGenerator.GenerateRandomToken(16);
     }
 
     public ReadOnlyMemory<byte> GenerateHashKey()
     {
-        var randomBytes = new byte[HashKeyMaxUtf8Length];
-        RandomNumberGenerator.Fill(randomBytes.AsSpan(0, HashKeyRandomBytesLength));
-        Base64.EncodeToUtf8InPlace(randomBytes, HashKeyRandomBytesLength, out var length);
-        return randomBytes.AsMemory(0, length);
+        return GetRandomBase64Bytes(32);
     }
 
     public string HashNodeNameHex(byte[] hashKey, string nodeName)
@@ -311,36 +400,32 @@ internal sealed class CryptographyService : ICryptographyService
 
     public ReadOnlyMemory<byte> DeriveSecretFromPassword(SecureString password, ReadOnlySpan<byte> salt)
     {
-        Span<byte> utf8Buffer = stackalloc byte[Encoding.UTF8.GetMaxByteCount(password.Length)];
-        var unicodePtr = Marshal.SecureStringToGlobalAllocUnicode(password);
+        var hash = _passwordHasher.Hash(password, salt);
 
-        try
-        {
-            unsafe
-            {
-                var utf16Span = new ReadOnlySpan<char>(unicodePtr.ToPointer(), password.Length);
-                var utf8Length = Encoding.UTF8.GetBytes(utf16Span, utf8Buffer);
-                var utf8Password = utf8Buffer[..utf8Length];
-                var hash = SrpClient.HashPassword(utf8Password, salt);
+        // Skip the first 29 characters which include the algorithm type, the number of rounds and the salt.
+        var secret = hash[29..];
 
-                // Skip the first 29 characters which include the algorithm type, the number of rounds and the salt.
-                var secret = hash[29..];
-                return secret;
-            }
-        }
-        finally
-        {
-            Marshal.ZeroFreeGlobalAllocUnicode(unicodePtr);
-        }
+        return secret;
     }
 
-    private void LogIfShareKeyPassphraseIsInvalid(Task<PgpVerificationStatus> task, string shareId)
+    /// <remarks>
+    /// The base64 part is to be compatible with the Web client quirks.
+    /// </remarks>
+    /// <param name="length">Length of the byte array.</param>
+    private static ReadOnlyMemory<byte> GetRandomBase64Bytes(int length)
+    {
+        var randomBytes = PgpGenerator.GenerateRandomToken(length);
+        var base64String = Convert.ToBase64String(randomBytes);
+        return Encoding.ASCII.GetBytes(base64String);
+    }
+
+    private void LogIfShareKeyPassphraseIsInvalid(Task<VerificationVerdict> task, string shareId)
     {
         // TODO: Instead of Task<>, use a type that expresses the guarantee of a result
         Trace.Assert(task.IsCompleted, "Signature verification task is not completed");
 
         var code = task.Result;
-        if (code == PgpVerificationStatus.Ok)
+        if (code == VerificationVerdict.ValidSignature)
         {
             return;
         }

@@ -1001,6 +1001,9 @@ désactiver l'optimisation du stockage à tout moment.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importer des photos</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Nous importerons seulement ce qu'il y a de nouveau. Les doublons sont ignorés automatiquement.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Photos</value>
   </data>

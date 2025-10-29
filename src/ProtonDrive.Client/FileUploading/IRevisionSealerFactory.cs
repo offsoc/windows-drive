@@ -1,5 +1,5 @@
-﻿using ProtonDrive.Client.Cryptography;
-using ProtonDrive.Client.Cryptography.Pgp;
+﻿using Proton.Security.Cryptography.Abstractions;
+using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Client.FileUploading;

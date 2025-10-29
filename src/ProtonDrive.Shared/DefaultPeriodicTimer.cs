@@ -11,7 +11,7 @@ public sealed class DefaultPeriodicTimer : IPeriodicTimer
 
     public async ValueTask<bool> WaitForNextTickAsync(CancellationToken cancellationToken = default)
     {
-        return await _adaptedInstance.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false);
+        return await _adaptedInstance.WaitForNextTickAsync(cancellationToken);
     }
 
     public void Dispose()

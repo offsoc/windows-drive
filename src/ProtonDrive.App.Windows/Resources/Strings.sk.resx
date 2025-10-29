@@ -1001,6 +1001,9 @@ Optimalizáciu úložiska môžete kedykoľvek vypnúť.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importovať fotografie</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Budeme importovať len nové položky — duplikáty sa automaticky preskočia.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fotografie</value>
   </data>

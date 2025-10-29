@@ -406,7 +406,7 @@
     <value>Filen hoppades över eftersom den nyligen har ändrats. Appen kommer att försöka igen automatiskt</value>
   </data>
   <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
-    <value>Live Photo cannot be uploaded.</value>
+    <value>Live-foton kan inte laddas upp.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Fil eller mapp har avvikit</value>
@@ -1000,6 +1000,9 @@ inaktivera lagringsoptimering när som helst.</value>
   </data>
   <data name="Main_Photos_Import_Title">
     <value>Importera foton</value>
+  </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Vi importerar bara det som är nytt – dubbletter hoppas över automatiskt.</value>
   </data>
   <data name="Main_Photos_Title">
     <value>Foton</value>

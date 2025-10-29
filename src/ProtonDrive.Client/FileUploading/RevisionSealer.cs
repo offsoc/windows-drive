@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Proton.Security.Cryptography.Abstractions;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
-using ProtonDrive.Client.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.FileUploading;
 

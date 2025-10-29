@@ -11,4 +11,5 @@ public enum Feature
     DriveWindowsStorageOptimizationNewFeatureBadge,
     DriveWindowsStorageOptimizationDisabled,
     DriveWindowsPhotoImport,
+    DriveWindowsOffers,
 }

@@ -523,6 +523,7 @@ public static class AppServices
                 .AddSingleton<IAccountStateAware>(provider => provider.GetRequiredService<OfferService>())
                 .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<OfferService>())
                 .AddSingleton<IRemoteSettingsAware>(provider => provider.GetRequiredService<OfferService>())
+                .AddSingleton<IFeatureFlagsAware>(provider => provider.GetRequiredService<OfferService>())
 
                 .AddSingleton<IGoogleTakeoutMetadataExtractor, GoogleTakeoutMetadataExtractor>()
             ;

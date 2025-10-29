@@ -1,10 +1,9 @@
 ﻿using System.Net;
 using System.Security;
 using Microsoft.Extensions.Logging;
-using Proton.Cryptography.Srp;
+using Proton.Security;
 using ProtonDrive.Client.Authentication.Contracts;
 using ProtonDrive.Client.Authentication.Contracts.Fido2;
-using ProtonDrive.Client.Authentication.Srp;
 using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Shared.Authentication;
 using ProtonDrive.Shared.Caching;
@@ -17,13 +16,12 @@ namespace ProtonDrive.Client.Authentication;
 
 internal sealed class AuthenticationService : IAuthenticationService, ISessionProvider
 {
-    private const int ServerEphemeralLength = 2048;
-
     private readonly IAuthenticationApiClient _authenticationApiClient;
-    private readonly ISrpClientFactory _srpClientFactory;
+    private readonly ISrpClient _srpClient;
     private readonly IUserClient _userClient;
     private readonly IAddressKeyProvider _addressKeyProvider;
     private readonly IKeyPassphraseProvider _keyPassphraseProvider;
+    private readonly ICryptographyService _cryptographyService;
     private readonly IProtectedRepository<Session> _sessionRepository;
     private readonly IClearableMemoryCache _cache;
     private readonly ILogger<AuthenticationService> _logger;
@@ -39,19 +37,21 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
 
     public AuthenticationService(
         IAuthenticationApiClient authenticationApiClient,
-        ISrpClientFactory srpClientFactory,
+        ISrpClient srpClient,
         IUserClient userClient,
         IAddressKeyProvider addressKeyProvider,
         IKeyPassphraseProvider keyPassphraseProvider,
+        ICryptographyService cryptographyService,
         IProtectedRepository<Session> sessionRepository,
         IClearableMemoryCache cache,
         ILogger<AuthenticationService> logger)
     {
         _authenticationApiClient = authenticationApiClient;
-        _srpClientFactory = srpClientFactory;
+        _srpClient = srpClient;
         _userClient = userClient;
         _addressKeyProvider = addressKeyProvider;
         _keyPassphraseProvider = keyPassphraseProvider;
+        _cryptographyService = cryptographyService;
         _sessionRepository = sessionRepository;
         _cache = cache;
         _logger = logger;
@@ -115,14 +115,21 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
             return StartSessionResult.Failure(StartSessionResultCode.SignInRequired, authInfo);
         }
 
-        var srpClient = _srpClientFactory.Create(credential, authInfo);
-        var srpClientHandshake = srpClient.ComputeHandshake(Convert.FromBase64String(authInfo.ServerEphemeral), ServerEphemeralLength);
+        var srpServerGeneratedChallenge = new SrpServerGeneratedChallenge(Version: 4, Convert.FromBase64String(authInfo.ServerEphemeral ?? string.Empty));
+
         try
         {
+            var srpClientResponse = _srpClient.CalculateResponse(
+                srpServerGeneratedChallenge,
+                Convert.FromBase64String(authInfo.Salt ?? string.Empty),
+                authInfo.Modulus ?? string.Empty,
+                credential.UserName,
+                credential.SecurePassword);
+
             var authData = new AuthRequest
             {
-                ClientEphemeral = Convert.ToBase64String(srpClientHandshake.Ephemeral),
-                ClientProof = Convert.ToBase64String(srpClientHandshake.Proof),
+                ClientEphemeral = Convert.ToBase64String(srpClientResponse.ClientGeneratedChallenge.Ephemeral),
+                ClientProof = Convert.ToBase64String(srpClientResponse.ClientProof),
                 SrpSession = authInfo.SrpSession,
                 Username = credential.UserName,
             };
@@ -133,7 +140,7 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
                 return StartSessionResult.Failure(StartSessionResultCode.SignInRequired, response);
             }
 
-            if (!srpClientHandshake.TryComputeSharedKey(Convert.FromBase64String(response.ServerProof)))
+            if (!Convert.ToBase64String(srpClientResponse.ClientGeneratedChallenge.ExpectedProof).Equals(response.ServerProof))
             {
                 _logger.LogWarning("Invalid server proof");
 
@@ -218,7 +225,9 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
 
             var address = await _addressKeyProvider.GetUserDefaultAddressAsync(cancellationToken).ConfigureAwait(false);
 
-            if (!address.GetPrimaryKey().PrivateKeyIsUnlocked)
+            var passphraseCanUnlock = _cryptographyService.PrivateKeyIsValid(address.GetPrimaryKey().PrivateKey);
+
+            if (!passphraseCanUnlock)
             {
                 _keyPassphraseProvider.ClearPassphrases();
 

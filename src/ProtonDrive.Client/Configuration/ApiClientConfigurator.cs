@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Proton.Security;
+using ProtonDrive.BlockVerification;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Authentication.Sessions;
-using ProtonDrive.Client.Authentication.Srp;
-using ProtonDrive.Client.BlockVerification;
 using ProtonDrive.Client.BugReport;
 using ProtonDrive.Client.Contacts;
 using ProtonDrive.Client.Core.Events;
@@ -107,13 +107,15 @@ public static class ApiClientConfigurator
 
         services.AddSingleton<IErrorReportingHttpClientConfigurator>(provider => new ErrorReportingHttpClientConfigurator(provider));
         services.AddSingleton<AuthenticationService>();
-        services.AddSingleton<ISrpClientFactory, SrpClientFactory>();
         services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<AuthenticationService>());
         services.AddSingleton<ISessionProvider>(sp => sp.GetRequiredService<AuthenticationService>());
         services.AddSingleton(sp => new Lazy<IAuthenticationService>(sp.GetRequiredService<IAuthenticationService>));
         services.AddSingleton(sp => new Lazy<ISessionProvider>(sp.GetRequiredService<ISessionProvider>));
 
         services.AddSingleton<ISessionClient, SessionClient>();
+
+        services.AddSingleton<ServerTimeCache>();
+        services.AddSingleton<IServerTimeProvider>(sp => sp.GetRequiredService<ServerTimeCache>());
 
         services.AddSingleton<OfflineService>();
         services.AddSingleton<IOfflineService>(sp => sp.GetRequiredService<OfflineService>());
@@ -128,8 +130,11 @@ public static class ApiClientConfigurator
         services.AddTransient<AuthorizationHandler>();
         services.AddTransient<OfflineHandler>();
         services.AddTransient<ChunkedTransferEncodingHandler>();
-        services.AddTransient<CryptographyTimeProvisionHandler>();
+        services.AddTransient<ServerTimeRecordingHandler>();
 
+        services.AddSingleton<ISrpClient, SrpClient>();
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<ISrpVerifierGenerator, SrpVerifierGenerator>();
         services.AddSingleton<IPgpTransformerFactory, PgpTransformerFactory>();
         services.AddSingleton<IKeyPassphraseProvider, KeyPassphraseProvider>();
 

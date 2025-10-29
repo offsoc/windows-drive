@@ -1000,6 +1000,9 @@
   <data name="Main_Photos_Import_Title">
     <value>导入相册</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>我们只会导入新的内容——重复项将被自动跳过。</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>照片</value>
   </data>

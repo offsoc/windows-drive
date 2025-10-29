@@ -1001,6 +1001,9 @@ desactivar l'optimització d'emmagatzematge en qualsevol moment.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importa fotos</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Només s'importarà el que sigui nou — els duplicats s'ometran automàticament.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fotos</value>
   </data>

@@ -1,10 +1,10 @@
 ﻿using System.Security;
-using Proton.Cryptography.Pgp;
-using ProtonDrive.Client.Cryptography.Pgp;
+using Proton.Security.Cryptography;
+using Proton.Security.Cryptography.Abstractions;
 
 namespace ProtonDrive.Client.Cryptography;
 
-internal interface ICryptographyService
+public interface ICryptographyService
 {
     Task<(ISigningCapablePgpMessageProducer Encrypter, Address Address)> CreateMainShareKeyPassphraseEncrypterAsync(CancellationToken cancellationToken);
 
@@ -13,35 +13,35 @@ internal interface ICryptographyService
         CancellationToken cancellationToken);
 
     Task<(ISigningCapablePgpMessageProducer Encrypter, Address SignatureAddress)> CreateNodeNameAndKeyPassphraseEncrypterAsync(
-        PgpPublicKey publicKey,
+        PublicPgpKey publicKey,
         string signatureAddressId,
         CancellationToken cancellationToken);
 
-    ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PgpPublicKey publicKey, PgpPrivateKey signatureKey);
+    ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(PublicPgpKey publicKey, PrivatePgpKey signatureKey);
 
     public ISigningCapablePgpMessageProducer CreateNodeNameAndKeyPassphraseEncrypter(
-        PgpPublicKey publicKey,
+        PublicPgpKey publicKey,
         PgpSessionKey sessionKey,
         Address signatureAddress);
 
     Task<(ISigningCapablePgpMessageProducer Encrypter, Address SignatureAddress)> CreateNodeNameAndKeyPassphraseEncrypterAsync(
-        PgpPublicKey publicKey,
+        PublicPgpKey publicKey,
         PgpSessionKey sessionKey,
         string signatureAddressId,
         CancellationToken cancellationToken);
 
-    ISigningCapablePgpMessageProducer CreateExtendedAttributesEncrypter(PgpPublicKey publicKey, Address signatureAddress);
+    ISigningCapablePgpMessageProducer CreateExtendedAttributesEncrypter(PublicPgpKey publicKey, Address signatureAddress);
 
-    ISigningCapablePgpMessageProducer CreateHashKeyEncrypter(PgpPublicKey encryptionKey, PgpPrivateKey signatureKey);
+    ISigningCapablePgpMessageProducer CreateHashKeyEncrypter(PublicPgpKey encryptionKey, PrivatePgpKey signatureKey);
 
     ISigningCapablePgpDataPacketProducer CreateFileBlockEncrypter(
         PgpSessionKey contentSessionKey,
-        PgpPublicKey signaturePublicKey,
+        PublicPgpKey signaturePublicKey,
         Address signatureAddress);
 
     public Task<(ISigningCapablePgpDataPacketProducer Encrypter, Address SignatureAddress)> CreateFileBlockEncrypterAsync(
         PgpSessionKey contentSessionKey,
-        PgpPublicKey signaturePublicKey,
+        PublicPgpKey signaturePublicKey,
         string signatureAddressId,
         CancellationToken cancellationToken);
 
@@ -50,34 +50,76 @@ internal interface ICryptographyService
         string signatureEmailAddress,
         CancellationToken cancellationToken);
 
+    Task<PgpSessionKey> DecryptShareKeyPassphraseSessionKeyAsync(
+        string shareId,
+        string addressId,
+        string signatureEmailAddress,
+        string passphraseMessage,
+        string passphraseSignature,
+        CancellationToken cancellationToken);
+
     Task<IVerificationCapablePgpDecrypter> CreateNodeNameAndKeyPassphraseDecrypterAsync(
-        PgpPrivateKey parentNodeOrShareKey,
+        PrivatePgpKey parentNodeOrShareKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken);
 
-    IVerificationCapablePgpDecrypter CreateHashKeyDecrypter(PgpPrivateKey privateKey, PgpPublicKey verificationKey);
+    IVerificationCapablePgpDecrypter CreateHashKeyDecrypter(PrivatePgpKey privateKey, PublicPgpKey verificationKey);
 
     Task<IVerificationCapablePgpDecrypter> CreateFileContentsBlockKeyDecrypterAsync(
-        PgpPrivateKey nodeKey,
+        PrivatePgpKey nodeKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken);
 
-    IPgpDecrypter CreateFileContentsBlockDecrypter(PgpPrivateKey nodeKey);
+    IPgpDecrypter CreateFileContentsBlockDecrypter(PrivatePgpKey nodeKey);
 
-    Task<PgpVerificationStatus> VerifyManifestAsync(
+    Task<IPgpMessageProducer> CreateShareUrlPasswordEncrypterAsync(CancellationToken cancellationToken);
+
+    Task<IPgpDecrypter> CreateShareUrlPasswordDecrypterAsync(IReadOnlyCollection<string> emailAddresses, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Encrypts a session key into a key packet using an asymmetric key.
+    /// </summary>
+    /// <returns>Return the key packet containing the encrypted session key.</returns>
+    ReadOnlyMemory<byte> EncryptSessionKey(PgpSessionKey sessionKey, PublicPgpKey publicKey);
+
+    /// <summary>
+    /// Encrypts a session key into a key packet using a password.
+    /// </summary>
+    /// <returns>Return the key packet containing the encrypted session key.</returns>
+    ReadOnlyMemory<byte> EncryptSessionKey(PgpSessionKey sessionKey, SecureString password);
+
+    /// <summary>
+    /// Decrypts a session key from a key packet using an asymmetric key.
+    /// </summary>
+    /// <returns>Returns the decrypted session key.</returns>
+    PgpSessionKey DecryptSessionKey(ReadOnlyMemory<byte> keyPacket, PrivatePgpKey privateKey);
+
+    /// <summary>
+    /// Decrypts a session key from a key packet using a password.
+    /// </summary>
+    /// <returns>Returns the decrypted session key.</returns>
+    PgpSessionKey DecryptSessionKey(ReadOnlyMemory<byte> keyPacket, SecureString password);
+
+    Task<VerificationVerdict> VerifyManifestAsync(
         ReadOnlyMemory<byte> manifest,
         string manifestSignature,
-        PgpPrivateKey nodeKey,
+        PrivatePgpKey nodeKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken);
 
-    PgpPrivateKey GenerateShareOrNodeKey();
+    bool PrivateKeyIsValid(PrivatePgpKey privateKey);
+
+    PrivatePgpKey GenerateShareOrNodeKey(ReadOnlyMemory<byte> passphrase);
 
     ReadOnlyMemory<byte> GeneratePassphrase();
 
+    ReadOnlyMemory<byte> GenerateSrpSalt();
+
+    ReadOnlyMemory<byte> GenerateEncryptionPasswordSalt();
+
     (ReadOnlyMemory<byte> KeyPacket, PgpSessionKey SessionKey, string SessionKeySignature) GenerateFileContentKeyPacket(
-        PgpPublicKey publicKey,
-        PgpPrivateKey signatureKey,
+        PublicPgpKey publicKey,
+        PrivatePgpKey signatureKey,
         string? fileName = null);
 
     ReadOnlyMemory<byte> GenerateHashKey();

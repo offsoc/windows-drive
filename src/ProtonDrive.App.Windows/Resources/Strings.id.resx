@@ -1001,6 +1001,9 @@ menonaktifkan optimisasi ruang penyimpanan ini kapan saja.</value>
   <data name="Main_Photos_Import_Title">
     <value>Impor foto</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>We'll only import what's new — duplicates are skipped automatically.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Foto</value>
   </data>

@@ -1000,6 +1000,9 @@
   <data name="Main_Photos_Import_Title">
     <value>匯入相片</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>We'll only import what's new — duplicates are skipped automatically.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>相片</value>
   </data>

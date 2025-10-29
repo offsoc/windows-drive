@@ -3,6 +3,7 @@
 public sealed class LocalFeatureFlags
 {
     public bool UpgradeStorageOnboardingStepEnabled { get; internal set; }
+    public bool OffersEnabled { get; internal set; }
 
     public bool DriveSdkEnabled { get; internal set; }
 

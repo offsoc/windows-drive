@@ -999,6 +999,9 @@ Dosyaların bu aygıtta yalnızca onları açtığınızda ya da her zaman bulun
   <data name="Main_Photos_Import_Title">
     <value>Fotoğrafları içe aktarın</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Yalnızca yeni olanlar içe aktarılacak. Yinelenenler otomatik olarak atlanacak.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Fotoğraflar</value>
   </data>

@@ -1001,6 +1001,9 @@ disattivare l'ottimizzazione della memoria in qualsiasi momento.</value>
   <data name="Main_Photos_Import_Title">
     <value>Importa foto</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Importeremo solo ciò che è nuovo — i duplicati vengono ignorati automaticamente.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Foto</value>
   </data>

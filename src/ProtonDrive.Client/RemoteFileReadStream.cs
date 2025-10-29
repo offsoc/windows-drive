@@ -6,7 +6,8 @@ using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 using CommunityToolkit.HighPerformance;
 using Microsoft.Extensions.Logging;
-using Proton.Cryptography.Pgp;
+using Proton.Security.Cryptography;
+using Proton.Security.Cryptography.Abstractions;
 using ProtonDrive.Client.Configuration;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
@@ -240,17 +241,9 @@ internal sealed class RemoteFileReadStream : Stream
     {
         try
         {
-            int readCount;
-            int totalReadCount = 0;
+            var readCount = await decryptingStream.ReadAsync(bufferOwner.Memory, cancellationToken).ConfigureAwait(false);
 
-            do
-            {
-                readCount = await decryptingStream.ReadAsync(bufferOwner.Memory[totalReadCount..], cancellationToken).ConfigureAwait(false);
-                totalReadCount += readCount;
-            }
-            while (readCount > 0);
-
-            return new WriteToDestinationJob(job.Block.Index, job.IsLastBlock, job.Destination, bufferOwner, totalReadCount, job.Sequencer);
+            return new WriteToDestinationJob(job.Block.Index, job.IsLastBlock, job.Destination, bufferOwner, readCount, job.Sequencer);
         }
         catch (CryptographicException ex)
         {
@@ -496,10 +489,10 @@ internal sealed class RemoteFileReadStream : Stream
                 blobStream.Seek(0, SeekOrigin.Begin);
 
                 var contentMessageStream = new ConcatenatingStream(_remoteFile.ContentKeyPacket.AsStream(), blobStream);
-
-                await using (contentMessageStream.ConfigureAwait(false))
+                var pgpMessageSource = new PgpMessageSource(contentMessageStream);
+                await using (pgpMessageSource.ConfigureAwait(false))
                 {
-                    var decryptingStream = decrypter.GetDecryptingStream(contentMessageStream);
+                    var decryptingStream = decrypter.GetDecryptingStream(pgpMessageSource);
 
                     await using (decryptingStream.ConfigureAwait(false))
                     {
@@ -595,11 +588,11 @@ internal sealed class RemoteFileReadStream : Stream
                     cancellationToken)
                 .ConfigureAwait(false);
 
-        if (verificationVerdict != PgpVerificationStatus.Ok)
+        if (verificationVerdict != VerificationVerdict.ValidSignature)
         {
             _logger.Log(
                 LogLevel.Warning,
-                "Manifest verification failure for file with link ID {LinkId}: {PgpVerificationStatus}",
+                "Manifest verification failure for file with link ID {LinkId}: {VerificationVerdict}",
                 _remoteFile.Id,
                 verificationVerdict);
         }

@@ -1001,6 +1001,9 @@
   <data name="Main_Photos_Import_Title">
     <value>Εισαγωγή φωτογραφιών</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates">
+    <value>Θα εισαγάγουμε μόνο ό,τι είναι καινούργιο — τα διπλότυπα παραλείπονται αυτόματα.</value>
+  </data>
   <data name="Main_Photos_Title">
     <value>Φωτογραφίες</value>
   </data>

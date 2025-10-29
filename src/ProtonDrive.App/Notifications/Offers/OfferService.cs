@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Account;
+using ProtonDrive.App.Features;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings.Remote;
 using ProtonDrive.Client.Contracts;
@@ -8,13 +9,14 @@ using ProtonDrive.Client.Notifications.Contracts;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Extensions;
+using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Threading;
 using ClientNotification = ProtonDrive.Client.Notifications.Contracts.Notification;
 
 namespace ProtonDrive.App.Notifications.Offers;
 
-internal sealed class OfferService : IStoppableService, IAccountStateAware, IUserStateAware, IRemoteSettingsAware, IDisposable
+internal sealed class OfferService : IStoppableService, IAccountStateAware, IUserStateAware, IRemoteSettingsAware, IFeatureFlagsAware, IDisposable
 {
     private readonly AppConfig _appConfig;
     private readonly IClock _clock;
@@ -29,6 +31,7 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
     private RemoteSettings _settings = RemoteSettings.Default;
     private UserState _userState = UserState.Empty;
     private Offer? _activeOffer;
+    private bool _offersEnabled;
     private bool _isStopping;
 
     public OfferService(
@@ -84,6 +87,17 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
         if (prevSettings.HasInAppNotificationsEnabled != settings.HasInAppNotificationsEnabled)
         {
             ScheduleExternalStateChangeHandling(forceRestart: !settings.HasInAppNotificationsEnabled);
+        }
+    }
+
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    {
+        var prevEnabled = _offersEnabled;
+        _offersEnabled = features.IsEnabled(Feature.DriveWindowsOffers);
+
+        if (prevEnabled != _offersEnabled)
+        {
+            ScheduleExternalStateChangeHandling(forceRestart: !_offersEnabled);
         }
     }
 
@@ -231,6 +245,7 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
 
         if (_accountStatus is not AccountStatus.Succeeded ||
             !_settings.HasInAppNotificationsEnabled ||
+            !_offersEnabled ||
             !CanGetAnOffer(userState))
         {
             _timer.Stop();

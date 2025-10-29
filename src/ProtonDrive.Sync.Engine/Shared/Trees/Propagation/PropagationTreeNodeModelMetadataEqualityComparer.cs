@@ -23,6 +23,6 @@ internal class PropagationTreeNodeModelMetadataEqualityComparer<TId> : IEquality
 
     public int GetHashCode(PropagationTreeNodeModel<TId> obj)
     {
-        throw new NotSupportedException();
+        throw new NotImplementedException();
     }
 }

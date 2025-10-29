@@ -99,7 +99,10 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
          * overrides the remote kill switch value and makes it enabled.
          */
 
-        yield break;
+        if (localFeatureFlags.OffersEnabled)
+        {
+            yield return (Feature.DriveWindowsOffers, IsEnabled: true);
+        }
     }
 
     private async Task EnsureFeaturesAreRetrievedAtLeastOnce(CancellationToken cancellationToken)
