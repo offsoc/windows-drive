@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Drive.Services.Shared;
+﻿namespace ProtonDrive.App.Drive.Services.Shared;
 
 public class ItemsChangedEventArgs<TKey, TItem> : EventArgs
 {

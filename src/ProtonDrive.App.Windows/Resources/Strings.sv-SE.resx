@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Filen hoppades över eftersom den nyligen har ändrats. Appen kommer att försöka igen automatiskt</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Fil eller mapp har avvikit</value>
   </data>
@@ -1282,6 +1285,9 @@ Innehållet i filer kommer endast att laddas ner på begäran.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Den lokala mappen måste vara tom innan synkronisering ställs in</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Serienummer för lokal volym har ändrats. Ställ in en ny synkroniseringsmapp.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Typen av lokal disk stöds inte. Försök att konfigurera en synkmapp på en annan lokal disk.</value>

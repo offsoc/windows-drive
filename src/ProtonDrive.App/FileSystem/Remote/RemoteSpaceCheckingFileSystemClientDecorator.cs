@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Account;
+﻿using ProtonDrive.App.Account;
 using ProtonDrive.Client;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;

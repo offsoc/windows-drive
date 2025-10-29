@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using ProtonDrive.Shared;
 using ProtonDrive.Sync.Windows.Interop;
 

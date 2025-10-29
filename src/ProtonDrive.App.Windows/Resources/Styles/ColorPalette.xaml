@@ -14,6 +14,8 @@
     <Color x:Key="RedColor.ExtraExtraDark">#442726</Color>
     <Color x:Key="YellowColor">#FAD857</Color>
     <Color x:Key="YellowColor.Light">#E1C24E</Color>
+    <Color x:Key="SaladColor">#D8FF00</Color>
+    <Color x:Key="SaladColor.Light">#BEDB6F</Color>
     <Color x:Key="OrangeColor.Light">#FFF0D9</Color>
     <Color x:Key="GreenColor">#1EA885</Color>
     <Color x:Key="WhiteColor">#FFFFFF</Color>

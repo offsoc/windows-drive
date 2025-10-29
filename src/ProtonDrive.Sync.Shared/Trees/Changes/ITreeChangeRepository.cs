@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Shared.Trees.Changes;
+﻿namespace ProtonDrive.Sync.Shared.Trees.Changes;
 
 public interface ITreeChangeRepository<TId>
     where TId : IEquatable<TId>

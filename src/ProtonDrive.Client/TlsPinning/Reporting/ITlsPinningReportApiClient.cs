@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Refit;
+﻿using Refit;
 
 namespace ProtonDrive.Client.TlsPinning.Reporting;
 

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Windows.Configuration.Hyperlinks;
+﻿namespace ProtonDrive.App.Windows.Configuration.Hyperlinks;
 
 internal interface IForkingSessionUrlOpener
 {

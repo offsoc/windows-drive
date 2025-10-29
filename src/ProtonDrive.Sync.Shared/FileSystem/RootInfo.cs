@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public sealed record RootInfo<TId>(int Id, int VolumeId, TId NodeId) : ICloneable
     where TId : IEquatable<TId>

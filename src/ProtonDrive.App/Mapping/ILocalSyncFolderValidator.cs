@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.App.Mapping;
+﻿namespace ProtonDrive.App.Mapping;
 
 internal interface ILocalSyncFolderValidator
 {

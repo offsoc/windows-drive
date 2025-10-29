@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.Mapping;
+﻿using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Windows.Dialogs;
 using ProtonDrive.App.Windows.Toolkit.Converters;
 

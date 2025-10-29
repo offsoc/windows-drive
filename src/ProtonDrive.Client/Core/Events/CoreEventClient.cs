@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Client.Core.Events.Contracts;
 
 namespace ProtonDrive.Client.Core.Events;

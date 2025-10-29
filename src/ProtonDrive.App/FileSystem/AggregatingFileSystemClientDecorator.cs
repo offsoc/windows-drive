@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Adapter.OnDemandHydration;

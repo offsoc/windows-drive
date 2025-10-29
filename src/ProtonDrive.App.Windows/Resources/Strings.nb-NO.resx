@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Filen hoppet over fordi den har endret seg for nylig. Appen prøver automatisk på nytt</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live-bilder kan ikke lastes opp.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Filen eller mappen samsvarer ikke.</value>
   </data>
@@ -1282,6 +1285,9 @@ Innholdet i filer vil kun bli lastet ned på forespørsel.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Lokal mappe må være tom før synkronisering konfigureres</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Serienummeret til det lokale volumet er endret. Opprett en ny synkroniseringsmappe.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Lokal stasjonstype som ikke støttes. Prøv å sette opp synkroniseringsmappen på en annen lokal stasjon.</value>

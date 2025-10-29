@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See LICENSE-MIT file in the project root for full license information.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading;
 using Microsoft.Win32.SafeHandles;
 using ProtonDrive.Sync.Windows.FileSystem.Internal;
 using ProtonDrive.Sync.Windows.Interop;

@@ -1,6 +1,4 @@
-﻿using System;
-using ProtonDrive.Client.Configuration;
-using Sentry;
+﻿using ProtonDrive.Client.Configuration;
 
 namespace ProtonDrive.App.Configuration;
 

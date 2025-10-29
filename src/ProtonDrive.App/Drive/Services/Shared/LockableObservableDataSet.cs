@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Drive.Services.Shared;

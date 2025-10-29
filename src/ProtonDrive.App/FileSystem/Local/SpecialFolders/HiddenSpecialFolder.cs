@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.FileSystem.Local.SpecialFolders;

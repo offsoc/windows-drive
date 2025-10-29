@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Sync.Shared.ExecutionStatistics;
+﻿using ProtonDrive.Sync.Shared.ExecutionStatistics;
 using ProtonDrive.Sync.Shared.SyncActivity;
 
 namespace ProtonDrive.Sync.Adapter;

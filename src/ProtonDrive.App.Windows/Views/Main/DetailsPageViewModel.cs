@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.Windows.Views.Shared.Navigation;
+﻿using ProtonDrive.App.Windows.Views.Shared.Navigation;
 
 namespace ProtonDrive.App.Windows.Views.Main;
 

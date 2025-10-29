@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace ProtonDrive.Sync.Shared;
+﻿namespace ProtonDrive.Sync.Shared;
 
 public class ConcurrentIdentitySource : IIdentitySource<long>
 {

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ProtonDrive.Sync.Windows.FileSystem.Watcher;
+﻿namespace ProtonDrive.Sync.Windows.FileSystem.Watcher;
 
 /// <summary>
 /// Provides data for the <see cref='FileSystemExtendedWatcher.Renamed'/> event.

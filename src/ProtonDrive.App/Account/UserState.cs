@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using ProtonDrive.Client.Contracts;
 
@@ -27,6 +26,8 @@ public sealed record UserState
     public string DisplayName { get; init; } = string.Empty;
 
     public string? SubscriptionPlanCode { get; init; }
+
+    public int SubscriptionCycle { get; init; }
 
     /// <summary>
     /// Subscription plan name of the unmanaged user account.
@@ -59,6 +60,8 @@ public sealed record UserState
     public long UsedDriveSpace { get; init; }
 
     public long MaxSpace { get; init; }
+
+    public string? Currency { get; init; }
 
     public string Initials => _initials ??= GetInitials();
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Proton.Security.Cryptography.Abstractions;
+﻿using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 using ProtonDrive.Client.Shares.Contracts;
 using ProtonDrive.Client.Volumes.Contracts;
 
@@ -57,7 +55,7 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
         cancellationToken.ThrowIfCancellationRequested();
 
         var shareKeyPassphrase = _cryptographyService.GeneratePassphrase();
-        var shareKey = _cryptographyService.GenerateShareOrNodeKey(shareKeyPassphrase);
+        var shareKey = _cryptographyService.GenerateShareOrNodeKey();
         var (userEncrypter, address) = await _cryptographyService.CreateMainShareKeyPassphraseEncrypterAsync(cancellationToken).ConfigureAwait(false);
 
         var shareParameters = GetRootShareCreationParameters(shareKey, shareKeyPassphrase, address, userEncrypter);
@@ -67,7 +65,7 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
     }
 
     private static ShareCreationParameters GetRootShareCreationParameters(
-        PrivatePgpKey shareKey,
+        PgpPrivateKey shareKey,
         ReadOnlyMemory<byte> shareKeyPassphrase,
         Address address,
         ISigningCapablePgpMessageProducer userEncrypter)
@@ -78,7 +76,7 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
         {
             AddressId = address.Id,
             AddressKeyId = address.GetPrimaryKey().Id,
-            Key = shareKey.ToString(),
+            Key = shareKey.Lock(shareKeyPassphrase.Span).ToString(),
             Passphrase = encryptedShareKeyPassphrase,
             PassphraseSignature = shareKeyPassphraseSignature,
         };
@@ -86,25 +84,25 @@ internal class VolumeCreationParametersFactory : IVolumeCreationParametersFactor
 
     private async Task<LinkCreationParameters> GetRootFolderCreationParametersAsync(
         string name,
-        PrivatePgpKey shareKey,
+        PgpPrivateKey shareKey,
         string addressId,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var (shareEncrypter, _) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(shareKey.PublicKey, addressId, cancellationToken)
+        var (shareEncrypter, _) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(shareKey.ToPublic(), addressId, cancellationToken)
             .ConfigureAwait(false);
 
         var folderKeyPassphrase = _cryptographyService.GeneratePassphrase();
-        var folderKey = _cryptographyService.GenerateShareOrNodeKey(folderKeyPassphrase);
+        var folderKey = _cryptographyService.GenerateShareOrNodeKey();
         var (encryptedFolderKeyPassphrase, folderKeyPassphraseSignature, _) = shareEncrypter.EncryptShareOrNodeKeyPassphrase(folderKeyPassphrase);
         var folderHashKey = _cryptographyService.GenerateHashKey();
-        var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.PublicKey, folderKey);
+        var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.ToPublic(), folderKey);
 
         return new LinkCreationParameters
         {
             Name = shareEncrypter.EncryptNodeName(name),
-            NodeKey = folderKey.ToString(),
+            NodeKey = folderKey.Lock(folderKeyPassphrase.Span).ToString(),
             NodePassphrase = encryptedFolderKeyPassphrase,
             NodePassphraseSignature = folderKeyPassphraseSignature,
             NodeHashKey = folderHashKeyEncrypter.EncryptHashKey(folderHashKey),

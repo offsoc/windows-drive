@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
 using ProtonDrive.App.Mapping.Setup.CloudFiles;
 using ProtonDrive.App.Mapping.Setup.ForeignDevices;
 using ProtonDrive.App.Mapping.Setup.HostDeviceFolders;

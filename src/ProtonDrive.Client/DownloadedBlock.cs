@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Client.Contracts;
+﻿using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.Client;
 

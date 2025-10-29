@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using ProtonDrive.Shared.Net.Http.TlsPinning;

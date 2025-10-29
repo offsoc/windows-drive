@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.Changes;
+﻿namespace ProtonDrive.Sync.Shared.Trees.Changes;
 
 public sealed class NullTreeChangeProvider<TId> : ITreeChangeProvider<TId>
     where TId : IEquatable<TId>

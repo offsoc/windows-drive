@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Net.Http.TlsPinning;
+﻿using ProtonDrive.Shared.Net.Http.TlsPinning;
 using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.Client.TlsPinning.Reporting;

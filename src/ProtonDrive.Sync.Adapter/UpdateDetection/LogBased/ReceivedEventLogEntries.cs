@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Sync.Shared.FileSystem;
+﻿using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection.LogBased;
 

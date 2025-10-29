@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using Polly;
+﻿using Polly;
 
 namespace ProtonDrive.Client.Offline;
 

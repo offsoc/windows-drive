@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.FileUploading;
+﻿namespace ProtonDrive.Client.FileUploading;
 
 public interface IPhotoDuplicateService
 {

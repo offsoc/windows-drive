@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Sync.Adapter.UpdateDetection.LogBased;
+﻿using ProtonDrive.Sync.Adapter.UpdateDetection.LogBased;
 using ProtonDrive.Sync.Adapter.UpdateDetection.StateBased;
 using ProtonDrive.Sync.Shared.ExecutionStatistics;
 

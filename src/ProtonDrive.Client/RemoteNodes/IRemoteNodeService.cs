@@ -1,6 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Threading;
-using System.Threading.Tasks;
 using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.Client.RemoteNodes;

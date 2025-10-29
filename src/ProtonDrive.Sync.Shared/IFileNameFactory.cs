@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿using ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 namespace ProtonDrive.Sync.Shared;
 

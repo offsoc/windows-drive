@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using ProtonDrive.Shared.IO;
 
 namespace ProtonDrive.Sync.Windows.FileSystem;

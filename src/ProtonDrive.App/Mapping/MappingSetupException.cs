@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Shared.Extensions;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Extensions;
+﻿using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Update.Helpers;
 
 namespace ProtonDrive.Update.Files.Downloadable;

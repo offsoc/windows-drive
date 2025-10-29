@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Sync.Adapter.Trees.Adapter.NodeLinking;
+﻿using ProtonDrive.Sync.Adapter.Trees.Adapter.NodeLinking;
 
 namespace ProtonDrive.Sync.Adapter.Trees.Adapter;
 

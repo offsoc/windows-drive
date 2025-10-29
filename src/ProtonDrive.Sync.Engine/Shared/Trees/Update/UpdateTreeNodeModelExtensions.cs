@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Engine.Shared.Trees.Update;
+﻿namespace ProtonDrive.Sync.Engine.Shared.Trees.Update;
 
 public static class UpdateTreeNodeModelExtensions
 {

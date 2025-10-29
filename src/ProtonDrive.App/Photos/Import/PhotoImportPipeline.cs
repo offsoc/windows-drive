@@ -1,12 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using ProtonDrive.App.Photos.LivePhoto;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 namespace ProtonDrive.App.Photos.Import;
 

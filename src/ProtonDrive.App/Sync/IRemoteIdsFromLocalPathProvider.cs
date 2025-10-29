@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Sync;
+﻿namespace ProtonDrive.App.Sync;
 
 public interface IRemoteIdsFromLocalPathProvider
 {

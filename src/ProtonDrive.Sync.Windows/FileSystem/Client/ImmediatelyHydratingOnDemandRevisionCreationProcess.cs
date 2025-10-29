@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 using Vanara.PInvoke;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Reporting;
+﻿namespace ProtonDrive.Shared.Reporting;
 
 public interface IErrorReporting
 {

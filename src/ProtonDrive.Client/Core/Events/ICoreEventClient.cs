@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Core.Events;
+﻿namespace ProtonDrive.Client.Core.Events;
 
 public interface ICoreEventClient
 {

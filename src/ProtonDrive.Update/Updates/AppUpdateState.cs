@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <inheritdoc />
 internal class AppUpdateState : IAppUpdateState

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Diagnostics;
+﻿namespace ProtonDrive.Shared.Diagnostics;
 
 public interface IOsProcess : IDisposable
 {

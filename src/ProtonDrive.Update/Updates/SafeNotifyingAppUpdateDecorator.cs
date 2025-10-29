@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <summary>
 /// Suppresses expected exceptions of <see cref="NotifyingAppUpdate.StartUpdating"/> method.

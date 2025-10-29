@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.Contracts;
+﻿namespace ProtonDrive.Client.Contracts;
 
 internal interface ITransferredBlock
 {

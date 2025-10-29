@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Net.Http.TlsPinning;
+﻿namespace ProtonDrive.Shared.Net.Http.TlsPinning;
 
 public sealed class TlsPinningHandlerFactory
 {

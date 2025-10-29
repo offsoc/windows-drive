@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.ComponentModel;
 using ProtonDrive.App.Configuration;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
 
 namespace ProtonDrive.App.Mapping.Setup;

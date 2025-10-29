@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using DotNext.Threading;
+﻿using DotNext.Threading;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.Shared;
 

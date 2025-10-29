@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Instrumentation.Telemetry;
 

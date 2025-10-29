@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Reporting;
+﻿namespace ProtonDrive.App.Reporting;
 
 public sealed class IntentionalCrashException : Exception
 {

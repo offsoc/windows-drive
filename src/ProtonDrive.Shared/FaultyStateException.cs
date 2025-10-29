@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared;
+﻿namespace ProtonDrive.Shared;
 
 public class FaultyStateException : Exception
 {

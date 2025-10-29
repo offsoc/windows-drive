@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using ProtonDrive.App.Windows.SystemIntegration;
 using ProtonDrive.App.Windows.Views.Shared;

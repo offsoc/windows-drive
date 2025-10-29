@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Notifications;
+﻿using ProtonDrive.App.Notifications;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Update;
 using ProtonDrive.App.Windows.Configuration.Hyperlinks;

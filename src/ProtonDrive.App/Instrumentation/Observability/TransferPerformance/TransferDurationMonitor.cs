@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Instrumentation.Observability.TransferPerformance;

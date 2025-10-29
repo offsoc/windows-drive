@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public interface IKnownFolders
 {

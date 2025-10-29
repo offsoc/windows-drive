@@ -1,10 +1,8 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Shared.Extensions;
@@ -22,7 +20,7 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
         _logger = logger;
     }
 
-    public async Task<ExtendedAttributes?> ReadAsync(Link link, PrivatePgpKey nodeKey, CancellationToken cancellationToken)
+    public async Task<ExtendedAttributes?> ReadAsync(Link link, PgpPrivateKey nodeKey, CancellationToken cancellationToken)
     {
         try
         {
@@ -36,11 +34,10 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
             var decrypter = await _cryptographyService.CreateNodeNameAndKeyPassphraseDecrypterAsync(nodeKey, signatureEmailAddress, cancellationToken)
                 .ConfigureAwait(false);
 
-            await using var messageSource = new PgpMessageSource(new AsciiStream(link.ExtendedAttributes), PgpArmoring.Ascii);
-            var result = decrypter.GetDecryptingAndVerifyingStream(messageSource);
-            var extendedAttributes = JsonSerializer.Deserialize<ExtendedAttributes>(result.Stream);
+            var result = decrypter.GetDecryptingAndVerifyingStream(Encoding.ASCII.GetBytes(link.ExtendedAttributes));
+            var extendedAttributes = JsonSerializer.Deserialize<ExtendedAttributes>(result.DecryptingStream);
 
-            LogIfSignatureIsInvalid(result.VerificationTask, link);
+            LogIfSignatureIsInvalid(result.GetVerificationStatus.Invoke(), link);
 
             ValidateSize(extendedAttributes);
 
@@ -53,7 +50,7 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
                 link.Id,
                 link.FileProperties?.ActiveRevision?.Id,
                 ex.CombinedMessage());
-            return default;
+            return null;
         }
         catch (CryptographicException ex)
         {
@@ -62,15 +59,13 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
                 link.Id,
                 link.FileProperties?.ActiveRevision?.Id,
                 ex.CombinedMessage());
-            return default;
+            return null;
         }
     }
 
-    private void LogIfSignatureIsInvalid(Task<VerificationVerdict> verificationVerdictTask, Link link)
+    private void LogIfSignatureIsInvalid(PgpVerificationStatus verificationStatus, Link link)
     {
-        var result = verificationVerdictTask.Result;
-
-        if (result == VerificationVerdict.ValidSignature)
+        if (verificationStatus == PgpVerificationStatus.Ok)
         {
             return;
         }
@@ -79,7 +74,7 @@ internal sealed class ExtendedAttributesReader : IExtendedAttributesReader
             "Signature problem on extended attributes for LinkID={LinkId} and RevisionID={RevisionId}: {VerificationResultCode}",
             link.Id,
             link.FileProperties?.ActiveRevision?.Id,
-            result);
+            verificationStatus);
     }
 
     private void ValidateSize(ExtendedAttributes? extendedAttributes)

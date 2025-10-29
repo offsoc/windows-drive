@@ -23,8 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
-    <PackageReference Include="Proton.Security" />
-    <PackageReference Include="ProtonDrive.BlockVerification" />
+    <PackageReference Include="Proton.Cryptography" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Net.Http.Json" />
@@ -36,6 +35,51 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\Notifications\bf-2025.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-duo-12m-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-duo-to-family-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-family-12m-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-family-1M-to-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-free-to-plus-12M-en-USD.heic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-free-to-plus-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-free-to-plus-12M-en-USD.webp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-free-to-plus-1M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-plus-12m-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-plus-1m-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-plus-1M-to-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-plus-to-unlimited-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-unlimited-12m-en.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Notifications\drive-unlimited-to-duo-12M-en-USD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Notifications\Notifications.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

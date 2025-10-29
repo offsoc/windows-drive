@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Docs;
+﻿using ProtonDrive.App.Docs;
 
 namespace ProtonDrive.App.InterProcessCommunication;
 

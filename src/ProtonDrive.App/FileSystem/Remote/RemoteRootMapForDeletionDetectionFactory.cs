@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.App.Devices;
+﻿using ProtonDrive.App.Devices;
 using ProtonDrive.App.Settings;
 
 namespace ProtonDrive.App.FileSystem.Remote;

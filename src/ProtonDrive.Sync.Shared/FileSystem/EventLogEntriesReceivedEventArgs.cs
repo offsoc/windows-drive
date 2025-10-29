@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public sealed class EventLogEntriesReceivedEventArgs<TId> : EventArgs
 {

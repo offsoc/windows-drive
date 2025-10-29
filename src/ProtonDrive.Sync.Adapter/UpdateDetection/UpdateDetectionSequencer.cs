@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Threading;
+﻿using ProtonDrive.Shared.Threading;
 using ProtonDrive.Sync.Shared;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection;

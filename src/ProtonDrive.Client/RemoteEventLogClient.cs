@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;

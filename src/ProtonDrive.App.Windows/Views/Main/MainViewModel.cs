@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -292,6 +291,15 @@ internal sealed class MainViewModel
         var offer = _offer;
         if (offer is null)
         {
+            return;
+        }
+
+        if (!string.Equals(_user?.Currency, "USD", StringComparison.OrdinalIgnoreCase))
+        {
+            // In-app offers are in English language and USD currency only. User currency is different,
+            // so we open Proton Drive web instead of offer modal. Drive web should show the translated offer in user currency.
+            _externalHyperlinks.WebClient.Open();
+
             return;
         }
 

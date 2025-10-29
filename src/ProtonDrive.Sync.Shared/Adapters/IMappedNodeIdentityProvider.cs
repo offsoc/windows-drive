@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Sync.Shared.Adapters;
+﻿namespace ProtonDrive.Sync.Shared.Adapters;
 
 /// <summary>
 /// Provides an identity value of the node in the File System Adapter of other replica

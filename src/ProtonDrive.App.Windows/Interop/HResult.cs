@@ -3,7 +3,6 @@
 //
 // Adapted from https://github.com/dotnet/pinvoke/blob/master/src/Windows.Core/HResult.cs
 
-using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 

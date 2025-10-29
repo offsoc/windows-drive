@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Threading;
+﻿namespace ProtonDrive.Shared.Threading;
 
 public interface ISchedulerTimer : IDisposable
 {

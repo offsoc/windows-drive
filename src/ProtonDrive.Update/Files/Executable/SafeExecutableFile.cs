@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using ProtonDrive.Update.Helpers;
 
 namespace ProtonDrive.Update.Files.Executable;

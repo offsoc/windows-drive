@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using DotNext.Threading;
+﻿using DotNext.Threading;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;

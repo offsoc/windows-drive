@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.App.Localization;
+﻿namespace ProtonDrive.App.Localization;
 
 public interface ILanguageService
 {

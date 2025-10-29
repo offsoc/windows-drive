@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Windows.Interop;

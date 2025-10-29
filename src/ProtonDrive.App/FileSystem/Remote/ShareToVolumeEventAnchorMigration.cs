@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.Shared.Repository;
+﻿using ProtonDrive.Shared.Repository;
 
 namespace ProtonDrive.App.FileSystem.Remote;
 

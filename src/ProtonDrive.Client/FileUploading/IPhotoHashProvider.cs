@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.FileUploading;
+﻿namespace ProtonDrive.Client.FileUploading;
 
 public interface IPhotoHashProvider
 {

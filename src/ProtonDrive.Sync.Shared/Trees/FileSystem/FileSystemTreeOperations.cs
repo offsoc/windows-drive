@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 using ProtonDrive.Sync.Shared.Trees.Operations;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.Core.Events.Contracts;
+﻿namespace ProtonDrive.Client.Core.Events.Contracts;
 
 [Flags]
 internal enum CoreEventsRefreshMask

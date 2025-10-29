@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Adapter.UpdateDetection.StateBased.Enumeration;
+﻿namespace ProtonDrive.Sync.Adapter.UpdateDetection.StateBased.Enumeration;
 
 internal class EscapeException : Exception
 {

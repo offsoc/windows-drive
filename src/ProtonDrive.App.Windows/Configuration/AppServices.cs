@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Threading;
+﻿using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -54,6 +52,7 @@ using ProtonDrive.Shared.Repository;
 using ProtonDrive.Shared.Security.Cryptography;
 using ProtonDrive.Shared.Threading;
 using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 using ProtonDrive.Sync.Windows.FileSystem.Client;
 using ProtonDrive.Sync.Windows.FileSystem.Photos;
 using ProtonDrive.Sync.Windows.Security.Cryptography;

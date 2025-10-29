@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Windows.Interop;
+﻿namespace ProtonDrive.Sync.Windows.Interop;
 
 public static partial class Kernel32
 {

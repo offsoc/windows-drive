@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using ProtonDrive.Shared.Threading;
+﻿using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.Sync.Shared.Collections.Generic;
 

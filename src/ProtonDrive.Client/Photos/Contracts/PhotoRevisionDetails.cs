@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Client.Photos.Contracts;

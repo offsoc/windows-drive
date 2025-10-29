@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Shared.Extensions;
+﻿using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Engine.ConflictResolution;
 using ProtonDrive.Sync.Engine.Reconciliation;
 using ProtonDrive.Sync.Engine.Shared;

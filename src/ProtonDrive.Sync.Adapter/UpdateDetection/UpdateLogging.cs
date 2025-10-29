@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.IO;
+﻿using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared;
 using ProtonDrive.Sync.Adapter.Trees.Adapter;

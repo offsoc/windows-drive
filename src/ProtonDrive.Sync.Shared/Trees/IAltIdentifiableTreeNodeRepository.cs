@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees;
+﻿namespace ProtonDrive.Sync.Shared.Trees;
 
 public interface IAltIdentifiableTreeNodeRepository<T, TId, TAltId> : ITreeNodeRepository<T, TId>
     where T : class, IIdentifiableTreeNode<TId>, IAltIdentifiable<TId, TAltId>

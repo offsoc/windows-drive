@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.FileSystem;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace ProtonDrive.Sync.Windows.FileSystem;
+﻿namespace ProtonDrive.Sync.Windows.FileSystem;
 
 public class TypeMismatchException : IOException
 {

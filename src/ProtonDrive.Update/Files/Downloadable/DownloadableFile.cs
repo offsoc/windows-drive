@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Files.Downloadable;
+﻿namespace ProtonDrive.Update.Files.Downloadable;
 
 /// <summary>
 /// Downloads file from internet.

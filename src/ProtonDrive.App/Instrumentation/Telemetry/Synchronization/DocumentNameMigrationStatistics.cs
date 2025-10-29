@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ProtonDrive.App.Instrumentation.Telemetry.Synchronization;
+﻿namespace ProtonDrive.App.Instrumentation.Telemetry.Synchronization;
 
 public sealed class DocumentNameMigrationStatistics
 {

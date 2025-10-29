@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Photos.Import;
+﻿using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Shared.Repository;
 

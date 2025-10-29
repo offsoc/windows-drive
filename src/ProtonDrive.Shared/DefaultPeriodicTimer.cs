@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared;
+﻿namespace ProtonDrive.Shared;
 
 public sealed class DefaultPeriodicTimer : IPeriodicTimer
 {
@@ -15,7 +11,7 @@ public sealed class DefaultPeriodicTimer : IPeriodicTimer
 
     public async ValueTask<bool> WaitForNextTickAsync(CancellationToken cancellationToken = default)
     {
-        return await _adaptedInstance.WaitForNextTickAsync(cancellationToken);
+        return await _adaptedInstance.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public void Dispose()

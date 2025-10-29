@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared.Features;
+﻿namespace ProtonDrive.Shared.Features;
 
 public interface IFeatureFlagProvider
 {

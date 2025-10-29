@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Client.Contracts;
+﻿using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.Client.FileUploading;
 

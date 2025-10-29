@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Update.Releases;
+﻿using ProtonDrive.Update.Releases;
 
 namespace ProtonDrive.Update.Updates;
 

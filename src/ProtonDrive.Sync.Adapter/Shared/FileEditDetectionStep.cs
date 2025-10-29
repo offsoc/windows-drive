@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using ProtonDrive.Sync.Adapter.Trees.Adapter;
+﻿using ProtonDrive.Sync.Adapter.Trees.Adapter;
 using ProtonDrive.Sync.Adapter.UpdateDetection;
 using ProtonDrive.Sync.Shared.Trees.FileSystem;
 

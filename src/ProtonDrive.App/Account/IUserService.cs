@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Contracts;
+﻿using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.App.Account;
 

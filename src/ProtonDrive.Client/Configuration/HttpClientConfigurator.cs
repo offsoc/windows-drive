@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using ProtonDrive.Client.Authentication;
@@ -32,7 +30,7 @@ public static class HttpClientConfigurator
         bool useOfflinePolicy = true)
     {
         builder
-            .AddHttpMessageHandler<ServerTimeRecordingHandler>()
+            .AddHttpMessageHandler<CryptographyTimeProvisionHandler>()
             .AddHttpMessageHandler<TooManyRequestsHandler>()
             .AddHttpMessageHandler<ChunkedTransferEncodingHandler>()
             .AddHttpMessageHandler<AuthorizationHandler>();

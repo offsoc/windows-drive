@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Adapter;
 using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Shared.Trees;

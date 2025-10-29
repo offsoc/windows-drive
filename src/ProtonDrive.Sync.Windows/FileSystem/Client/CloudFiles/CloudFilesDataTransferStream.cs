@@ -1,9 +1,5 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
+﻿using System.Buffers;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Sync.Shared.FileSystem;
 using Vanara.PInvoke;

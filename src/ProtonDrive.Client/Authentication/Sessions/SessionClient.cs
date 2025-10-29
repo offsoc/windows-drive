@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Authentication.Sessions;
+﻿namespace ProtonDrive.Client.Authentication.Sessions;
 
 internal sealed class SessionClient : ISessionClient
 {

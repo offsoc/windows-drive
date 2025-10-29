@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection;
 

@@ -30,6 +30,7 @@
     <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.205" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageVersion Include="morelinq" Version="4.4.0" />
+    <PackageVersion Include="Proton.Cryptography" Version="0.22.0" />
     <PackageVersion Include="ProtonDrive.BlockVerification" Version="1.1.0" />
     <PackageVersion Include="Proton.Security" Version="1.2.5" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="8.0.0" />

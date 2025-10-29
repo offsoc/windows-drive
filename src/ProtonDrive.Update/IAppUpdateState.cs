@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Update;
+﻿namespace ProtonDrive.Update;
 
 /// <summary>
 /// Public app update state

@@ -3,12 +3,7 @@
 //
 // Adapted from https://github.com/dotnet/samples/blob/main/csharp/parallel/ParallelExtensionsExtras/TaskSchedulers/StaTaskScheduler.cs
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ProtonDrive.Sync.Windows.FileSystem;
 

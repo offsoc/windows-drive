@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Windows.FileSystem.Watcher;
+﻿namespace ProtonDrive.Sync.Windows.FileSystem.Watcher;
 
 /// <summary>
 /// Represents the method that will handle the <see cref='FileSystemExtendedWatcher.Changed'/>,

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public interface ILocalFolderService
 {

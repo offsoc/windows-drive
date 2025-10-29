@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
+﻿namespace ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
 
 public sealed class GoogleTakeoutMetadata
 {

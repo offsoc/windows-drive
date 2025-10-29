@@ -761,6 +761,9 @@ disable storage optimization at any time.</value>
   <data name="Main_Photos_ImportFromGoogle_SelectFolder_Button" xml:space="preserve">
     <value>Select Folder</value>
   </data>
+  <data name="Main_Photos_Info_Duplicates" xml:space="preserve">
+    <value>We'll only import what's new — duplicates are skipped automatically.</value>
+  </data>
   <data name="Main_Photos_Warning_UploadUnavailable" xml:space="preserve">
     <value>Uploading photos is temporarily unavailable</value>
   </data>

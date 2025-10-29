@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
+﻿using System.Collections;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Logging;

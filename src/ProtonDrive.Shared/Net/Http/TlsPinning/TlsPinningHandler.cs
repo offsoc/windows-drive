@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Security;
+﻿using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ProtonDrive.Shared.Net.Http.TlsPinning;

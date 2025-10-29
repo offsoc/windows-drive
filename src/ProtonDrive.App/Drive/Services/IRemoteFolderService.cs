@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Drive.Services;
+﻿namespace ProtonDrive.App.Drive.Services;
 
 public interface IRemoteFolderService
 {

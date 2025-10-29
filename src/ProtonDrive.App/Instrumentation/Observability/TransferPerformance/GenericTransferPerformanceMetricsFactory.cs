@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using ProtonDrive.Client.Instrumentation.Observability;
 using ProtonDrive.Sync.Shared.SyncActivity;
 

@@ -2535,6 +2535,15 @@ namespace ProtonDrive.App.Windows.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We&apos;ll only import what&apos;s new — duplicates are skipped automatically..
+        /// </summary>
+        internal static string Main_Photos_Info_Duplicates {
+            get {
+                return ResourceManager.GetString("Main_Photos_Info_Duplicates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Photos.
         /// </summary>
         internal static string Main_Photos_Title {

@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Sync.Shared.Trees;
+﻿using ProtonDrive.Sync.Shared.Trees;
 
 namespace ProtonDrive.Sync.Adapter.Trees.Dirty;
 

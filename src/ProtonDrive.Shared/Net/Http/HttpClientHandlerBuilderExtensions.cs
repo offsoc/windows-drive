@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using ProtonDrive.Shared.Net.Http.TlsPinning;
 

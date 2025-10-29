@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Sync.Adapter.Trees.Adapter;
+﻿using ProtonDrive.Sync.Adapter.Trees.Adapter;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection.StateBased.Enumeration;

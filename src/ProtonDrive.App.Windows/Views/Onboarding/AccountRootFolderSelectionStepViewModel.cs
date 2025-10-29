@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;

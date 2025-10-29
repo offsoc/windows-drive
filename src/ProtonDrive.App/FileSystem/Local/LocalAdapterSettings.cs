@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.FileSystem.Local;
+﻿namespace ProtonDrive.App.FileSystem.Local;
 
 internal sealed record LocalAdapterSettings
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Authentication;
+﻿namespace ProtonDrive.Client.Authentication;
 
 internal interface ISessionProvider
 {

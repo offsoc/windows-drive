@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 
 public class PassiveTreeTraversal<TTree, TNode, TModel, TId>
     where TTree : FileSystemTree<TTree, TNode, TModel, TId>

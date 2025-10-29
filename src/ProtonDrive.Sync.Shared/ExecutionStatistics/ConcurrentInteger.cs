@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ProtonDrive.Sync.Shared.ExecutionStatistics;
+﻿namespace ProtonDrive.Sync.Shared.ExecutionStatistics;
 
 public class ConcurrentInteger
 {

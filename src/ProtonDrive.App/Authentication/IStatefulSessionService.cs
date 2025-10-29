@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Authentication;
+﻿namespace ProtonDrive.App.Authentication;
 
 public interface IStatefulSessionService
 {

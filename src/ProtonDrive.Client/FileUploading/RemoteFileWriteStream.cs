@@ -1,22 +1,15 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Buffers;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using CommunityToolkit.HighPerformance;
-using Proton.Security.Cryptography.Abstractions;
-using ProtonDrive.BlockVerification;
+using ProtonDrive.Client.BlockVerification;
 using ProtonDrive.Client.Configuration;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -434,20 +427,24 @@ internal sealed class RemoteFileWriteStream : Stream
 
         var (encryptingStream, signatureStream) = GetEncryptingAndSignatureStreams(command);
 
-        await using (encryptingStream.ConfigureAwait(false))
         await using (signatureStream.ConfigureAwait(false))
         {
             var encryptionBuffer = await _bufferPool.RentAsync(EstimatedEncryptedBlockSize, cancellationToken).ConfigureAwait(false);
 
-            var blockContentLength = await encryptingStream.ReadAsync(encryptionBuffer.Memory, cancellationToken).ConfigureAwait(false);
+            int blockContentLength;
+            await using (encryptingStream.ConfigureAwait(false))
+            {
+                blockContentLength = await encryptingStream.ReadAsync(encryptionBuffer.Memory, cancellationToken).ConfigureAwait(false);
+            }
 
             var blockDataPacket = encryptionBuffer.Memory[..blockContentLength];
             var plainData = command.PlainBuffer.Memory[..command.PlainDataLength];
 
-            var verificationToken = GetVerificationToken(blockDataPacket.Span, plainData.Span, command.Index, command.Target);
+            var verificationToken = GetVerificationToken(blockDataPacket, plainData.Span, command.Index, command.Target);
 
             command.PlainBuffer.Dispose();
 
+            signatureStream.Seek(0, SeekOrigin.Begin);
             using var signatureReader = new StreamReader(signatureStream, Encoding.ASCII, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
             var signature = await signatureReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
 
@@ -598,19 +595,19 @@ internal sealed class RemoteFileWriteStream : Stream
     {
         return uploadCommand.Target switch
         {
-            UploadTarget.Content => _encrypter.GetEncryptingAndSignatureStreams(GetPlainDataSource(), DetachedSignatureParameters.ArmoredEncrypted),
+            UploadTarget.Content => _encrypter.GetEncryptingAndSignatureStreams(GetPlainDataSource()),
             UploadTarget.Thumbnail => (_encrypter.GetEncryptingAndSigningStream(GetPlainDataSource()), Null),
             UploadTarget.HdPreview => (_encrypter.GetEncryptingAndSigningStream(GetPlainDataSource()), Null),
             _ => throw new NotSupportedException($"Unsupported upload target \"{uploadCommand.Target}\""),
         };
 
-        PlainDataSource GetPlainDataSource()
+        ReadOnlyMemory<byte> GetPlainDataSource()
         {
-            return new PlainDataSource(uploadCommand.PlainBuffer.Memory[..uploadCommand.PlainDataLength].AsStream());
+            return uploadCommand.PlainBuffer.Memory[..uploadCommand.PlainDataLength];
         }
     }
 
-    private VerificationToken? GetVerificationToken(ReadOnlySpan<byte> blockDataPacket, ReadOnlySpan<byte> plainData, int blockIndex, UploadTarget target)
+    private VerificationToken? GetVerificationToken(ReadOnlyMemory<byte> blockDataPacket, ReadOnlySpan<byte> plainData, int blockIndex, UploadTarget target)
     {
         try
         {

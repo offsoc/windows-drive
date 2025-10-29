@@ -1,7 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Logging;
 using ProtonDrive.Shared.Media;
 using ProtonDrive.Shared.Reporting;
@@ -38,13 +39,6 @@ internal sealed class Win32ThumbnailGenerationValidator
 
         if (!TryGetNumberOfPixelsOnLargestSide(out var imageNumberOfPixelsOnLargestSide))
         {
-            var fileExtensionToReport = _extension[^Math.Min(_extension.Length, 5)..];
-            _logger.LogWarning(
-                "Thumbnail generation failed for file extension \"{fileExtensionToReport}\": failed to determine image dimensions",
-                fileExtensionToReport);
-
-            var errorMessage = $"Thumbnail generation failed for file extension \"{fileExtensionToReport}\": failed to determine file size";
-            _errorReporting.CaptureError(errorMessage);
             return false;
         }
 
@@ -83,16 +77,45 @@ internal sealed class Win32ThumbnailGenerationValidator
             numberOfPixelsOnLargestSide = Math.Max(decoder.Frames[0].PixelWidth, decoder.Frames[0].PixelHeight);
             return true;
         }
-        catch (NotSupportedException)
+        catch (Exception ex) when (ex is ArgumentException or COMException or FileFormatException or InvalidOperationException or NotSupportedException)
         {
-            var filenameToLog = _logger.GetSensitiveValueForLogging(Path.GetFileName(_filePath));
             _logger.LogWarning(
-                "HD preview generation for file \"{File}\" with extension \"{Extension}\" failed: File format not supported",
-                filenameToLog,
-                _extension[^Math.Min(_extension.Length, 5)..]);
+                "HD preview generation for file \"{File}\" with extension \"{Extension}\" failed: File format not supported : {ErrorCode}",
+                GetFileNameForLogging(),
+                GetFileExtensionForLogging(),
+                ex.GetRelevantFormattedErrorCode());
 
-            numberOfPixelsOnLargestSide = 0;
-            return false;
+            ReportError(ex);
         }
+        catch (Exception ex) when (ex.IsFileAccessException())
+        {
+            _logger.LogWarning(
+                "HD preview generation for file \"{File}\" with extension \"{Extension}\" failed: {ExceptionType} : {ErrorCode}",
+                GetFileNameForLogging(),
+                GetFileExtensionForLogging(),
+                ex.GetType().Name,
+                ex.GetRelevantFormattedErrorCode());
+
+            ReportError(ex);
+        }
+
+        numberOfPixelsOnLargestSide = 0;
+        return false;
+    }
+
+    private void ReportError(Exception ex)
+    {
+        var errorMessage = $"Thumbnail generation failed for \"{GetFileExtensionForLogging()}\": ({ex.GetRelevantFormattedErrorCode()}) Failed to determine media size";
+        _errorReporting.CaptureError(errorMessage);
+    }
+
+    private string GetFileNameForLogging()
+    {
+        return _logger.GetSensitiveValueForLogging(Path.GetFileName(_filePath));
+    }
+
+    private string GetFileExtensionForLogging()
+    {
+        return _extension[^Math.Min(_extension.Length, 5)..];
     }
 }

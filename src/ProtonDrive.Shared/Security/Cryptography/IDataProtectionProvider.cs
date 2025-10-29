@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Security.Cryptography;
+﻿namespace ProtonDrive.Shared.Security.Cryptography;
 
 public interface IDataProtectionProvider
 {

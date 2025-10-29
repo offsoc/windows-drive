@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Mapping;
+﻿namespace ProtonDrive.App.Mapping;
 
 public static class MappingRegistryExtensions
 {

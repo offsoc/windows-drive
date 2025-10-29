@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.Drive.Services.Shared;
+﻿using ProtonDrive.App.Drive.Services.Shared;
 using ProtonDrive.Client.Shares.SharedWithMe;
 
 namespace ProtonDrive.App.Drive.Services.SharedWithMe;

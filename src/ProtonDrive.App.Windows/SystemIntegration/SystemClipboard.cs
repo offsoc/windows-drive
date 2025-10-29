@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.SystemIntegration;
+﻿using ProtonDrive.App.SystemIntegration;
 
 namespace ProtonDrive.App.Windows.SystemIntegration;
 

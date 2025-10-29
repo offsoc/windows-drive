@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Adapter.Trees.Adapter.NodeLookup;
+﻿namespace ProtonDrive.Sync.Adapter.Trees.Adapter.NodeLookup;
 
 internal class NodeByPathLookupResult<TId, TAltId>
     where TId : IEquatable<TId>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client;

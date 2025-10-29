@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Sync.Engine.Shared.Trees.Synced;
 using ProtonDrive.Sync.Engine.Shared.Trees.Update;
 using ProtonDrive.Sync.Shared;

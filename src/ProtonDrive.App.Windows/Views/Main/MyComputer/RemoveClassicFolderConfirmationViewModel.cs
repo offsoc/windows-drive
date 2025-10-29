@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Windows.Views.Main.MyComputer;
+﻿namespace ProtonDrive.App.Windows.Views.Main.MyComputer;
 
 internal sealed class RemoveClassicFolderConfirmationViewModel : RemoveFolderConfirmationViewModelBase
 {

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.Windows.Services;

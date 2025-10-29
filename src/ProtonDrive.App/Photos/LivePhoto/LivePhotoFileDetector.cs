@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 namespace ProtonDrive.App.Photos.LivePhoto;
 
@@ -76,5 +74,25 @@ public sealed class LivePhotoFileDetector : ILivePhotoFileDetector
         ReadOnlySpan<char> mainPhotoNameWithoutExtension = Path.GetFileNameWithoutExtension(mainPhotoPathSpan);
 
         return fileNameWithoutExtension.Equals(mainPhotoNameWithoutExtension, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public bool IsLivePhoto(string filePath)
+    {
+        if (!_livePhotoMainExtensions.Contains(Path.GetExtension(filePath)))
+        {
+            return false;
+        }
+
+        var parentFolderPath = Path.GetDirectoryName(filePath);
+        if (parentFolderPath is null)
+        {
+            return false;
+        }
+
+        var fileName = Path.GetFileNameWithoutExtension(filePath);
+
+        return _livePhotoVideoExtensions
+            .Select(videoExtension => Path.Combine(parentFolderPath, fileName + videoExtension))
+            .Any(File.Exists);
     }
 }

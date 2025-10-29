@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Features.Contracts;
+﻿using ProtonDrive.Client.Features.Contracts;
 using Refit;
 
 namespace ProtonDrive.Client.Features;

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ProtonDrive.Shared.Features;
+﻿namespace ProtonDrive.Shared.Features;
 
 public static class FeatureExtensions
 {

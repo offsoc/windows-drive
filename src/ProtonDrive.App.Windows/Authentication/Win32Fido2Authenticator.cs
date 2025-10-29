@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Authentication;
+﻿using ProtonDrive.App.Authentication;
 using ProtonDrive.Native.Authentication;
 using ProtonDrive.Shared.Authentication;
 

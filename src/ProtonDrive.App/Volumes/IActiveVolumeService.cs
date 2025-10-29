@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Volumes;
+﻿namespace ProtonDrive.App.Volumes;
 
 internal interface IActiveVolumeService
 {

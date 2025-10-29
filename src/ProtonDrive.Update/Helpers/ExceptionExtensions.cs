@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Net.Http;
+﻿using System.ComponentModel;
 using System.Net.Sockets;
 
 namespace ProtonDrive.Update.Helpers;

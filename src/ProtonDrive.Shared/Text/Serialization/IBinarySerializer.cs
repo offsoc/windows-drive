@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ProtonDrive.Shared.Text.Serialization;
+﻿namespace ProtonDrive.Shared.Text.Serialization;
 
 public interface IBinarySerializer
 {

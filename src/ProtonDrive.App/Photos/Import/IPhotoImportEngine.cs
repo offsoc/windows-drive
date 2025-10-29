@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Photos.Import;
+﻿namespace ProtonDrive.App.Photos.Import;
 
 internal interface IPhotoImportEngine
 {

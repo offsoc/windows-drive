@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Se omitió el archivo porque cambió demasiado recientemente. La aplicación volverá a intentarlo automáticamente</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>No se puede cargar la Foto en Vivo</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Se modificó el archivo o la carpeta.</value>
   </data>
@@ -1282,6 +1285,9 @@ El contenido de los archivos se descargará solo cuando lo necesite.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>La carpeta local debe estar vacía antes de configurar la sincronización</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>El número de serie del volumen local ha cambiado. Configure una carpeta de sincronización nueva.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>El tipo de unidad local no es compatible. Intente configurar la carpeta de sincronización en una unidad local diferente.</value>

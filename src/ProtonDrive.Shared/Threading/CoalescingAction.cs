@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared.Threading;
+﻿namespace ProtonDrive.Shared.Threading;
 
 /// <summary>
 /// Implements consumer in a simple producer/consumer pattern. Multiple producers are producing work,

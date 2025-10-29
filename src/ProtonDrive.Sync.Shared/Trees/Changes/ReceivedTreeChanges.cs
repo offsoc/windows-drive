@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
 using ProtonDrive.Shared.Repository;
 
 namespace ProtonDrive.Sync.Shared.Trees.Changes;

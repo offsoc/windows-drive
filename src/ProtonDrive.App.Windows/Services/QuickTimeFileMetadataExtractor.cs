@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Frozen;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using MetadataExtractor;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared.Extensions;

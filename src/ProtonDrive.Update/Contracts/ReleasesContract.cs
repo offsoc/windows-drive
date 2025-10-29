@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Update.Contracts;
+﻿namespace ProtonDrive.Update.Contracts;
 
 internal class ReleasesContract
 {

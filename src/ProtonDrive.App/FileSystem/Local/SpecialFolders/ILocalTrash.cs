@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.FileSystem.Local.SpecialFolders;
+﻿namespace ProtonDrive.App.FileSystem.Local.SpecialFolders;
 
 internal interface ILocalTrash<TId> : ISpecialFolder<TId>
     where TId : IEquatable<TId>

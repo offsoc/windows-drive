@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Shared.Net.Http.TlsPinning;
+﻿namespace ProtonDrive.Shared.Net.Http.TlsPinning;
 
 public sealed class TlsPinningConfig
 {

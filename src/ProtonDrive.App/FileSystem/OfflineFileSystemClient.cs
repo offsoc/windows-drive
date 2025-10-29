@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.FileSystem;

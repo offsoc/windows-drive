@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public interface IFileSystemNodeFactory<in TTree, TNode, in TModel, TId>
     where TTree : FileSystemTree<TTree, TNode, TModel, TId>

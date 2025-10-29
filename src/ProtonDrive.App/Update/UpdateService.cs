@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using ProtonDrive.App.Authentication;
 using ProtonDrive.App.EarlyAccess;
 using ProtonDrive.App.Services;

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Onboarding;

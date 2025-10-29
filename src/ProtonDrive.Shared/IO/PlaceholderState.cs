@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.IO;
+﻿namespace ProtonDrive.Shared.IO;
 
 /// <summary>
 /// The state of a placeholder file or folder

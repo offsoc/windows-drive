@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public class FileSystemNodeModel<TId> : IFileSystemNodeModel<TId>, ICloneable
     where TId : IEquatable<TId>

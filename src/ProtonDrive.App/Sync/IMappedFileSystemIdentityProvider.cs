@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Sync.Shared.Trees;
+﻿using ProtonDrive.Sync.Shared.Trees;
 
 namespace ProtonDrive.App.Sync;
 

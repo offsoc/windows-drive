@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public class FileContentEqualityComparer<TId> : IEqualityComparer<FileSystemNodeModel<TId>>
     where TId : IEquatable<TId>

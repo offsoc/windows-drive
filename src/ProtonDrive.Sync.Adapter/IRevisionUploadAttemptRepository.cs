@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.Sync.Adapter;
+﻿namespace ProtonDrive.Sync.Adapter;
 
 public interface IRevisionUploadAttemptRepository
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.DataAccess.Repositories;
+﻿using ProtonDrive.DataAccess.Repositories;
 using ProtonDrive.Sync.Adapter.Trees.Adapter;
 
 namespace ProtonDrive.DataAccess.Databases;

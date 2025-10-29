@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography.Abstractions;
-using ProtonDrive.BlockVerification;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Albums.Contracts;
+using ProtonDrive.Client.BlockVerification;
 using ProtonDrive.Client.Configuration;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
@@ -190,7 +184,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
                 .ConfigureAwait(false);
 
         var hashKey = _cryptographyService.GenerateHashKey();
-        var hashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(nodeKey.PublicKey, nodeKey);
+        var hashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(nodeKey.ToPublic(), nodeKey);
         parameters.NodeHashKey = hashKeyEncrypter.EncryptHashKey(hashKey);
 
         if (_isPhotoClient)
@@ -233,7 +227,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
         parameters.MediaType = GetMediaType(info);
 
-        var (keyPacket, sessionKey, sessionKeySignature) = _cryptographyService.GenerateFileContentKeyPacket(nodeKey.PublicKey, nodeKey, info.Name);
+        var (keyPacket, sessionKey, sessionKeySignature) = _cryptographyService.GenerateFileContentKeyPacket(nodeKey.ToPublic(), nodeKey, info.Name);
         parameters.ContentKeyPacket = keyPacket;
         parameters.ContentKeyPacketSignature = sessionKeySignature;
         parameters.ClientId = _clientInstanceIdentityProvider.GetClientInstanceId();
@@ -245,7 +239,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             (sessionKey, nodeKey) = await GetExistingKeysAsync(response.FileRevisionId.LinkId).ConfigureAwait(false);
         }
 
-        var contentEncrypter = _cryptographyService.CreateFileBlockEncrypter(sessionKey, nodeKey.PublicKey, signatureAddress);
+        var contentEncrypter = _cryptographyService.CreateFileBlockEncrypter(sessionKey, nodeKey.ToPublic(), signatureAddress);
 
         var blockVerifier = await GetBlockVerifierAsync(response.FileRevisionId.LinkId, response.FileRevisionId.Value, nodeKey, cancellationToken)
             .ConfigureAwait(false);
@@ -270,7 +264,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             fileMetadataProvider,
             _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
         {
-            NodeKey = nodeKey.PublicKey,
+            NodeKey = nodeKey.ToPublic(),
             LastWriteTime = info.LastWriteTimeUtc,
             Size = info.Size,
             SignatureAddress = signatureAddress,
@@ -312,7 +306,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             stream.BlockSize,
             revisionSealer);
 
-        async Task<(PgpSessionKey ContentSessionKey, PrivatePgpKey NodeKey)> GetExistingKeysAsync(string linkId)
+        async Task<(PgpSessionKey ContentSessionKey, PgpPrivateKey NodeKey)> GetExistingKeysAsync(string linkId)
         {
             var existingNode = await GetRemoteNodeAsync(linkId, draftAllowed: true, cancellationToken).ConfigureAwait(false);
 
@@ -382,7 +376,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
 
         var (contentEncrypter, signatureAddress) = await _cryptographyService.CreateFileBlockEncrypterAsync(
             contentSessionKey: remoteFile.ContentSessionKey,
-            signaturePublicKey: nodeKey.PublicKey,
+            signaturePublicKey: nodeKey.ToPublic(),
             share.RelevantMembershipAddressId,
             cancellationToken).ConfigureAwait(false);
 
@@ -409,7 +403,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             fileMetadataProvider,
             _loggerFactory.CreateLogger<ExtendedAttributesBuilder>())
         {
-            NodeKey = nodeKey.PublicKey,
+            NodeKey = nodeKey.ToPublic(),
             LastWriteTime = lastWriteTime,
             Size = size,
             SignatureAddress = signatureAddress,
@@ -491,7 +485,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             var destinationName = node.Name;
 
             var (nameEncrypter, signatureAddress) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
-                destinationParentFolder.PrivateKey.PublicKey,
+                destinationParentFolder.PrivateKey.ToPublic(),
                 nodeToAdd.NameSessionKey,
                 share.RelevantMembershipAddressId,
                 cancellationToken).ConfigureAwait(false);
@@ -500,7 +494,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             var nameHash = _cryptographyService.HashNodeNameHex(destinationParentFolder.HashKey, destinationName);
 
             var passphraseEncrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(
-                destinationParentFolder.PrivateKey.PublicKey,
+                destinationParentFolder.PrivateKey.ToPublic(),
                 nodeToAdd.PassphraseSessionKey,
                 signatureAddress);
 
@@ -561,7 +555,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
             : ToRemoteFolder(await GetRemoteNodeAsync(destinationInfo.ParentId!, cancellationToken).ConfigureAwait(false));
 
         var (nameEncrypter, signatureAddress) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
-            destinationParentFolder.PrivateKey.PublicKey,
+            destinationParentFolder.PrivateKey.ToPublic(),
             nodeToMove.NameSessionKey,
             share.RelevantMembershipAddressId,
             cancellationToken).ConfigureAwait(false);
@@ -572,7 +566,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         if (!isRenameOnly)
         {
             var passphraseEncrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(
-                destinationParentFolder.PrivateKey.PublicKey,
+                destinationParentFolder.PrivateKey.ToPublic(),
                 nodeToMove.PassphraseSessionKey,
                 signatureAddress);
 
@@ -963,30 +957,42 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
                 .Where(x => x.Response is { Succeeded: false })
                 .ToList();
 
-            var numberOfAlreadyAddedFiles = failures
+            var numberOfAlreadyExistsErrors = failures
                 .Count(x => x.Response is { Code: ResponseCode.AlreadyExists });
 
-            if (numberOfAlreadyAddedFiles > 0)
+            if (numberOfAlreadyExistsErrors > 0)
             {
                 _logger.LogInformation(
                     "In current batch, {NumberOfFiles} Photo file(s) were already in the album with ID {AlbumId}",
-                    numberOfAlreadyAddedFiles,
+                    numberOfAlreadyExistsErrors,
                     albumLinkId);
             }
 
-            var numberOfFailedToAddFilesDueToMissingRelatedFiles = failures
+            var numberOfMissingRelatedFilesErrors = failures
                 .Count(x => x.Response is { Code: ResponseCode.MissingRelatedFiles });
 
-            if (numberOfFailedToAddFilesDueToMissingRelatedFiles > 0)
+            if (numberOfMissingRelatedFilesErrors > 0)
             {
                 _logger.LogWarning(
                     "In current batch, {NumberOfFiles} Photo files(s) failed to add to the album with ID {AlbumId} due to missing related files. Failure is ignored",
-                    numberOfFailedToAddFilesDueToMissingRelatedFiles,
+                    numberOfMissingRelatedFilesErrors,
+                    albumLinkId);
+            }
+
+            var numberOfInvalidRequirementsErrors = failures
+                .Count(x => x.Response is { Code: ResponseCode.InvalidRequirements });
+
+            if (numberOfInvalidRequirementsErrors > 0)
+            {
+                _logger.LogWarning(
+                    "In current batch, {NumberOfFiles} Photo files(s) failed to add to the album with ID {AlbumId} due to invalid requirements. Failure is ignored",
+                    numberOfInvalidRequirementsErrors,
                     albumLinkId);
             }
 
             var otherFailures = failures
-                .Where(x => x.Response is { Code: not ResponseCode.AlreadyExists and not ResponseCode.MissingRelatedFiles })
+                .Where(x => x.Response.Code is not
+                    (ResponseCode.AlreadyExists or ResponseCode.MissingRelatedFiles or ResponseCode.InvalidRequirements))
                 .ToList();
 
             foreach (var failure in otherFailures)
@@ -1100,7 +1106,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         return ToRemoteFolder(parentNode);
     }
 
-    private async Task<IBlockVerifier> GetBlockVerifierAsync(string linkId, string revisionId, PrivatePgpKey nodeKey, CancellationToken cancellationToken)
+    private async Task<IBlockVerifier> GetBlockVerifierAsync(string linkId, string revisionId, PgpPrivateKey nodeKey, CancellationToken cancellationToken)
     {
         try
         {
@@ -1226,7 +1232,7 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         }
     }
 
-    private async Task<(T Parameters, PrivatePgpKey NodeKey, Address SignatureAddress)> CreateNodeCreationParametersAsync<T>(
+    private async Task<(T Parameters, PgpPrivateKey NodeKey, Address SignatureAddress)> CreateNodeCreationParametersAsync<T>(
         NodeInfo<string> info,
         Func<T> factory,
         string signatureAddressId,
@@ -1238,19 +1244,19 @@ public sealed class RemoteFileSystemClient : IFileSystemClient<string>
         try
         {
             var (parentEncrypter, signatureAddress) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
-                parentFolder.PrivateKey.PublicKey,
+                parentFolder.PrivateKey.ToPublic(),
                 signatureAddressId,
                 cancellationToken).ConfigureAwait(false);
 
             var passphrase = _cryptographyService.GeneratePassphrase();
-            var nodeKey = _cryptographyService.GenerateShareOrNodeKey(passphrase);
+            var nodeKey = _cryptographyService.GenerateShareOrNodeKey();
             var (encryptedPassphrase, passphraseSignature, _) = parentEncrypter.EncryptShareOrNodeKeyPassphrase(passphrase);
 
             var parameters = factory.Invoke();
 
             parameters.Name = parentEncrypter.EncryptNodeName(info.Name);
             parameters.ParentLinkId = info.ParentId;
-            parameters.NodeKey = nodeKey.ToString();
+            parameters.NodeKey = nodeKey.Lock(passphrase.Span).ToString();
             parameters.NodePassphrase = encryptedPassphrase;
             parameters.NodePassphraseSignature = passphraseSignature;
             parameters.SignatureEmailAddress = signatureAddress.EmailAddress;

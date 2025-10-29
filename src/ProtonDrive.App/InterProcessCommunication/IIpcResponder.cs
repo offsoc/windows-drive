@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.InterProcessCommunication;
+﻿namespace ProtonDrive.App.InterProcessCommunication;
 
 public interface IIpcResponder
 {

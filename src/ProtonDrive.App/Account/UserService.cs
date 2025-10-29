@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Client;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Contracts;
@@ -162,7 +157,9 @@ internal sealed class UserService : IUserService, IDisposable
             MaxSpace = user.MaxDriveSpace,
             UsedSpace = user.SplitStorageUsedSpace,
             UsedDriveSpace = user.ProductUsedSpace.Drive,
+            Currency = user.Currency,
             SubscriptionPlanCode = userSubscriptionPlan.Code,
+            SubscriptionCycle = userSubscriptionPlan.Cycle,
             SubscriptionPlanDisplayName = userSubscriptionPlan.DisplayName,
             SubscriptionPlanCouponCode = userSubscriptionPlan.CouponCode,
             LatestSubscriptionCancellationTimeUtc = latestSubscriptionCancellationTimeUtc,
@@ -235,7 +232,7 @@ internal sealed class UserService : IUserService, IDisposable
     {
         if (user.HasNoSubscription())
         {
-            return default;
+            return null;
         }
 
         var organization = _cachedOrganization;
@@ -248,7 +245,7 @@ internal sealed class UserService : IUserService, IDisposable
             _cachedOrganization = organization;
         }
 
-        return new UserSubscriptionPlan(organization.PlanCode, default, organization.DisplayName, default);
+        return new UserSubscriptionPlan(organization.PlanCode, DisplayName: null, organization.DisplayName, CouponCode: null, Cycle: 0);
     }
 
     private async Task<UserSubscriptionPlan?> GetAccountPlanNameAsync(User user, CancellationToken cancellationToken)
@@ -257,7 +254,7 @@ internal sealed class UserService : IUserService, IDisposable
             || user.Type == UserType.Managed
             || !_hasPaymentsScope)
         {
-            return default;
+            return null;
         }
 
         try
@@ -274,13 +271,13 @@ internal sealed class UserService : IUserService, IDisposable
 
             return subscription.Plans
                 .Where(x => x.Type == PlanType.PrimaryPlan)
-                .Select(x => new UserSubscriptionPlan(x.Code, x.DisplayName, default, subscription.CouponCode))
+                .Select(x => new UserSubscriptionPlan(x.Code, x.DisplayName, null, subscription.CouponCode, subscription.Cycle))
                 .FirstOrDefault();
         }
         catch (ApiException ex) when (ex.ResponseCode == ResponseCode.NoActiveSubscription)
         {
             // Response code NoActiveSubscription indicates the user account has no subscriptions, therefore is "free"
-            return default;
+            return null;
         }
     }
 
@@ -288,7 +285,7 @@ internal sealed class UserService : IUserService, IDisposable
     {
         if (user.Type == UserType.Managed)
         {
-            return default;
+            return null;
         }
 
         var defaultPlan = _cachedDefaultPlan;
@@ -301,7 +298,7 @@ internal sealed class UserService : IUserService, IDisposable
             _cachedDefaultPlan = defaultPlan;
         }
 
-        return new UserSubscriptionPlan(defaultPlan.Code, defaultPlan.DisplayName, default, default);
+        return new UserSubscriptionPlan(defaultPlan.Code, defaultPlan.DisplayName, OrganizationDisplayName: null, CouponCode: null, Cycle: 0);
     }
 
     private async Task SafeGetLatestSubscriptionCancellationAsync(CancellationToken cancellationToken)
@@ -328,11 +325,11 @@ internal sealed class UserService : IUserService, IDisposable
         _userClient.ClearCache();
         _userState = UserState.Empty;
         _cachedSubscriptionPlan = UserSubscriptionPlan.Empty;
-        _cachedUser = default;
-        _cachedOrganization = default;
-        _cachedSubscription = default;
-        _cachedDefaultPlan = default;
-        _cachedLatestSubscriptionCancellationTimeUtc = default;
+        _cachedUser = null;
+        _cachedOrganization = null;
+        _cachedSubscription = null;
+        _cachedDefaultPlan = null;
+        _cachedLatestSubscriptionCancellationTimeUtc = null;
     }
 
     private void SetUserState(UserState userState)
@@ -378,8 +375,8 @@ internal sealed class UserService : IUserService, IDisposable
         }
     }
 
-    private record UserSubscriptionPlan(string? Code, string? DisplayName, string? OrganizationDisplayName, string? CouponCode)
+    private record UserSubscriptionPlan(string? Code, string? DisplayName, string? OrganizationDisplayName, string? CouponCode, int Cycle)
     {
-        public static UserSubscriptionPlan Empty { get; } = new(default, default, default, default);
+        public static UserSubscriptionPlan Empty { get; } = new(Code: null, DisplayName: null, OrganizationDisplayName: null, CouponCode: null, Cycle: 0);
     }
 }

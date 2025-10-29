@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using ProtonDrive.App.InterProcessCommunication;
 using ProtonDrive.App.Windows.Interop;
 using ProtonDrive.App.Windows.InterProcessCommunication;

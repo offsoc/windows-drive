@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Shared.Extensions;
+﻿using ProtonDrive.Shared.Extensions;
 
 namespace ProtonDrive.Update.Files.UpdatesFolder;
 

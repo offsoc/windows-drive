@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.App.Windows.Services;
+﻿namespace ProtonDrive.App.Windows.Services;
 
 internal sealed class UpgradeStoragePlanAvailabilityVerifier : IUpgradeStoragePlanAvailabilityVerifier
 {

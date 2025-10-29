@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Files.Validatable;
+﻿namespace ProtonDrive.Update.Files.Validatable;
 
 internal interface IValidatableFile
 {

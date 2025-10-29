@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Events;
+﻿using ProtonDrive.Client.Events;
 
 namespace ProtonDrive.Client.Volumes.Events;
 

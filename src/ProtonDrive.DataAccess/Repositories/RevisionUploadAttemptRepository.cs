@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using ProtonDrive.Sync.Adapter;
 
 namespace ProtonDrive.DataAccess.Repositories;

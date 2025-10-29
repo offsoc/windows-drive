@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Repository;
+﻿using ProtonDrive.Shared.Repository;
 
 namespace ProtonDrive.App.Account;
 

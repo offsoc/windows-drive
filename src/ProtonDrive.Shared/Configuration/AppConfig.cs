@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Configuration;
+﻿namespace ProtonDrive.Shared.Configuration;
 
 public sealed class AppConfig
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ProtonDrive.App.Localization;
 using ProtonDrive.App.Windows.SystemIntegration;

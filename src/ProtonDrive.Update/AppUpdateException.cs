@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Update;
+﻿namespace ProtonDrive.Update;
 
 public class AppUpdateException : Exception
 {

@@ -123,7 +123,7 @@
                     Grid.Row="3"
                     Content="{Binding OfferTitle}"
                     Command="{Binding OpenOfferCommand}"
-                    Style="{StaticResource OffersButtonStyle}"
+                    Style="{StaticResource OfferButtonStyle}"
                     Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={x:Static converters:BooleanToVisibilityConverter.FalseIsCollapsed}}"
                     Margin="0,20,0,0" />
             </Grid>

@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.Windows.Dialogs;
+﻿using ProtonDrive.App.Windows.Dialogs;
 
 namespace ProtonDrive.App.Windows.Views.Main.MyComputer;
 

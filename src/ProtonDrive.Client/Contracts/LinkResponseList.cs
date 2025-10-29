@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Client.Contracts;
+﻿namespace ProtonDrive.Client.Contracts;
 
 public sealed record LinkResponseList : ApiResponse
 {

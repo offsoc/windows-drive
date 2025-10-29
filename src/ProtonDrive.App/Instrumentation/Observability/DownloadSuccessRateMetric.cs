@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Client.Instrumentation.Observability;
+﻿using ProtonDrive.Client.Instrumentation.Observability;
 using ProtonDrive.Shared.Extensions;
 
 namespace ProtonDrive.App.Instrumentation.Observability;

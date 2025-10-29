@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Files.Downloadable;
+﻿namespace ProtonDrive.Update.Files.Downloadable;
 
 internal interface IDownloadableFile
 {

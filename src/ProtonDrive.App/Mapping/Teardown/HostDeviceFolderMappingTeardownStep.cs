@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;

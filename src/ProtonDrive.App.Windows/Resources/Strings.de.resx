@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Die Datei wurde übersprungen, weil sie kürzlich geändert wurde. Die App wird es automatisch erneut versuchen</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live-Foto kann nicht hochgeladen werden.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Datei oder Ordner hat sich verlagert</value>
   </data>
@@ -1279,6 +1282,9 @@ Der Inhalt der Dateien wird nur bei Bedarf heruntergeladen.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Der lokale Ordner muss vor dem Einrichten der Synchronisation leer sein</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Seriennummer des lokalen Volumes hat sich geändert. Richte einen neuen Sync-Ordner ein.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Nicht unterstützter lokaler Laufwerkstyp. Versuche den Synchronisierungsordner auf einem anderen lokalen Laufwerk einzurichten.</value>

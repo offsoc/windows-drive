@@ -1,5 +1,4 @@
-﻿using System;
-using Proton.Security.Cryptography.Abstractions;
+﻿using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -10,7 +9,7 @@ internal sealed record RemoteFolder(
         string Name,
         PgpSessionKey NameSessionKey,
         string? ParentPath,
-        PrivatePgpKey PrivateKey,
+        PgpPrivateKey PrivateKey,
         ReadOnlyMemory<byte> Passphrase,
         PgpSessionKey PassphraseSessionKey,
         byte[] HashKey,

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ProtonDrive.Shared.Repository;
+﻿namespace ProtonDrive.Shared.Repository;
 
 public class CollectionRepository<T> : ICollectionRepository<T>
 {

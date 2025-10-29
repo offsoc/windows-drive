@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Engine.Shared;
+﻿namespace ProtonDrive.Sync.Engine.Shared;
 
 public static class UpdateStatusExtensions
 {

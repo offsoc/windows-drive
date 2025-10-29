@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>S'ha omès el fitxer perquè ha canviat massa recentment. L'aplicació es tornarà a provar automàticament.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>La foto en viu no s'ha pogut carregar.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>S'ha modificat el fitxer o la carpeta.</value>
   </data>
@@ -1283,6 +1286,9 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>La carpeta local ha d'estar buida abans de configurar la sincronització.</value>
   </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>El número de sèrie del volum local ha canviat. Configureu una nova carpeta de sincronització.</value>
+  </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>El tipus de drive local no es compatible. Proveu de configurar la carpeta de sincronització en una unitat local diferent.</value>
   </data>
@@ -1480,7 +1486,7 @@ El contingut dels fitxers es descarregarà només sota demanda.</value>
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Button_LearnMore">
-    <value>Per saber-ne més</value>
+    <value>Més informació</value>
   </data>
   <data name="SignIn_Button_SignIn">
     <value>_Inicia la sessió</value>

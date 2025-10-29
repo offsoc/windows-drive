@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -91,7 +87,7 @@ public static class AppServices
                     provider => provider.GetRequiredService<IConfiguration>().GetSection("TlsPinning").Get<IReadOnlyDictionary<string, TlsPinningConfig>>(options => options.BindNonPublicProperties = true) ??
                         throw new InvalidOperationException("Failed to obtain TLS pinning configuration"))
                 .AddSingleton(
-                    provider => provider.GetRequiredService<IConfiguration>().GetSection("FeatureManagement").Get<FeatureFlags>(options => options.BindNonPublicProperties = true) ??
+                    provider => provider.GetRequiredService<IConfiguration>().GetSection("FeatureManagement").Get<LocalFeatureFlags>(options => options.BindNonPublicProperties = true) ??
                         throw new InvalidOperationException("Failed to obtain app feature configuration"))
 
                 .AddSingleton(GetDriveApiConfig)

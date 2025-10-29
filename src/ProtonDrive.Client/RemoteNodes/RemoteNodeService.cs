@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.IO;
+﻿using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography;
-using Proton.Security.Cryptography.Abstractions;
+using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 using ProtonDrive.Client.Shares;
 using ProtonDrive.Shared.Extensions;
 
@@ -161,7 +157,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
 
         var (passphrase, passphraseSessionKey) = DecryptPassphrase(passphraseDecrypter, link.NodePassphrase, link.NodePassphraseSignature, "link", link.Id);
 
-        var nodeKey = PrivatePgpKey.FromArmored(link.NodeKey, passphrase);
+        var nodeKey = PgpPrivateKey.ImportAndUnlock(Encoding.ASCII.GetBytes(link.NodeKey), passphrase.Span, PgpEncoding.AsciiArmor);
 
         // TODO: re-use the decrypter used to decrypt the passphrase
         var (name, nameSessionKey) = await DecryptNameAsync(link.Id, link.Name, parent.PrivateKey, link.NameSignatureEmailAddress, cancellationToken)
@@ -192,7 +188,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
                     extendedAttributes);
 
             case LinkType.Folder:
-                var hashKey = DecryptHashKey(link.Id, link.FolderProperties?.NodeHashKey ?? string.Empty, nodeKey, nodeKey.PublicKey);
+                var hashKey = DecryptHashKey(link.Id, link.FolderProperties?.NodeHashKey ?? string.Empty, nodeKey, nodeKey.ToPublic());
 
                 return new RemoteFolder(
                     link,
@@ -206,7 +202,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
                     extendedAttributes);
 
             case LinkType.Album:
-                var albumHashKey = DecryptHashKey(link.Id, link.AlbumProperties?.NodeHashKey ?? string.Empty, nodeKey, nodeKey.PublicKey);
+                var albumHashKey = DecryptHashKey(link.Id, link.AlbumProperties?.NodeHashKey ?? string.Empty, nodeKey, nodeKey.ToPublic());
 
                 return new RemoteFolder(
                     link,
@@ -238,7 +234,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
         var addressIds = share.Memberships.Select(m => m.AddressId);
         var decrypter = await _cryptographyService.CreateShareKeyPassphraseDecrypterAsync(addressIds, share.CreatorEmailAddress, cancellationToken).ConfigureAwait(false);
         var (passphrase, _) = DecryptPassphrase(decrypter, share.Passphrase, share.PassphraseSignature, "share", shareId);
-        var privateKey = PrivatePgpKey.FromArmored(share.Key, passphrase);
+        var privateKey = PgpPrivateKey.ImportAndUnlock(Encoding.ASCII.GetBytes(share.Key), passphrase.Span, PgpEncoding.AsciiArmor);
 
         return new Share(share.LinkId, privateKey, share.AddressId);
     }
@@ -246,7 +242,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
     private async Task<(string Name, PgpSessionKey SessionKey)> DecryptNameAsync(
         string linkId,
         string nameMessage,
-        PrivatePgpKey decryptionKey,
+        PgpPrivateKey decryptionKey,
         string? signatureEmailAddress,
         CancellationToken cancellationToken)
     {
@@ -294,7 +290,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
         }
     }
 
-    private ReadOnlyMemory<byte> DecryptHashKey(string linkId, string encryptedHashKey, PrivatePgpKey decryptionKey, PublicPgpKey verificationKey)
+    private ReadOnlyMemory<byte> DecryptHashKey(string linkId, string encryptedHashKey, PgpPrivateKey decryptionKey, PgpPublicKey verificationKey)
     {
         var hashKeyDecrypter = _cryptographyService.CreateHashKeyDecrypter(decryptionKey, verificationKey);
 
@@ -318,7 +314,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
         ReadOnlyMemory<byte> contentKeyPacket,
         string? signature,
         string? signatureAddress,
-        PrivatePgpKey nodeKey,
+        PgpPrivateKey nodeKey,
         CancellationToken cancellationToken)
     {
         var contentSessionKeyDecrypter = await _cryptographyService
@@ -329,12 +325,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
         {
             var contentSessionKey = contentSessionKeyDecrypter.DecryptSessionKey(contentKeyPacket);
 
-            var verificationVerdict = await VerifyContentSessionKeyAsync(
-                contentSessionKeyDecrypter,
-                contentSessionKey,
-                contentKeyPacket,
-                signature,
-                cancellationToken).ConfigureAwait(false);
+            var verificationVerdict = VerifyContentSessionKey(contentSessionKeyDecrypter, contentSessionKey, contentKeyPacket, signature);
 
             LogIfSignatureIsInvalid(verificationVerdict, "file", linkId, "content key packet");
 
@@ -346,41 +337,33 @@ internal sealed class RemoteNodeService : IRemoteNodeService
         }
     }
 
-    private static async Task<VerificationVerdict> VerifyContentSessionKeyAsync(
+    private static PgpVerificationStatus VerifyContentSessionKey(
         IVerificationCapablePgpDecrypter decrypter,
         PgpSessionKey contentSessionKey,
         ReadOnlyMemory<byte> contentKeyPacket,
-        string? signature,
-        CancellationToken cancellationToken)
+        string? signature)
     {
         if (signature is null)
         {
-            return VerificationVerdict.NoSignature;
+            return PgpVerificationStatus.NotSigned;
         }
 
-        var signatureSource = new PgpSignatureSource(new AsciiStream(signature), PgpArmoring.Ascii);
+        var (sessionKeyToken, _) = contentSessionKey.Export();
+        var signatureBytes = Encoding.ASCII.GetBytes(signature);
+        var verificationVerdict = decrypter.Verify(sessionKeyToken, signatureBytes);
 
-        await using (signatureSource.ConfigureAwait(false))
+        // Legacy signature support
+        if (verificationVerdict != PgpVerificationStatus.Ok)
         {
-            var verificationVerdict = await decrypter.VerifyAsync(contentSessionKey.Data, signatureSource, cancellationToken)
-                .ConfigureAwait(false);
-
-            // Legacy signature support
-            if (verificationVerdict != VerificationVerdict.ValidSignature)
-            {
-                signatureSource.Stream.Seek(0, SeekOrigin.Begin);
-
-                verificationVerdict = await decrypter.VerifyAsync(contentKeyPacket, signatureSource, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            return verificationVerdict;
+            verificationVerdict = decrypter.Verify(contentKeyPacket.Span, signatureBytes);
         }
+
+        return verificationVerdict;
     }
 
-    private void LogIfSignatureIsInvalid(VerificationVerdict code, string objectType, string objectId, string attributeType)
+    private void LogIfSignatureIsInvalid(PgpVerificationStatus code, string objectType, string objectId, string attributeType)
     {
-        if (code == VerificationVerdict.ValidSignature)
+        if (code == PgpVerificationStatus.Ok)
         {
             return;
         }

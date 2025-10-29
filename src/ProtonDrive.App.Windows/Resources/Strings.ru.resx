@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Файл пропущен, так как он изменился слишком недавно. Приложение автоматически попытается повторить операцию</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Файл или папка разошлись</value>
   </data>
@@ -1282,6 +1285,9 @@
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Перед настройкой синхронизации локальная папка должна быть пустой</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Тип локального хранилища не поддерживается. Попробуйте настроить папку синхронизации на другом хранилище.</value>

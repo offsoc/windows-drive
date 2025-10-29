@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public class AltIdentifiableFileSystemNodeModel<TId, TAltId> : FileSystemNodeModel<TId>, IAltIdentifiable<TId, TAltId>
     where TId : IEquatable<TId>

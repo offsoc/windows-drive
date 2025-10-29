@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Client.Photos.Contracts;
+﻿namespace ProtonDrive.Client.Photos.Contracts;
 
 public sealed record PhotoDuplicationParameters
 {

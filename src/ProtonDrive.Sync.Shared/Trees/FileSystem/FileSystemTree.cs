@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Shared.Trees.Collections;
 

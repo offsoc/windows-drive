@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Security;
 
 namespace ProtonDrive.Client.Cryptography;
 

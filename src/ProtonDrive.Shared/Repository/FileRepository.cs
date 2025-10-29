@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using ProtonDrive.Shared.Extensions;
+﻿using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Text.Serialization;
 
 namespace ProtonDrive.Shared.Repository;

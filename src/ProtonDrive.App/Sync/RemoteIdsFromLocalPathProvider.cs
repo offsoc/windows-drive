@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Mapping;
+﻿using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Shared.IO;

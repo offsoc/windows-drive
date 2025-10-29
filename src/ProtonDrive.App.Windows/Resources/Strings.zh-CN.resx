@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>由于文件最近更改过多而跳过。应用程序将自动重试</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>文件或文件夹不匹配</value>
   </data>
@@ -1281,6 +1284,9 @@
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>设置同步前，本地文件夹必须为空</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>不支持的本地驱动器类型。请尝试在不同的本地驱动器上设置同步文件夹。</value>

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ProtonDrive.Sync.Shared.SyncActivity;
+﻿using ProtonDrive.Sync.Shared.SyncActivity;
 
 namespace ProtonDrive.App.Sync;
 

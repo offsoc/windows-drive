@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public class LooseCompoundAltIdentifiableFileSystemNodeModel<TId, TAltId> : FileSystemNodeModel<TId>, ILooseCompoundAltIdentifiable<TId, TAltId>
     where TId : IEquatable<TId>

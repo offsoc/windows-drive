@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public interface IOnDemandSyncRootRegistry
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.App.Mapping.SyncFolders;

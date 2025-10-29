@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace ProtonDrive.Shared.IO;
+﻿namespace ProtonDrive.Shared.IO;
 
 public static class PathExtensions
 {

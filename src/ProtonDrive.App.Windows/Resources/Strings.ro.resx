@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Fișier ignorat deoarece a fost modificat prea recent. Aplicația va reîncerca automat.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Fotografiile în direct nu pot fi încărcate.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Fișierul sau folderul s-a modificat.</value>
   </data>
@@ -540,7 +543,7 @@ Dezactivați și reactivați sincronizarea pentru a o restabili și a șterge ac
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Account_Password_Description">
-    <value>Modificare parolă cont.</value>
+    <value>Modificați parola contului.</value>
   </data>
   <data name="Main_Account_Password_HelpText">
     <value>Schimbați-vă parola Proton Drive</value>
@@ -562,7 +565,7 @@ Dezactivați și reactivați sincronizarea pentru a o restabili și a șterge ac
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="Main_Account_SessionManagement_Description">
-    <value>Dacă nu vă deconectați din cont sau nu vă schimbați parola, sesiunea va rămâne activă. Sesiunile expiră după 60 de zile de inactivitate</value>
+    <value>Dacă nu vă deconectați din cont sau nu vă schimbați parola, sesiunea va rămâne activă. Sesiunile expiră după 60 de zile de inactivitate.</value>
   </data>
   <data name="Main_Account_SessionManagement_HelpText">
     <value>Gestionați-vă sesiunea. După 60 de zile de inactivitate sesiunea va expira.</value>
@@ -571,7 +574,7 @@ Dezactivați și reactivați sincronizarea pentru a o restabili și a șterge ac
     <value>Gestionare sesiuni</value>
   </data>
   <data name="Main_Account_SignOut_Description">
-    <value>Deconectați-vă și dezactivați sincronizarea. Vă puteți reconecta cu același cont pentru a relua sincronizarea.</value>
+    <value>Vă deconectați și dezactivați sincronizarea. Vă puteți reconecta cu același cont pentru a relua sincronizarea.</value>
   </data>
   <data name="Main_Account_SignOut_HelpText">
     <value>Deconectare din Proton Drive</value>
@@ -988,7 +991,7 @@ Fișierele ocupă spațiul local doar când sunt deschise sau alegeți să fie p
     <value>Importare folder</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Description">
-    <value>Importare fotografii Google din Google Takeout</value>
+    <value>Importați fotografii Google din Google Takeout.</value>
   </data>
   <data name="Main_Photos_Import_ImportFromGoogle_Title">
     <value>Importare din Google Photos</value>
@@ -1280,6 +1283,9 @@ Conținutul fișierelor va fi descărcat numai la cerere.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Folderul local trebuie să fie gol înainte de a seta sincronizarea.</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Numărul de serie al volumului local s-a modificat. Setați un folder nou de sincronizare.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Tip de unitate locală nesuportată. Încercați să setați un folder de sincronizare pe o unitate diferită.</value>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared;
+﻿namespace ProtonDrive.Shared;
 
 public readonly struct AsyncDisposable : IAsyncDisposable
 {

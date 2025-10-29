@@ -56,12 +56,12 @@
     <SolidColorBrush
         x:Key="OfferButtonBrush.Default.Background"
         po:Freeze="True"
-        Color="{StaticResource YellowColor}" />
+        Color="{StaticResource SaladColor}" />
 
     <SolidColorBrush
         x:Key="OfferButtonBrush.MouseOver.Background"
         po:Freeze="True"
-        Color="{StaticResource YellowColor.Light}" />
+        Color="{StaticResource SaladColor.Light}" />
 
     <SolidColorBrush
         x:Key="PrimaryColorBrush"
@@ -182,6 +182,11 @@
         x:Key="OnboardingWindow.DarkTheme.Background"
         po:Freeze="True"
         Color="{StaticResource DarkTheme.Black}" />
+
+    <SolidColorBrush
+        x:Key="OfferWindow.DarkTheme.Background"
+        po:Freeze="True"
+        Color="#1D1541" />
 
     <SolidColorBrush
         x:Key="Window.SignIn.Background"

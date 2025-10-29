@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.FileUploading;
+﻿namespace ProtonDrive.Client.FileUploading;
 
 internal sealed class BlockVerificationFailedException : Exception
 {

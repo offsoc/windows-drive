@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem;
 
 public interface IFileSystemNodeModel<TId> : IIdentifiableTreeNode<TId>
     where TId : IEquatable<TId>

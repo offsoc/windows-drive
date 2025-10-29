@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
+﻿using ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 
 namespace ProtonDrive.Sync.Adapter.Trees.Dirty;
 

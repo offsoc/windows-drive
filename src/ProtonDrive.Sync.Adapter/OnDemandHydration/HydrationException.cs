@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Adapter.OnDemandHydration;
+﻿namespace ProtonDrive.Sync.Adapter.OnDemandHydration;
 
 public sealed class HydrationException : Exception
 {

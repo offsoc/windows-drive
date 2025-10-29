@@ -1,5 +1,4 @@
-﻿using System;
-using Vanara.PInvoke;
+﻿using Vanara.PInvoke;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client.CloudFiles;
 

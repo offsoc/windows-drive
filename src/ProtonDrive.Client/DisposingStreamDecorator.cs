@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 
 namespace ProtonDrive.Client;
 
@@ -15,6 +12,11 @@ internal sealed class DisposingStreamDecorator : WrappingStream
         _disposable = disposable;
     }
 
+    public async override ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync().ConfigureAwait(false);
+    }
+
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -23,10 +25,5 @@ internal sealed class DisposingStreamDecorator : WrappingStream
         {
             _disposable.Dispose();
         }
-    }
-
-    public async override ValueTask DisposeAsync()
-    {
-        await base.DisposeAsync().ConfigureAwait(false);
     }
 }

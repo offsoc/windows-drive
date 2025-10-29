@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <summary>
 /// Marshals app update state changed notifications of <see cref="INotifyingAppUpdate"/>

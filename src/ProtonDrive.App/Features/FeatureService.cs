@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Frozen;
-using System.Collections.Generic;
+﻿using System.Collections.Frozen;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
 using ProtonDrive.App.Account;
@@ -45,7 +40,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
 
     public FeatureService(
         DriveApiConfig config,
-        FeatureFlags localFeatureFlags,
+        LocalFeatureFlags localFeatureFlags,
         IFeatureApiClient featureApiClient,
         IRepository<IReadOnlyDictionary<Feature, bool>> featureRepository,
         Lazy<IEnumerable<IFeatureFlagsAware>> featureFlagsAware,
@@ -94,7 +89,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
         return IsEnabled(feature);
     }
 
-    private static IEnumerable<(Feature Feature, bool IsEnabled)> GetLocalFeatureOverrides(FeatureFlags localFeatureFlags)
+    private static IEnumerable<(Feature Feature, bool IsEnabled)> GetLocalFeatureOverrides(LocalFeatureFlags localFeatureFlags)
     {
         /* There are two cases of how local feature flag (there is no local kill switch) affects
          * remote feature flag values:

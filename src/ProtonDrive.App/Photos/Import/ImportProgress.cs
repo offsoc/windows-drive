@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace ProtonDrive.App.Photos.Import;
+﻿namespace ProtonDrive.App.Photos.Import;
 
 internal sealed class ImportProgress
 {

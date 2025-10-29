@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public interface IRevision : IThumbnailProvider, IFileMetadataProvider, IDisposable, IAsyncDisposable
 {

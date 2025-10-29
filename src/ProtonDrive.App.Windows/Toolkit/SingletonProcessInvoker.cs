@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace ProtonDrive.App.Windows.Toolkit;
+﻿namespace ProtonDrive.App.Windows.Toolkit;
 
 public static class SingletonProcessInvoker
 {

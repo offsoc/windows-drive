@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Client.Instrumentation.Telemetry;
+﻿using ProtonDrive.Client.Instrumentation.Telemetry;
 
 namespace ProtonDrive.App.Instrumentation.Telemetry.FirstLaunch;
 

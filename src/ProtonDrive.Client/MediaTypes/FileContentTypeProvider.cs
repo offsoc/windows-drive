@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace ProtonDrive.Client.MediaTypes;

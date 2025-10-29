@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using ProtonDrive.Sync.Engine.Shared.Trees.Propagation;
 using ProtonDrive.Sync.Engine.Shared.Trees.Synced;
 using ProtonDrive.Sync.Shared.Trees.FileSystem;

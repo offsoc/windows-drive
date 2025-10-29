@@ -1,7 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Buffers;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using ProtonDrive.Shared.Extensions;
@@ -39,8 +36,11 @@ public sealed class TlsPinningPolicy
 
     private static bool TryGetPublicKeySha256Digest(X509Certificate2 certificate, Span<byte> outputBuffer)
     {
-        var publicKey = (AsymmetricAlgorithm?)certificate.GetRSAPublicKey()
-            ?? certificate.GetDSAPublicKey()
+        var publicKey =
+            (AsymmetricAlgorithm?)certificate.GetRSAPublicKey()
+            ?? (AsymmetricAlgorithm?)certificate.GetDSAPublicKey()
+            ?? (AsymmetricAlgorithm?)certificate.GetECDiffieHellmanPublicKey()
+            ?? (AsymmetricAlgorithm?)certificate.GetECDsaPublicKey()
             ?? throw new NotSupportedException("No supported key algorithm");
 
         // Expected length of public key info is around 550 bytes

@@ -1,7 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading;
-
-namespace ProtonDrive.Shared.Net.Http;
+﻿namespace ProtonDrive.Shared.Net.Http;
 
 internal class LoggingOptions
 {

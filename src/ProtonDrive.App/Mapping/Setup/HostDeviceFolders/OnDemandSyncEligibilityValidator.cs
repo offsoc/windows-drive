@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ProtonDrive.App.SystemIntegration;
+﻿using ProtonDrive.App.SystemIntegration;
 
 namespace ProtonDrive.App.Mapping.Setup.HostDeviceFolders;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.App.Notifications;
+﻿namespace ProtonDrive.App.Notifications;
 
 public sealed class Notification
 {

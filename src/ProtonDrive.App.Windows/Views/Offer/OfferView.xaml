@@ -32,7 +32,9 @@
         </b:DataTrigger>
     </b:Interaction.Triggers>
 
-    <Border Padding="0,0,0,40">
+    <Border
+        Background="{StaticResource OfferWindow.DarkTheme.Background}"
+        Padding="0,0,0,40">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -57,7 +59,7 @@
                 Content="{loc:Resource Main_Sidebar_Offer_Button_GetDeal}"
                 Command="{Binding GetDealCommand}"
                 IsDefault="True"
-                Style="{StaticResource PrimaryButtonStyle}"
+                Style="{StaticResource OfferButtonStyle}"
                 MinWidth="160"
                 HorizontalAlignment="Center" />
         </Grid>

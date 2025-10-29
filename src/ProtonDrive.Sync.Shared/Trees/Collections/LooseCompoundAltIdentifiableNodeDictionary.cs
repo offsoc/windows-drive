@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Shared.Trees.Collections;
+﻿namespace ProtonDrive.Sync.Shared.Trees.Collections;
 
 public class LooseCompoundAltIdentifiableNodeDictionary<T, TPayload, TId, TAltId> : IdentifiableNodeDictionary<T, TPayload, TId>
     where TPayload : IAltIdentifiable<TId, LooseCompoundAltIdentity<TAltId>>

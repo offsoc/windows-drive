@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Shared.Linq;
+﻿namespace ProtonDrive.Shared.Linq;
 
 public static class EnumerableExtensions
 {

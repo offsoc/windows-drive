@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ProtonDrive.Update.Releases;
+﻿using ProtonDrive.Update.Releases;
 
 namespace ProtonDrive.Update.Updates;
 

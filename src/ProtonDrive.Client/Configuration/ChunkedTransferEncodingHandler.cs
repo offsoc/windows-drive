@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Configuration;
+﻿namespace ProtonDrive.Client.Configuration;
 
 internal sealed class ChunkedTransferEncodingHandler : DelegatingHandler
 {

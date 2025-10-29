@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-
-namespace ProtonDrive.App.Instrumentation.Observability;
+﻿namespace ProtonDrive.App.Instrumentation.Observability;
 
 internal sealed class AttemptRetryMonitor<TId>
     where TId : notnull

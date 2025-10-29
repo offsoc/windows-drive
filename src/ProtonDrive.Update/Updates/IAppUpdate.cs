@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <summary>
 /// Interface to the app update state plus the app update related operations.

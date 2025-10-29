@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Client.RemoteNodes;
 using ProtonDrive.Client.Shares.Events;
 using ProtonDrive.Client.Volumes.Events;

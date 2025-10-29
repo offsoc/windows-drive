@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Windows.Interop;

@@ -3,11 +3,7 @@
 //
 // Adapted from https://github.com/microsoft/BuildXL/blob/main/Public/Src/Utilities/Utilities/Tasks/DedicatedThreadTaskScheduler.cs
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ProtonDrive.Shared.Threading;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.ExecutionStatistics;
+﻿namespace ProtonDrive.Sync.Shared.ExecutionStatistics;
 
 public interface IExecutionStatistics : IEquatable<IExecutionStatistics>
 {

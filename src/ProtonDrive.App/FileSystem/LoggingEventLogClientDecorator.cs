@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Sync.Shared.FileSystem;
 

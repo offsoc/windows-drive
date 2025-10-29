@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public interface ILocalVolumeInfoProvider
 {

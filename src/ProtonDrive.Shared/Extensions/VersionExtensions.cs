@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Extensions;
+﻿namespace ProtonDrive.Shared.Extensions;
 
 public static class VersionExtensions
 {

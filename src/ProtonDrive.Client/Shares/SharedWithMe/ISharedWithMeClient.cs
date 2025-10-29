@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Shares.SharedWithMe;
+﻿namespace ProtonDrive.Client.Shares.SharedWithMe;
 
 public interface ISharedWithMeClient
 {

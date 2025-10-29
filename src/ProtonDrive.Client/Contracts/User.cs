@@ -56,6 +56,8 @@ public sealed class User
         set => _keys = value;
     }
 
+    public string? Currency { get; init; }
+
     public bool IsDelinquent => DelinquentState is DelinquentState.Delinquent or DelinquentState.NotReceived;
 
     public bool HasNoSubscription() => SubscriptionTier == 0; // Free user

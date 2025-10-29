@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Sync.Engine.Propagation;
+﻿namespace ProtonDrive.Sync.Engine.Propagation;
 
 internal static class PropagatingNodesExtensions
 {

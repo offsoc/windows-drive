@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ProtonDrive.Shared.Threading;
+﻿namespace ProtonDrive.Shared.Threading;
 
 public class CancellationHandle
 {

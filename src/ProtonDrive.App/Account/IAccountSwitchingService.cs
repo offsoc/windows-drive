@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Account;
+﻿namespace ProtonDrive.App.Account;
 
 internal interface IAccountSwitchingService
 {

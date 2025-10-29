@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Photos.Import;
+﻿namespace ProtonDrive.App.Photos.Import;
 
 internal interface IPhotoAlbumNameProvider
 {

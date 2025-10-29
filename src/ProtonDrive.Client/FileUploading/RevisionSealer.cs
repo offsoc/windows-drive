@@ -1,10 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Proton.Security.Cryptography.Abstractions;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.FileUploading;
 

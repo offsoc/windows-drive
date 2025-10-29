@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>O ficheiro foi ignorado por ter sido alterado demasiado recentemente. A aplicação tentará novamente de forma automática.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>A pasta ou o ficheiro foi modificado.</value>
   </data>
@@ -1282,6 +1285,9 @@ O conteúdo do ficheiro será transferido apenas a pedido.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>A pasta local deve estar vazia antes de configurar a sincronização.</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>A unidade local não é suportada. Tente configurar uma pasta de sincronização em outro disco local.</value>

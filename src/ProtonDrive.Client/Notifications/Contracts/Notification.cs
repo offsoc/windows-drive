@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ProtonDrive.Client.Notifications.Contracts;
 
@@ -9,12 +7,12 @@ public sealed class Notification
     [JsonPropertyName("NotificationID")]
     public required string Id { get; init; }
 
-    public IReadOnlyCollection<string> UserSubscriptionPlanCodes { get; init; } = new List<string>();
+    public IReadOnlyCollection<string> UserSubscriptionPlanCodes { get; init; } = [];
+    public IReadOnlyCollection<string> ExcludedUserSubscriptionPlanCouponCodes { get; init; } = [];
+    public int? UserSubscriptionCycle { get; init; }
+    public string? UserCurrency { get; init; }
 
-    [JsonPropertyName("StartTime")]
     public required DateTimeOffset StartTime { get; init; }
-
-    [JsonPropertyName("EndTime")]
     public required DateTimeOffset EndTime { get; init; }
 
     public NotificationType Type { get; init; }

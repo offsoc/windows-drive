@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public interface IPhotoFileSystemClient<TId> : IFileSystemClient<TId>
     where TId : IEquatable<TId>

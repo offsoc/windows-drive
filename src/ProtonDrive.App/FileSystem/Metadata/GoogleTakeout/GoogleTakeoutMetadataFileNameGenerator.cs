@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
+﻿namespace ProtonDrive.App.FileSystem.Metadata.GoogleTakeout;
 
 internal static class GoogleTakeoutMetadataFileNameGenerator
 {

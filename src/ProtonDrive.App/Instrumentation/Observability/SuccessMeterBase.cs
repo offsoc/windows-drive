@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.App.Mapping;
+﻿using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Photos.Import;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.Sync;

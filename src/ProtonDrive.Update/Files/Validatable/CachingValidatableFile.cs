@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Files.Validatable;
+﻿namespace ProtonDrive.Update.Files.Validatable;
 
 /// <summary>
 /// Caches positive file validation result while file length and modification date has not changed.

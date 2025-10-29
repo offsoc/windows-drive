@@ -1,4 +1,3 @@
-using System;
 using ProtonDrive.App.Authentication;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.Shared;

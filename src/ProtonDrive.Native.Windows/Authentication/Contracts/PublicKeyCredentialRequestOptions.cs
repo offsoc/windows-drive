@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Native.Authentication.Contracts;
+﻿namespace ProtonDrive.Native.Authentication.Contracts;
 
 internal sealed class PublicKeyCredentialRequestOptions
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.App.FileSystem.Local.SpecialFolders;
 using ProtonDrive.App.FileSystem.Remote;

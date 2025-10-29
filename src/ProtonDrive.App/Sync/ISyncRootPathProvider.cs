@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 
 namespace ProtonDrive.App.Sync;
 

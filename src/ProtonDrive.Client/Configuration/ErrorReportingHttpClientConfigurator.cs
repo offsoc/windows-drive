@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ProtonDrive.Shared.Localization;
 
 namespace ProtonDrive.Client.Configuration;

@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Súbor bol vynechaný, pretože sa len nedávno zmenil. Aplikácia sa automaticky pokúsi o opakovanie</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Živé fotografie nie je možné nahrať.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Súbor alebo priečinok sa rozdelil</value>
   </data>
@@ -1282,6 +1285,9 @@ Obsah súborov sa bude sťahovať len na požiadanie.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Miestny priečinok musí byť pred nastavením synchronizácie prázdny.</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Sériové číslo lokálneho disku sa zmenilo. Nastavte novú synchronizačnú zložku.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Nepodporovaný typ miestnej jednotky. Skúste nastaviť synchronizačný priečinok na inej miestnej jednotke.</value>

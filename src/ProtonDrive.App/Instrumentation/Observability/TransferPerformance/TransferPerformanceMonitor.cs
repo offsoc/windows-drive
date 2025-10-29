@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Sync.Shared.SyncActivity;
 using TransferId = (ProtonDrive.Sync.Shared.SyncActivity.SyncActivitySource ActivitySource, long FileId);

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Account;
+﻿namespace ProtonDrive.App.Account;
 
 public interface IAccountService
 {

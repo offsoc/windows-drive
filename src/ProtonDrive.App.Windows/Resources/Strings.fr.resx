@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Le fichier a été ignoré car il a été modifié trop récemment. L'application tentera à nouveau automatiquement.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Les photos en directe ne peuvent pas être importé.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Le fichier ou le dossier ne correspond pas.</value>
   </data>
@@ -1283,8 +1286,11 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Le dossier local doit être vide avant de configurer la synchronisation.</value>
   </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Le numéro de série du volume local a été modifié. Veuillez configurer un nouveau dossier de synchronisation.</value>
+  </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
-    <value>Ce type de disque n'est pas pris en charge. Essayez de configurer le fichier de synchronisation sur un autre lecteur local.</value>
+    <value>Ce type de lecteur local n'est pas pris en charge. Essayez de configurer le dossier de synchronisation sur un autre lecteur local.</value>
   </data>
   <data name="MappingErrorCode_Value_None">
     <value></value>
@@ -1404,10 +1410,10 @@ Le contenu des fichiers sera téléchargé à la demande uniquement.</value>
     <value>L'importation n'a pas abouti. Le nombre maximal de photos par album a été atteint.</value>
   </data>
   <data name="PhotoImportErrorCode_Value_Unknown">
-    <value>L'importation n'a malheureusement pas abouti. Veuillez réessayer.</value>
+    <value>L'importation n'a pas abouti. Veuillez réessayer.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Failed">
-    <value>L'importation n'a pas été aboutie.</value>
+    <value>L'importation n'a pas abouti.</value>
   </data>
   <data name="PhotoImportFolderStatus_Value_Importing">
     <value></value>

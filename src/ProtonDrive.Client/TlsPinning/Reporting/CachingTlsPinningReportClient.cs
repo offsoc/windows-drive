@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using ProtonDrive.Shared.Net.Http.TlsPinning;
 
 namespace ProtonDrive.Client.TlsPinning.Reporting;

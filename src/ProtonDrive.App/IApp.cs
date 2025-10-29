@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App;
+﻿namespace ProtonDrive.App;
 
 public interface IApp
 {

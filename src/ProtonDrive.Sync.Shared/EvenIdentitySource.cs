@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared;
+﻿namespace ProtonDrive.Sync.Shared;
 
 public class EvenIdentitySource : IIdentitySource<long>
 {

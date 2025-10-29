@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using MetadataExtractor;
 using MetadataExtractor.Formats.QuickTime;
 using ProtonDrive.Shared.Extensions;

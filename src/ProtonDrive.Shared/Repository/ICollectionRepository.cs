@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Shared.Repository;
+﻿namespace ProtonDrive.Shared.Repository;
 
 public interface ICollectionRepository<T>
 {

@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Albums.Contracts;
+﻿using ProtonDrive.Client.Albums.Contracts;
 using ProtonDrive.Client.Photos.Contracts;
 using Refit;
 

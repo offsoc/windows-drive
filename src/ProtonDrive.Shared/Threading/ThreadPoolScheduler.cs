@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared.Threading;
+﻿namespace ProtonDrive.Shared.Threading;
 
 public class ThreadPoolScheduler : IScheduler
 {

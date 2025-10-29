@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Το αρχείο παραλείφθηκε επειδή έχει αλλάξει πολύ πρόσφατα. Η εφαρμογή θα προσπαθήσει ξανά αυτόματα</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Η Ζωντανή Φωτογραφία δεν μπορεί να μεταφορτωθεί.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Το αρχείο ή ο φάκελος έχει αποκλίνει</value>
   </data>
@@ -1282,6 +1285,9 @@
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Ο τοπικός φάκελος πρέπει να είναι κενός πριν από τη ρύθμιση του συγχρονισμού</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Ο τοπικός σειριακός αριθμός τόμου έχει αλλάξει. Ρυθμίστε ένα νέο φάκελο συγχρονισμού.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Μη υποστηριζόμενος τύπος τοπικής μονάδας δίσκου. Δοκιμάστε να ρυθμίσετε το φάκελο συγχρονισμού σε διαφορετική τοπική μονάδα δίσκου.</value>

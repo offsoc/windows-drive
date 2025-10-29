@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Client.Devices;
+﻿namespace ProtonDrive.Client.Devices;
 
 public interface IDeviceClient
 {

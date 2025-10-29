@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.DataAccess.Databases;
 using ProtonDrive.Shared;
 using ProtonDrive.Shared.Extensions;

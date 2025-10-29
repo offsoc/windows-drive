@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Plik został pominięty, ponieważ został ostatnio zmieniony. Aplikacja spróbuje ponownie rozwiązać problem</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Plik lub folder uległ rozbieżności</value>
   </data>
@@ -1282,6 +1285,9 @@ Zawartość plików będzie pobierana na żądanie.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Lokalny folder musi być pusty przed skonfigurowaniem synchronizacji</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Typ lokalnego dysku jest nieobsługiwany. Spróbuj skonfigurować folder synchronizacji na innym lokalnym dysku.</value>

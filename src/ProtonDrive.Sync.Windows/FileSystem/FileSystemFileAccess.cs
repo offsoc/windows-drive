@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Sync.Windows.Interop;
+﻿using ProtonDrive.Sync.Windows.Interop;
 
 namespace ProtonDrive.Sync.Windows.FileSystem;
 

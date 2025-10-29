@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using ProtonDrive.Shared;
 
 namespace ProtonDrive.App.Windows.Extensions;

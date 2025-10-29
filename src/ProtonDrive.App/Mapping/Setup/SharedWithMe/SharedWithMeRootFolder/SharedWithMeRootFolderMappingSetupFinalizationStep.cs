@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
 
 namespace ProtonDrive.App.Mapping.Setup.SharedWithMe.SharedWithMeRootFolder;

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public interface INonSyncablePathProvider
 {

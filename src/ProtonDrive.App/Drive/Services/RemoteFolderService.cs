@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client;
+﻿using ProtonDrive.Client;
 using ProtonDrive.Client.Contracts;
 
 namespace ProtonDrive.App.Drive.Services;

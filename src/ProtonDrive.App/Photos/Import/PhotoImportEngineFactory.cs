@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
-using ProtonDrive.App.Photos.LivePhoto;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 namespace ProtonDrive.App.Photos.Import;
 

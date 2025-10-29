@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared;
+﻿namespace ProtonDrive.Shared;
 
 public readonly struct TickCount : IEquatable<TickCount>, IComparable<TickCount>
 {

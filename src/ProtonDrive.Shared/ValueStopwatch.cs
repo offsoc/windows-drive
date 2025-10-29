@@ -4,7 +4,6 @@
 //
 // Adapted from https://github.com/dotnet/extensions/blob/master/src/Shared/src/ValueStopwatch/ValueStopwatch.cs
 
-using System;
 using System.Diagnostics;
 
 namespace ProtonDrive.Shared;

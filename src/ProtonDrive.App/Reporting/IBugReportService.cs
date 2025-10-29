@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.BugReport;
+﻿using ProtonDrive.Client.BugReport;
 using ProtonDrive.Shared;
 
 namespace ProtonDrive.App.Reporting;

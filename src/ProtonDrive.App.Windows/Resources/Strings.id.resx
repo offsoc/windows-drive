@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Berkas ini dilewati karena terdapat perubahan yang terlalu terkini pada berkas. Aplikasi akan mencoba ulang secara otomatis</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Berkas atau folder telah berubah</value>
   </data>
@@ -1282,6 +1285,9 @@ Konten berkas hanya akan diunduh apabila diminta.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Folder lokal harus kosong sebelum mempersiapkan sinkronisasi</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Tipe drive lokal tidak didukung. Cobalah untuk mengatur folder sinkronisasi pada drive lokal yang berbeda.</value>

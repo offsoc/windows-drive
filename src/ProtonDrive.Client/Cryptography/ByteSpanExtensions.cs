@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.Cryptography;
+﻿namespace ProtonDrive.Client.Cryptography;
 
 internal static class ByteSpanExtensions
 {

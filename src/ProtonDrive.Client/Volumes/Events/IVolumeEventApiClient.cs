@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Contracts;
+﻿using ProtonDrive.Client.Contracts;
 using Refit;
 
 namespace ProtonDrive.Client.Volumes.Events;

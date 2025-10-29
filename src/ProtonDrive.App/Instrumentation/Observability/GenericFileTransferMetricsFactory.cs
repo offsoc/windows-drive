@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using ProtonDrive.Client.Instrumentation.Observability;
 
 namespace ProtonDrive.App.Instrumentation.Observability;

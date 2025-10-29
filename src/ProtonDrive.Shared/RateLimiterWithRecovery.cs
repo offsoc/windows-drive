@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Shared;
+﻿namespace ProtonDrive.Shared;
 
 public sealed class RateLimiterWithRecovery<TKey> : RateLimiter<TKey>
     where TKey : notnull

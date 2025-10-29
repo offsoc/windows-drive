@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-namespace ProtonDrive.Client.Configuration;
+﻿namespace ProtonDrive.Client.Configuration;
 
 public interface IErrorReportingHttpClientConfigurator
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Shared.Extensions;
+﻿using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Sync.Adapter.Trees.Adapter;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection;

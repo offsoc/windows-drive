@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Sync.Shared.FileSystem;
+﻿using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.Photos.Import;
 

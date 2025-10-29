@@ -4,10 +4,6 @@
 //
 // Adapted from https://github.com/dotnet/runtime/blob/main/src/libraries/Microsoft.Extensions.Http/src/Logging/LoggingScopeHttpMessageHandler.cs
 
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace ProtonDrive.Shared.Net.Http;

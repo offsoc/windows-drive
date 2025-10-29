@@ -1,7 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Proton.Security.Cryptography.Abstractions;
+﻿using Proton.Cryptography.Pgp;
 using ProtonDrive.Client.Cryptography;
+using ProtonDrive.Client.Cryptography.Pgp;
 using ProtonDrive.Client.Devices.Contracts;
 using ProtonDrive.Client.Shares;
 using ProtonDrive.Client.Shares.Contracts;
@@ -39,7 +38,7 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
 
         var (shareKey, shareParameters) = GetRootShareCreationParameters(shareEncrypter, address);
 
-        var folderParameters = GetRootFolderCreationParameters(name, shareKey.PublicKey, address.GetPrimaryKey().PrivateKey);
+        var folderParameters = GetRootFolderCreationParameters(name, shareKey.ToPublic(), address.GetPrimaryKey().PrivateKey);
 
         return new DeviceCreationParameters
         {
@@ -49,32 +48,32 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
         };
     }
 
-    private LinkCreationParameters GetRootFolderCreationParameters(string name, PublicPgpKey shareKey, PrivatePgpKey signatureKey)
+    private LinkCreationParameters GetRootFolderCreationParameters(string name, PgpPublicKey shareKey, PgpPrivateKey signatureKey)
     {
         var encrypter = _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypter(shareKey, signatureKey);
 
         var folderKeyPassphrase = _cryptographyService.GeneratePassphrase();
-        var folderKey = _cryptographyService.GenerateShareOrNodeKey(folderKeyPassphrase);
+        var folderKey = _cryptographyService.GenerateShareOrNodeKey();
         var (encryptedFolderKeyPassphrase, folderKeyPassphraseSignature, _) = encrypter.EncryptShareOrNodeKeyPassphrase(folderKeyPassphrase);
         var folderHashKey = _cryptographyService.GenerateHashKey();
-        var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.PublicKey, folderKey);
+        var folderHashKeyEncrypter = _cryptographyService.CreateHashKeyEncrypter(folderKey.ToPublic(), folderKey);
 
         return new LinkCreationParameters
         {
             Name = encrypter.EncryptNodeName(name),
-            NodeKey = folderKey.ToString(),
+            NodeKey = folderKey.Lock(folderKeyPassphrase.Span).ToString(),
             NodePassphrase = encryptedFolderKeyPassphrase,
             NodePassphraseSignature = folderKeyPassphraseSignature,
             NodeHashKey = folderHashKeyEncrypter.EncryptHashKey(folderHashKey),
         };
     }
 
-    private (PrivatePgpKey PrivateKey, ShareCreationParameters DeviceParameters) GetRootShareCreationParameters(
+    private (PgpPrivateKey PrivateKey, ShareCreationParameters DeviceParameters) GetRootShareCreationParameters(
         ISigningCapablePgpMessageProducer encrypter,
         Address address)
     {
         var shareKeyPassphrase = _cryptographyService.GeneratePassphrase();
-        var shareKey = _cryptographyService.GenerateShareOrNodeKey(shareKeyPassphrase);
+        var shareKey = _cryptographyService.GenerateShareOrNodeKey();
 
         var (encryptedShareKeyPassphrase, shareKeyPassphraseSignature, _) = encrypter.EncryptShareOrNodeKeyPassphrase(shareKeyPassphrase);
 
@@ -82,7 +81,7 @@ internal class DeviceCreationParametersFactory : IDeviceCreationParametersFactor
         {
             AddressId = address.Id,
             AddressKeyId = address.GetPrimaryKey().Id,
-            Key = shareKey.ToString(),
+            Key = shareKey.Lock(shareKeyPassphrase.Span).ToString(),
             Passphrase = encryptedShareKeyPassphrase,
             PassphraseSignature = shareKeyPassphraseSignature,
         });

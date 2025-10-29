@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Services;
@@ -14,7 +10,7 @@ namespace ProtonDrive.App.Onboarding;
 
 internal sealed class OnboardingService : IOnboardingService, IStartableService, IAccountSwitchingAware
 {
-    private readonly FeatureFlags _featureFlags;
+    private readonly LocalFeatureFlags _localFeatureFlags;
     private readonly Lazy<IEnumerable<IOnboardingStateAware>> _onboardingStateAware;
     private readonly Lazy<IEnumerable<ISharedWithMeOnboardingStateAware>> _sharedWithMeOnboardingStateAware;
     private readonly Lazy<IEnumerable<IPhotosOnboardingStateAware>> _photosOnboardingStateAware;
@@ -25,7 +21,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
     private OnboardingState _state = OnboardingState.Initial;
 
     public OnboardingService(
-        FeatureFlags featureFlags,
+        LocalFeatureFlags localFeatureFlags,
         Lazy<IEnumerable<IOnboardingStateAware>> onboardingStateAware,
         Lazy<IEnumerable<ISharedWithMeOnboardingStateAware>> sharedWithMeOnboardingStateAware,
         Lazy<IEnumerable<IPhotosOnboardingStateAware>> photosOnboardingStateAware,
@@ -33,7 +29,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
         IRepository<OnboardingSettings> settings,
         ILogger<OnboardingService> logger)
     {
-        _featureFlags = featureFlags;
+        _localFeatureFlags = localFeatureFlags;
         _onboardingStateAware = onboardingStateAware;
         _sharedWithMeOnboardingStateAware = sharedWithMeOnboardingStateAware;
         _photosOnboardingStateAware = photosOnboardingStateAware;
@@ -213,7 +209,7 @@ internal sealed class OnboardingService : IOnboardingService, IStartableService,
             return OnboardingStep.AccountRootFolderSelection;
         }
 
-        if (!settings.IsUpgradeStorageStepCompleted && _featureFlags.UpgradeStorageOnboardingStepEnabled)
+        if (!settings.IsUpgradeStorageStepCompleted && _localFeatureFlags.UpgradeStorageOnboardingStepEnabled)
         {
             return OnboardingStep.UpgradeStorage;
         }

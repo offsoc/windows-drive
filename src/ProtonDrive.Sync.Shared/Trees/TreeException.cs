@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.Trees;
+﻿namespace ProtonDrive.Sync.Shared.Trees;
 
 public class TreeException : Exception
 {

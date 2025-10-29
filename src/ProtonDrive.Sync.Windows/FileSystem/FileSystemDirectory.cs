@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using ProtonDrive.Shared;
 using ProtonDrive.Sync.Windows.FileSystem.Enumeration;
 using ProtonDrive.Sync.Windows.FileSystem.Internal;

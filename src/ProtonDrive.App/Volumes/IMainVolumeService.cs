@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Volumes;
+﻿namespace ProtonDrive.App.Volumes;
 
 public interface IMainVolumeService
 {

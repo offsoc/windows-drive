@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Windows.Services;
+﻿namespace ProtonDrive.App.Windows.Services;
 
 public class ThumbnailGenerationException : Exception
 {

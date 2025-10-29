@@ -1,2 +1,228 @@
 ﻿[
+  // Free users
+  {
+    "NotificationID": "BF-2025-Free-to-DrivePlus-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-11-18T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "free" ],
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-free-to-plus-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=drive2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25PROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_free_windows"
+    }
+  },
+  {
+    "NotificationID": "BF-2025-Free-to-DrivePlus-1M",
+    "StartTime": "2025-11-18T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "free" ],
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 80% off",
+      "ImageUrl": "Resources/Notifications/drive-free-to-plus-1M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=drive2022&disablePlanSelector=true&cycle=1&disableCycleSelector=true&coupon=BF25PROMO1M&fullscreen=auto&start=checkout&ref=ref=proton_bf_25_drive_free2_windows"
+    }
+  },
+
+  // Drive Plus 1M
+  {
+    "NotificationID": "BF-2025-DrivePlus-1M-to-Unlimited-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-11-18T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_1m_windows"
+    }
+  },
+  {
+    "NotificationID": "BF-2025-DrivePlus-1M-to-12M",
+    "StartTime": "2025-11-18T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-1M-to-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=drive2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25PROMO&fullscreen=auto&start=checkout&ref=ref=proton_bf_25_drive_1m2_windows"
+    }
+  },
+
+  // Mail, VPN, Pass users who are using Drive as a "free user" 1M
+  {
+    "NotificationID": "BF-2025-DriveFree-to-Unlimited-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-11-18T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "mail2022", "vpn2022", "pass2023" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_1m_windows"
+    }
+  },
+  {
+    "NotificationID": "BF-2025-DriveFree-to-Unlimited-12M",
+    "StartTime": "2025-11-18T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "mail2022", "vpn2022", "pass2023" ],
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_1m2_windows"
+    }
+  },
+
+  // Drive Plus (also Mail, VPN, Pass users who are using Drive as a "free user") 12M
+  {
+    "NotificationID": "BF-2025-DrivePlus-12M-to-Unlimited-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-11-18T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022", "mail2022", "vpn2022", "pass2023" ],
+    "UserSubscriptionCycle": 12,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_12m_windows"
+    }
+  },
+  {
+    "NotificationID": "BF-2025-DrivePlus-12M-to-Unlimited-12M-2",
+    "StartTime": "2025-11-18T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022", "mail2022", "vpn2022", "pass2023" ],
+    "UserSubscriptionCycle": 12,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_12m2_windows"
+    }
+  },
+
+  // Drive Plus (also Mail, VPN, Pass users who are using Drive as a "free user") 24M
+  {
+    "NotificationID": "BF-2025-DrivePlus-24M-to-Unlimited-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-11-18T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022", "mail2022", "vpn2022", "pass2023" ],
+    "UserSubscriptionCycle": 24,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_24m_windows"
+    }
+  },
+  {
+    "NotificationID": "BF-2025-DrivePlus-24M-to-Unlimited-12M-2",
+    "StartTime": "2025-11-18T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "drive2022", "mail2022", "vpn2022", "pass2023" ],
+    "UserSubscriptionCycle": 24,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-plus-to-unlimited-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=bundle2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_drive_24m2_windows"
+    }
+  },
+
+  // Unlimited 1M
+  {
+    "NotificationID": "BF-2025-Unlimited-1M-to-Duo-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "bundle2022" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-unlimited-to-duo-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=duo2024&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_unlimited_windows"
+    }
+  },
+
+  // Unlimited 12M
+  {
+    "NotificationID": "BF-2025-Unlimited-12M-to-Duo-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "bundle2022" ],
+    "UserSubscriptionCycle": 12,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-unlimited-to-duo-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=duo2024&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_unlimited_windows"
+    }
+  },
+
+  // Duo 1M
+  {
+    "NotificationID": "BF-2025-Duo-to-Family-1M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "duo2024" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-duo-to-family-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=family2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_duo_windows"
+    }
+  },
+
+  // Duo 12M
+  {
+    "NotificationID": "BF-2025-Duo-to-Family-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "duo2024" ],
+    "UserSubscriptionCycle": 12,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-duo-to-family-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=family2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_duo_windows"
+    }
+  },
+
+  // Family 1M
+  {
+    "NotificationID": "BF-2025-Family-1M-to-12M",
+    "StartTime": "2025-11-03T12:00:00+01:00",
+    "EndTime": "2025-12-03T12:00:00+01:00",
+    "UserSubscriptionPlanCodes": [ "family2022" ],
+    "UserSubscriptionCycle": 1,
+    "ExcludedUserSubscriptionPlanCouponCodes": [ "BF25PROMO", "BF25PROMO1M", "BF25BUNDLEPROMO", "BF25LIGHTNING" ],
+    "Type": 0,
+    "Offer": {
+      "Title": "Black Friday: 50% off",
+      "ImageUrl": "Resources/Notifications/drive-family-1M-to-12M-en-USD.png",
+      "AccountAppUrl": "https://account.silver.proton.black/lite?action=subscribe-account&app=drive&plan=family2022&disablePlanSelector=true&cycle=12&disableCycleSelector=true&coupon=BF25BUNDLEPROMO&fullscreen=auto&start=checkout&ref=proton_bf_25_family_windows"
+    }
+  }
 ]

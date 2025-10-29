@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Dosya çok yakın zamanda değiştiği için atlandı. Uygulama otomatik olarak yeniden deneyecek</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo yüklenemez.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Dosya veya klasör değiştirilmiş</value>
   </data>
@@ -1280,6 +1283,9 @@ Dosyaların içeriği yalnızca istek yapıldığında indirilir.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Eşitleme kurulmadan önce yerel klasör boş olmalıdır</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Yerel birimin seri numarası değişmiş. Yeni bir eşitleme klasörü oluşturun.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Yerel sürücü türü desteklenmiyor. Eşitleme klasörünü farklı bir yerel sürücüde kurmayı deneyin.</value>

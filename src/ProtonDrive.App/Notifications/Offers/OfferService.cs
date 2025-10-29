@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings.Remote;
@@ -63,8 +57,8 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
         var prevStatus = _accountStatus;
         _accountStatus = state.Status;
 
-        bool currentSucceeded = state.Status is AccountStatus.Succeeded;
-        bool previousSucceeded = prevStatus is AccountStatus.Succeeded;
+        var currentSucceeded = state.Status is AccountStatus.Succeeded;
+        var previousSucceeded = prevStatus is AccountStatus.Succeeded;
         if (currentSucceeded != previousSucceeded)
         {
             ScheduleExternalStateChangeHandling(forceRestart: !currentSucceeded);
@@ -123,9 +117,11 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
             state.Type != prevState.Type ||
             state.SubscriptionPlanCode != prevState.SubscriptionPlanCode ||
             state.IsDelinquent != prevState.IsDelinquent ||
+            state.Currency != prevState.Currency ||
             state.CanBuySubscription != prevState.CanBuySubscription ||
             state.LatestSubscriptionCancellationTimeUtc != prevState.LatestSubscriptionCancellationTimeUtc ||
-            state.SubscriptionPlanCouponCode != prevState.SubscriptionPlanCouponCode;
+            state.SubscriptionPlanCouponCode != prevState.SubscriptionPlanCouponCode ||
+            state.SubscriptionCycle != prevState.SubscriptionCycle;
     }
 
     private static bool CanGetAnOffer(UserState userState)
@@ -154,10 +150,22 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
             return false;
         }
 
-        // The same coupon cannot be used a second time
-        if (!string.IsNullOrEmpty(userState.SubscriptionPlanCouponCode) &&
-            !string.IsNullOrEmpty(notification.Offer.CouponCode) &&
-            notification.Offer.CouponCode.Equals(userState.SubscriptionPlanCouponCode, StringComparison.OrdinalIgnoreCase))
+        // The same or similar coupon cannot be used a second time
+        if (notification.ExcludedUserSubscriptionPlanCouponCodes.Contains(userState.SubscriptionPlanCouponCode))
+        {
+            return false;
+        }
+
+        // The subscription cycle must match if specified
+        if (notification.UserSubscriptionCycle is not null &&
+            notification.UserSubscriptionCycle != userState.SubscriptionCycle)
+        {
+            return false;
+        }
+
+        // The currency must match if specified
+        if (!string.IsNullOrEmpty(notification.UserCurrency) &&
+            !notification.UserCurrency.Equals(userState.Currency, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
@@ -184,15 +192,15 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
     {
         ArgumentNullException.ThrowIfNull(notification.Offer);
 
-        var baseImagePath = _appConfig.AppFolderPath;
+        var appFolderPath = _appConfig.AppFolderPath;
 
         return new Offer
         {
             Id = notification.Id,
             StartTimeUtc = notification.StartTime.UtcDateTime,
             EndTimeUtc = notification.EndTime.UtcDateTime,
-            ClickUrl = notification.Offer.ClickUrl,
-            ImageFilePath = Path.Combine(baseImagePath, notification.Offer.ImageUrl),
+            AccountAppUrl = notification.Offer.AccountAppUrl,
+            ImageFilePath = Path.Combine(appFolderPath, notification.Offer.ImageUrl),
             Title = notification.Offer.Title,
             NotificationMessage = ToNotificationMessage(notification),
         };

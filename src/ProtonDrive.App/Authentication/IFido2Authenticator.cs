@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Authentication;
+﻿using ProtonDrive.Shared.Authentication;
 
 namespace ProtonDrive.App.Authentication;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared.IO;
+﻿namespace ProtonDrive.Shared.IO;
 
 public abstract class WrappingStream : Stream
 {

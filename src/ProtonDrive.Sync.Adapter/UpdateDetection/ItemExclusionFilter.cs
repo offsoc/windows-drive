@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 
 namespace ProtonDrive.Sync.Adapter.UpdateDetection;
 

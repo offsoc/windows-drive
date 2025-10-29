@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.Shared.Configuration;
 
 namespace ProtonDrive.App.Mapping;

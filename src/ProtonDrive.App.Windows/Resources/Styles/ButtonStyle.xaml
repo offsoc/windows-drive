@@ -305,9 +305,10 @@
     </Style>
 
     <Style
-        x:Key="OffersButtonStyle"
+        x:Key="OfferButtonStyle"
         TargetType="Button"
         BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="Padding" Value="6,6" />
         <Setter Property="Background" Value="{StaticResource OfferButtonBrush.Default.Background}" />
         <Setter Property="Foreground" Value="{StaticResource Text.Normal.Brush}" />
         <Setter Property="FontWeight" Value="Bold" />
@@ -317,7 +318,7 @@
                     BlurRadius="30"
                     Opacity="0.5"
                     ShadowDepth="0"
-                    Color="{StaticResource YellowColor}" />
+                    Color="{StaticResource SaladColor}" />
             </Setter.Value>
         </Setter>
         <Setter Property="Template">

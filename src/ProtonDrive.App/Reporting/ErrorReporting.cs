@@ -1,7 +1,5 @@
-﻿using System;
-using ProtonDrive.App.Configuration;
+﻿using ProtonDrive.App.Configuration;
 using ProtonDrive.Shared.Reporting;
-using Sentry;
 using Sentry.Extensibility;
 
 namespace ProtonDrive.App.Reporting;

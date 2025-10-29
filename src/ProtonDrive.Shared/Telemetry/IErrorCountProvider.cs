@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Shared.Telemetry;
+﻿namespace ProtonDrive.Shared.Telemetry;
 
 public interface IErrorCountProvider
 {

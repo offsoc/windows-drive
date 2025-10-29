@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.Shared;
 
 namespace ProtonDrive.App.Mapping.Setup.PhotoFolders;

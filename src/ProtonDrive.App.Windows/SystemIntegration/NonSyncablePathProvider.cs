@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.App.SystemIntegration;
+﻿using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.Shared.Configuration;
 
 namespace ProtonDrive.App.Windows.SystemIntegration;

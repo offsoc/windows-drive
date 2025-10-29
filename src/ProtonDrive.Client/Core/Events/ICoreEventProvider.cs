@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.Core.Events;
+﻿namespace ProtonDrive.Client.Core.Events;
 
 public interface ICoreEventProvider
 {

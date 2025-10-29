@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 using ProtonDrive.Client.Contracts;
 using ProtonDrive.Client.Photos.Contracts;
 using ProtonDrive.Shared.Devices;

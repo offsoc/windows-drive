@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace ProtonDrive.Client.Authentication.Contracts.Fido2;
 

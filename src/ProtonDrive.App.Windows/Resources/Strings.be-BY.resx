@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Файл прапушчаны, бо ён змяняўся зусім нядаўна. Праграма аўтаматычна паўторыць спробу.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo не могуць быць запампаваны.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Неадпаведнасць файла або папкі</value>
   </data>
@@ -1282,6 +1285,9 @@
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Лакальная папка павінна быць пустой перад наладжваннем сінхранізацыі</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Серыйны нумар лакальнага тома змяніўся. Наладзьце новую папку сінхранізацыі.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Лакальны тып дыска не падтрымліваецца. Наладзьце папку для сінхранізацыі на іншым лакальным дыску.</value>

@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>O arquivo foi ignorado porque foi alterado muito recentemente. O aplicativo tentará novamente automaticamente.</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Não foi possível enviar a Live Photo.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>O arquivo ou pasta divergiu</value>
   </data>
@@ -1282,6 +1285,9 @@ O conteúdo dos arquivos será baixado sob demanda.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>A pasta local deve estar vazia antes de configurar a sincronização</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>O número de série do volume local mudou. Configure uma nova pasta para sincronização.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Tipo de drive local não suportado. Tente configurar a pasta de sincronização em um drive local diferente.</value>

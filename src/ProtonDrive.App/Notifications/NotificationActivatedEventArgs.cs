@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Notifications;
+﻿namespace ProtonDrive.App.Notifications;
 
 public class NotificationActivatedEventArgs : EventArgs
 {

@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See LICENSE-MIT file in the project root for full license information.
 
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Internal;

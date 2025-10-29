@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MoreLinq.Extensions;
+﻿using MoreLinq.Extensions;
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Drive.Services.Shared;
 using ProtonDrive.Client.Shares.SharedWithMe;
 

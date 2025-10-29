@@ -1,8 +1,8 @@
-﻿using Proton.Security.Cryptography.Abstractions;
+﻿using Proton.Cryptography.Pgp;
 
 namespace ProtonDrive.Client.RemoteNodes;
 
 internal interface IPrivateKeyHolder
 {
-    PrivatePgpKey PrivateKey { get; }
+    PgpPrivateKey PrivateKey { get; }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Threading;
 using ProtonDrive.Sync.Adapter;
 using ProtonDrive.Sync.Shared.Trees;
 

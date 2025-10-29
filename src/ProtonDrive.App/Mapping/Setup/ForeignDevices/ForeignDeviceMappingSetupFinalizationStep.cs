@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Settings;
+﻿using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
 
 namespace ProtonDrive.App.Mapping.Setup.ForeignDevices;

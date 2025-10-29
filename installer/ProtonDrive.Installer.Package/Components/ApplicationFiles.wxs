@@ -17,6 +17,7 @@
     <ComponentGroup Id="ApplicationFiles" Directory="INSTALLFOLDER">
       <Files Include="!(bindpath.ApplicationFiles)**">
         <Exclude Files="!(bindpath.ApplicationFiles)*.pdb" />
+        <Exclude Files="!(bindpath.ApplicationFiles)*.lib" />
         <Exclude Files="!(bindpath.ApplicationFiles)ProtonDrive.exe" />
       </Files>
 

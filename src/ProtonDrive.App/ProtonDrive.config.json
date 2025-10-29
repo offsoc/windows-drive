@@ -98,7 +98,7 @@
     }
   },
   "FeatureManagement": {
-    "UpgradeStorageOnboardingStepEnabled": true
+    "UpgradeStorageOnboardingStepEnabled": false
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.Async", "Serilog.Sinks.File" ],
@@ -119,6 +119,8 @@
               "rollingInterval": "Day",
               "rollOnFileSizeLimit": true,
               "fileSizeLimitBytes": "20971520", // 20 MB
+              "retainedFileCountLimit": "100",
+              "retainedFileTimeLimit": "60.00:00:00",
               "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:l}{NewLine}{Exception}"
             }
           }

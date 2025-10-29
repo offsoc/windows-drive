@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MetadataExtractor;
+﻿using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Xmp;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Media;
 using ProtonDrive.Sync.Shared.FileSystem;
+using ProtonDrive.Sync.Shared.FileSystem.Photos;
 using XmpCore;
 using Directory = MetadataExtractor.Directory;
 
@@ -43,10 +38,12 @@ public class PhotoTagsGenerator : IPhotoTagsGenerator
     private const string UserCommentValueScreenshot = "Screenshot";
     private const string LensModelValueFragmentFront = "front";
 
+    private readonly ILivePhotoFileDetector _livePhotoFileDetector;
     private readonly ILogger<PhotoTagsGenerator> _logger;
 
-    public PhotoTagsGenerator(ILogger<PhotoTagsGenerator> logger)
+    public PhotoTagsGenerator(ILivePhotoFileDetector livePhotoFileDetector, ILogger<PhotoTagsGenerator> logger)
     {
+        _livePhotoFileDetector = livePhotoFileDetector;
         _logger = logger;
     }
 
@@ -64,6 +61,7 @@ public class PhotoTagsGenerator : IPhotoTagsGenerator
             .AddIf(PhotoTag.Portrait, IsPortrait(metadata))
             .AddIf(PhotoTag.Panorama, IsPanorama(metadata))
             .AddIf(PhotoTag.Raw, IsRaw(filePath))
+            .AddIf(PhotoTag.LivePhoto, IsLivePhoto(filePath))
             ;
 
         _logger.LogInformation("Photo tags generated: {PhotoTags}", tags);
@@ -152,6 +150,11 @@ public class PhotoTagsGenerator : IPhotoTagsGenerator
         var fileExtension = Path.GetExtension(filePath);
 
         return KnownFileExtensions.RawImageExtensions.Contains(fileExtension);
+    }
+
+    private bool IsLivePhoto(string filePath)
+    {
+        return _livePhotoFileDetector.IsLivePhoto(filePath);
     }
 
     private IReadOnlyList<Directory> ReadMetadata(string filePath)

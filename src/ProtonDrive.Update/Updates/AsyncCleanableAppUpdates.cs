@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <summary>
 /// Performs asynchronous app updates download folder cleanup.

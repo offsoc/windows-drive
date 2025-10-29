@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>檔案已略過，因為變更時間過於近期。應用程式將會自動重試。</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo cannot be uploaded.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>檔案或資料夾已分歧</value>
   </data>
@@ -1281,6 +1284,9 @@
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>本機資料夾必須是空的，才能設定同步</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Local volume serial number has changed. Set up a new sync folder.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>不支援的本機雲端磁碟類型。請嘗試在不同的本機雲端磁碟上設定同步資料夾。</value>

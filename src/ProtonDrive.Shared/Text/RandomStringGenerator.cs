@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Shared.Text;
+﻿namespace ProtonDrive.Shared.Text;
 
 public sealed class RandomStringGenerator
 {

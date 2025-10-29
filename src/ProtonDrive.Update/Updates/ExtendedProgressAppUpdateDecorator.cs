@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using ProtonDrive.Shared.Threading;
+﻿using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.Update.Updates;
 

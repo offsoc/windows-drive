@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Client.Instrumentation.Telemetry;
+﻿using ProtonDrive.Client.Instrumentation.Telemetry;
 using ProtonDrive.Shared.Telemetry;
 using ProtonDrive.Sync.Shared.FileSystem;
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Sync.Adapter.UpdateDetection;
+﻿namespace ProtonDrive.Sync.Adapter.UpdateDetection;
 
 /// <summary>
 /// Allows optionally postponing update detection until this object

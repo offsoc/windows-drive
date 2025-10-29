@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 
 namespace ProtonDrive.App.Windows.Extensions;
 

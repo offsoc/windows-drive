@@ -4,7 +4,6 @@
 //
 // Adapted from https://github.com/dotnet/runtime/blob/main/src/libraries/Microsoft.Extensions.Http/src/Logging/LoggingHttpMessageHandlerBuilderFilter.cs
 
-using System;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ProtonDrive.App.Photos.LivePhoto;
+namespace ProtonDrive.Sync.Shared.FileSystem.Photos;
 
 /// <summary>
 /// Provides functionality to detect and manage Live Photo file relationships captured on iOS devices.
@@ -36,4 +36,17 @@ public interface ILivePhotoFileDetector
     /// with identical filenames (excluding extensions) in the same directory.
     /// </remarks>
     bool IsVideoRelatedToLivePhoto(string videoLivePhotoPath, string mainLivePhotoPath);
+
+    /// <summary>
+    /// Indicate if the file is a Live Photo.
+    /// </summary>
+    /// <param name="filePath">The full path of the file to check.</param>
+    /// <remarks>
+    /// A Live Photo pair consists of a photo file (.heic, .jpeg, or .jpg) and a video file (.mp4 or .mov)
+    /// with identical filenames (excluding extensions) in the same directory.
+    /// </remarks>
+    /// <returns>
+    /// <c>true</c> if the file is a Live Photo; otherwise, <c>false</c>
+    /// </returns>
+    bool IsLivePhoto(string filePath);
 }

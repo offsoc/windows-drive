@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -65,7 +62,7 @@ internal sealed class OfferViewModel : ObservableObject, ICloseable, IDialogView
             return;
         }
 
-        var openingSucceeded = await _urlOpener.TryOpenUrlAsync(Offer.ClickUrl, "web-account-lite", cancellationToken).ConfigureAwait(true);
+        var openingSucceeded = await _urlOpener.TryOpenUrlAsync(Offer.AccountAppUrl, "web-account-lite", cancellationToken).ConfigureAwait(true);
 
         if (openingSucceeded)
         {

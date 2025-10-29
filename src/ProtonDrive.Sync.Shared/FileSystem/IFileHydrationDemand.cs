@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace ProtonDrive.Sync.Shared.FileSystem;
+﻿namespace ProtonDrive.Sync.Shared.FileSystem;
 
 public interface IFileHydrationDemand<TId>
     where TId : IEquatable<TId>

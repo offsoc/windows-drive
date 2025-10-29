@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Client.Configuration;
+﻿namespace ProtonDrive.Client.Configuration;
 
 public class DriveApiConfig
 {

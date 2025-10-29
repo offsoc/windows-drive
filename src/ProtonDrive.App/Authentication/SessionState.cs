@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Client;
+﻿using ProtonDrive.Client;
 
 namespace ProtonDrive.App.Authentication;
 

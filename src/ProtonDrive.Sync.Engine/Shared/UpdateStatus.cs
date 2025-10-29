@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Engine.Shared;
+﻿namespace ProtonDrive.Sync.Engine.Shared;
 
 [Flags]
 public enum UpdateStatus

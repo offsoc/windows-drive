@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.Client.Instrumentation.Observability;
+﻿namespace ProtonDrive.Client.Instrumentation.Observability;
 
 public sealed class ObservabilityMetrics(IReadOnlyList<ObservabilityMetric> metrics)
 {

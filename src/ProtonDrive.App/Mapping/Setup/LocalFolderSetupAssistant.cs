@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Threading;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Settings;
 using ProtonDrive.App.SystemIntegration;
 

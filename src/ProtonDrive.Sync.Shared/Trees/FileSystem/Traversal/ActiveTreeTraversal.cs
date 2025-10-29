@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 
 public class ActiveTreeTraversal<TTree, TNode, TModel, TId>
     where TTree : FileSystemTree<TTree, TNode, TModel, TId>

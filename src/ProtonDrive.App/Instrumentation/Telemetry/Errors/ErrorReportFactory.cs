@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.Client.Instrumentation.Telemetry;
+﻿using ProtonDrive.Client.Instrumentation.Telemetry;
 using ProtonDrive.Shared.Telemetry;
 
 namespace ProtonDrive.App.Instrumentation.Telemetry.Errors;

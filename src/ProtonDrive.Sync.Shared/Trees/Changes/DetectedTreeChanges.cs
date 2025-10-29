@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using ProtonDrive.Sync.Shared.Trees.FileSystem;
+﻿using ProtonDrive.Sync.Shared.Trees.FileSystem;
 using ProtonDrive.Sync.Shared.Trees.Operations;
 
 namespace ProtonDrive.Sync.Shared.Trees.Changes;

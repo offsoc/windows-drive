@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.InterProcessCommunication;
+﻿namespace ProtonDrive.App.InterProcessCommunication;
 
 /// <summary>
 /// Handles the app activation request from the second instance of the app.

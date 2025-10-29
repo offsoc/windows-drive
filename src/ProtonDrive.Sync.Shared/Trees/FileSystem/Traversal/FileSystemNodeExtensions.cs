@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ProtonDrive.Shared;
+﻿using ProtonDrive.Shared;
 
 namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Shared.Net.Http;
+﻿namespace ProtonDrive.Shared.Net.Http;
 
 /// <summary>
 /// Throws <see cref="TimeoutException"/> in case there is no HTTP response received

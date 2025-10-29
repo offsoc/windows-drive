@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Engine.Shared.Trees.Update;
+﻿namespace ProtonDrive.Sync.Engine.Shared.Trees.Update;
 
 internal class UpdateTreeNodeModelMetadataEqualityComparer<TId> : IEqualityComparer<UpdateTreeNodeModel<TId>>
     where TId : IEquatable<TId>

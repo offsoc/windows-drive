@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using ProtonDrive.Shared.Extensions;
 
 namespace ProtonDrive.Shared.Text.Serialization;
@@ -11,6 +9,7 @@ public sealed class JsonUtf8Serializer : IBinarySerializer, IThrowsExpectedExcep
     {
         WriteIndented = true,
         AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
         Converters = { new Base64JsonConverter() },
     };
 

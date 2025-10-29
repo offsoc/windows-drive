@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Shares.SharedWithMe;
+﻿using ProtonDrive.Client.Shares.SharedWithMe;
 
 namespace ProtonDrive.App.Mapping;
 

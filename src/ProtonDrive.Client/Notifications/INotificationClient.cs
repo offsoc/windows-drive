@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Notifications.Contracts;
+﻿using ProtonDrive.Client.Notifications.Contracts;
 
 namespace ProtonDrive.Client.Notifications;
 

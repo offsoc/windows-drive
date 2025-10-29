@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.App.Mapping;
+﻿using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Settings;
 
 namespace ProtonDrive.App.Sync;

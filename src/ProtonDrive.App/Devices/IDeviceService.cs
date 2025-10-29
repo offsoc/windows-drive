@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Devices;
+﻿namespace ProtonDrive.App.Devices;
 
 public interface IDeviceService
 {

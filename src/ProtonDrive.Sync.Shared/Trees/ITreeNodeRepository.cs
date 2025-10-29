@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Sync.Shared.Trees;
+﻿namespace ProtonDrive.Sync.Shared.Trees;
 
 public interface ITreeNodeRepository<T, TId>
     where T : class, IIdentifiableTreeNode<TId>

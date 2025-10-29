@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -66,11 +63,10 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
         }
 
         IntPtr hBitmap = IntPtr.Zero;
-        var isHdPreview = false;
 
         try
         {
-            isHdPreview = IsRequestingHdPreview(numberOfPixelsOnLargestSide);
+            var isHdPreview = IsRequestingHdPreview(numberOfPixelsOnLargestSide);
 
             if (isHdPreview)
             {
@@ -86,7 +82,7 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
 
             if (hBitmap == IntPtr.Zero)
             {
-                ReportError(fileExtensionToLog, isHdPreview, numberOfPixelsOnLargestSide, $"Failed to get bitmap handle: 0x{hResult.AsInt32:x8}", hResult);
+                ReportError(fileExtensionToLog, numberOfPixelsOnLargestSide, "Failed to get bitmap handle", hResult);
                 return null;
             }
 
@@ -104,7 +100,7 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
 
             if (thumbnailBytes.Length > maxNumberOfBytes)
             {
-                throw new ThumbnailGenerationException($"Could not generate thumbnail of less than {maxNumberOfBytes} bytes.");
+                throw new ThumbnailGenerationException($"Could not generate thumbnail of less than {maxNumberOfBytes} bytes");
             }
 
             _logger.LogDebug(
@@ -115,13 +111,13 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
                 bitmap.PixelHeight,
                 thumbnailBytes.Length);
 
-            if (thumbnailBytes.Length <= 0)
+            if (thumbnailBytes.Length == 0)
             {
                 _logger.LogWarning(
-                    "{ThumbnailType} generation failed for file \"{FileName}\": empty thumbnail",
+                    "{ThumbnailType} generation failed for file \"{FileName}\": Empty thumbnail",
                     isHdPreview ? "HD preview" : "Thumbnail",
                     fileExtensionToLog);
-                ReportError(fileExtensionToLog, isHdPreview, numberOfPixelsOnLargestSide, "Empty thumbnail");
+                ReportError(fileExtensionToLog, numberOfPixelsOnLargestSide, "Empty thumbnail");
                 return null;
             }
 
@@ -132,7 +128,7 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
             _logger.LogWarning("Thumbnail generation failed: File not found");
             return null;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             var exceptionType = ex.GetType().Name;
 
@@ -143,7 +139,7 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
                 exceptionType,
                 ex.HResult);
 
-            ReportError(fileExtensionToLog, isHdPreview, numberOfPixelsOnLargestSide, $"{exceptionType}: {ex.HResult}", new HResult(ex.HResult));
+            ReportError(fileExtensionToLog, numberOfPixelsOnLargestSide, exceptionType, new HResult(ex.HResult));
             return null;
         }
         finally
@@ -231,11 +227,11 @@ internal class Win32ThumbnailGenerator : IThumbnailGenerator
         return (nativeBitmapHandle, new HResult(HResult.Code.S_OK));
     }
 
-    private void ReportError(string fileExtensionToReport, bool isHdPreview, int requestedSize, string details, HResult? hresult = null)
+    private void ReportError(string fileExtensionToReport, int requestedSize, string details, HResult? hresult = null)
     {
         var errorMessage =
-            $"Thumbnail generation with size {requestedSize} {(isHdPreview ? "(HD preview) " : string.Empty)}" +
-            $"failed for file extension \"{fileExtensionToReport}\": {(hresult.HasValue ? $"(0x{hresult.Value.AsUInt32:x8}) {details}" : details)}";
+            $"Thumbnail generation with size {requestedSize} " +
+            $"failed for \"{fileExtensionToReport}\": {(hresult.HasValue ? $"(0x{hresult.Value.AsUInt32:x8}) {details}" : details)}";
         _errorReporting.CaptureError(errorMessage);
     }
 }

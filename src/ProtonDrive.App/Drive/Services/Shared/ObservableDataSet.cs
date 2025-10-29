@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using ProtonDrive.Shared;
 
 namespace ProtonDrive.App.Drive.Services.Shared;

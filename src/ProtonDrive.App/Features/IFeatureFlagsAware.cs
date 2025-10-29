@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Shared.Features;
+﻿using ProtonDrive.Shared.Features;
 
 namespace ProtonDrive.App.Features;
 

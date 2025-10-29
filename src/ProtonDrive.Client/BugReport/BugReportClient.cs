@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Configuration;
+﻿using ProtonDrive.Client.Configuration;
 using ProtonDrive.Shared.Text;
 
 namespace ProtonDrive.Client.BugReport;

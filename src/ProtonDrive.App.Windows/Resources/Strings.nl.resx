@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Bestand overgeslagen omdat het te recent veranderd is. De app zal automatisch opnieuw proberen</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live foto kan niet worden geüpload.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Bestand of map is afgeweken</value>
   </data>
@@ -1281,6 +1284,9 @@ De inhoud van bestanden wordt alleen op aanvraag gedownload.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>De map moet leeg zijn voordat u synchronisatie kunt instellen</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Het serienummer van het lokale volume is gewijzigd. Stel een nieuwe sync map in.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Niet-ondersteund lokale schijftype. Probeer de synchronisatiemap op een andere lokale schijf in te stellen.</value>

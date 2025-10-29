@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProtonDrive.App.Settings;
+﻿namespace ProtonDrive.App.Settings;
 
 internal sealed class HierarchicalMappingComparer : IComparer<RemoteToLocalMapping>
 {

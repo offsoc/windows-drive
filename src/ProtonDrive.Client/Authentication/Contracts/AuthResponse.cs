@@ -11,7 +11,7 @@ internal sealed record AuthResponse : ApiResponse
     [JsonPropertyName("UserID")]
     public string UserId { get; init; } = string.Empty;
 
-    public string? ServerProof { get; init; }
+    public string ServerProof { get; init; } = string.Empty;
 
     [JsonPropertyName("EventID")]
     public string? EventId { get; init; }

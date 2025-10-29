@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.SystemIntegration;
+﻿namespace ProtonDrive.App.SystemIntegration;
 
 public class InvalidFileSystemException : Exception
 {

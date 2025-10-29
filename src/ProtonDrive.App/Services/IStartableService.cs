@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.App.Services;
+﻿namespace ProtonDrive.App.Services;
 
 public interface IStartableService
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using ProtonDrive.Sync.Shared.FileSystem;
+﻿using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Client.CloudFiles;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtonDrive.Update.Contracts;
+﻿using ProtonDrive.Update.Contracts;
 
 namespace ProtonDrive.Update;
 

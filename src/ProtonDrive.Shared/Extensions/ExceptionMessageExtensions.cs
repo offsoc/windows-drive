@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ProtonDrive.Shared.Extensions;
+﻿namespace ProtonDrive.Shared.Extensions;
 
 public static class ExceptionMessageExtensions
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Shared.IO;
+﻿using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 using ProtonDrive.Sync.Shared.SyncActivity;
 

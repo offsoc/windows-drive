@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>File ignorato perché è stato modificato troppo di recente. L'app riproverà automaticamente</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo non può essere caricata.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Il file o la cartella sono divergenti</value>
   </data>
@@ -1282,6 +1285,9 @@ I contenuti dei file verranno scaricati sono se necessari.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>La cartella locale deve essere vuota prima di impostare la sincronizzazione</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Il numero di serie del volume locale è cambiato. Imposta una nuova cartella per la sincronizzazione.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Tipo di unità locale non supportato. Prova a configurare la cartella di sincronizzazione su un'altra unità locale.</value>

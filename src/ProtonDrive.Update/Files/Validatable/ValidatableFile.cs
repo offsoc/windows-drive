@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace ProtonDrive.Update.Files.Validatable;
+﻿namespace ProtonDrive.Update.Files.Validatable;
 
 /// <summary>
 /// Validates checksum of file.

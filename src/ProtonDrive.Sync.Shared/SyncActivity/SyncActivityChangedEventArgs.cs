@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Sync.Shared.SyncActivity;
+﻿namespace ProtonDrive.Sync.Shared.SyncActivity;
 
 public sealed class SyncActivityChangedEventArgs<TId> : EventArgs
 {

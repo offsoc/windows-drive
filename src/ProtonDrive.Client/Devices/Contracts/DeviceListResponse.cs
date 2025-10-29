@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProtonDrive.Client.Devices.Contracts;
+﻿namespace ProtonDrive.Client.Devices.Contracts;
 
 internal sealed record DeviceListResponse : ApiResponse
 {

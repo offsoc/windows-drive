@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
+﻿namespace ProtonDrive.Sync.Shared.Trees.FileSystem.Traversal;
 
 public static class EnumerableTreeTraversalExtensions
 {

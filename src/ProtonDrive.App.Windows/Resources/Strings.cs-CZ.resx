@@ -405,6 +405,9 @@
   <data name="FileSystemErrorCode_Value_LastWriteTimeTooRecent">
     <value>Soubor přeskočen, protože se změnil příliš nedávno. Aplikace automaticky pokus zopakuje</value>
   </data>
+  <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
+    <value>Live Photo nelze nahrát.</value>
+  </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Soubor nebo složka se neshodují</value>
   </data>
@@ -1282,6 +1285,9 @@ Obsah souborů bude stažen jen na vyžádání.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalFolderNotEmpty">
     <value>Před nastavením synchronizace musí být místní složka prázdná</value>
+  </data>
+  <data name="MappingErrorCode_Value_LocalVolumeDiverged">
+    <value>Místní sériové číslo jednotky se změnilo. Nastavte novou složku k synchronizaci.</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>Nepodporovaný typ místního disku Zkuste nastavit složku k synchronizaci na jiný místní disk.</value>

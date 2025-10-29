@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.App.Authentication;
+﻿namespace ProtonDrive.App.Authentication;
 
 [Flags]
 public enum MultiFactorAuthenticationMethods

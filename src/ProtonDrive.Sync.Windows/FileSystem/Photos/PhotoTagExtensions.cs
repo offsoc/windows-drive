@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ProtonDrive.Sync.Shared.FileSystem;
+﻿using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Sync.Windows.FileSystem.Photos;
 

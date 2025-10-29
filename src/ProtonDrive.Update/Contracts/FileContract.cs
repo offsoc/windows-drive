@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProtonDrive.Update.Contracts;
+﻿namespace ProtonDrive.Update.Contracts;
 
 internal class FileContract : IEquatable<FileContract>
 {

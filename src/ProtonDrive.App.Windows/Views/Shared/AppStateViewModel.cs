@@ -1,5 +1,4 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Authentication;
 using ProtonDrive.App.Mapping;

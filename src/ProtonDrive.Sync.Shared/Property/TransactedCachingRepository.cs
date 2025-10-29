@@ -1,5 +1,4 @@
-﻿using System;
-using ProtonDrive.Shared.Repository;
+﻿using ProtonDrive.Shared.Repository;
 
 namespace ProtonDrive.Sync.Shared.Property;
 

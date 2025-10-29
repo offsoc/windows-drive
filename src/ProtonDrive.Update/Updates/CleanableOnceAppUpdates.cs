@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ProtonDrive.Update.Updates;
+﻿namespace ProtonDrive.Update.Updates;
 
 /// <summary>
 /// Performs app updates download directory cleanup only once.

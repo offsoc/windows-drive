@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ProtonDrive.Client.Cryptography;
+﻿using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Client.Devices.Contracts;
 using ProtonDrive.Client.RemoteNodes;
 using ProtonDrive.Shared;
@@ -130,7 +127,7 @@ internal sealed class DeviceClient : IDeviceClient
         var share = await _remoteNodeService.GetShareAsync(device.ShareId, cancellationToken).ConfigureAwait(false);
 
         var (nameEncrypter, address) = await _cryptographyService.CreateNodeNameAndKeyPassphraseEncrypterAsync(
-            share.Key.PublicKey,
+            share.Key.ToPublic(),
             node.NameSessionKey,
             share.RelevantMembershipAddressId,
             cancellationToken).ConfigureAwait(false);
