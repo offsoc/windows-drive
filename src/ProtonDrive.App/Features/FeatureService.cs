@@ -25,7 +25,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
     private readonly IRepository<IReadOnlyDictionary<Feature, bool>> _repository;
     private readonly ILogger<FeatureService> _logger;
 
-    private readonly IReadOnlyDictionary<Feature, bool> _localFeatureOverrides;
+    private readonly FrozenDictionary<Feature, bool> _localFeatureOverrides;
     private readonly CancellationHandle _cancellationHandle = new();
     private readonly TimeSpan _period;
     private readonly Lazy<IEnumerable<IFeatureFlagsAware>> _featureFlagsAware;
@@ -102,6 +102,12 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
         if (localFeatureFlags.OffersEnabled)
         {
             yield return (Feature.DriveWindowsOffers, IsEnabled: true);
+        }
+
+        if (localFeatureFlags.DriveSdkEnabled)
+        {
+            yield return (Feature.DriveWindowsSdkDownloadMain, IsEnabled: true);
+            yield return (Feature.DriveWindowsSdkUploadMain, IsEnabled: true);
         }
     }
 
@@ -184,7 +190,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
 
             var latestFeatureFlags = featureListResponse.FeatureFlags
                 .Select(
-                    x => Enum.TryParse(x.Name, out Feature featureFlag)
+                    x => Enum.TryParse(x.Name, ignoreCase: true, out Feature featureFlag)
                         ? new (Feature Feature, bool IsEnabled)?((featureFlag, x.Enabled))
                         : null)
                 .Where(x => x is not null)

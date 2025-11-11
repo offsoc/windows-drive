@@ -6,6 +6,7 @@ using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Client.MediaTypes;
 using ProtonDrive.Client.RemoteNodes;
 using ProtonDrive.Client.Volumes;
+using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Devices;
 using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.Reporting;
@@ -16,6 +17,7 @@ namespace ProtonDrive.Client;
 internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFactory
 {
     private readonly DriveApiConfig _driveApi;
+    private readonly LocalFeatureFlags _localFeatureFlags;
     private readonly IFeatureFlagProvider _featureFlagProvider;
     private readonly IFileContentTypeProvider _fileContentTypeProvider;
     private readonly IClientInstanceIdentityProvider _clientInstanceIdentityProvider;
@@ -35,6 +37,7 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
 
     public RemoteFileSystemClientFactory(
         DriveApiConfig driveApi,
+        LocalFeatureFlags localFeatureFlags,
         IFeatureFlagProvider featureFlagProvider,
         IFileContentTypeProvider fileContentTypeProvider,
         IClientInstanceIdentityProvider clientInstanceIdentityProvider,
@@ -53,6 +56,7 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
         IErrorReporting errorReporting)
     {
         _driveApi = driveApi;
+        _localFeatureFlags = localFeatureFlags;
         _featureFlagProvider = featureFlagProvider;
         _fileContentTypeProvider = fileContentTypeProvider;
         _clientInstanceIdentityProvider = clientInstanceIdentityProvider;
@@ -73,8 +77,11 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
 
     public IFileSystemClient<string> CreateClient(FileSystemClientParameters parameters)
     {
-        //TODO: Add SDK client when ready
-        return CreateLegacyClient(parameters);
+        // The hybrid client will selectively use the legacy and the SDK client based on feature flags per operation
+        var legacyClient = CreateLegacyClient(parameters);
+        var sdkClient = CreateSdkClient(parameters);
+
+        return new HybridRemoteFileSystemClient(_localFeatureFlags, _featureFlagProvider, legacyClient, sdkClient);
     }
 
     private RemoteFileSystemClient CreateLegacyClient(FileSystemClientParameters parameters)
@@ -100,8 +107,8 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
         );
     }
 
-    private SdkRemoteFileSystemClient CreateSdkClient(FileSystemClientParameters parameters)
+    private SdkFileSystemClient CreateSdkClient(FileSystemClientParameters parameters)
     {
-        throw new NotSupportedException();
+        return new SdkFileSystemClient(parameters);
     }
 }

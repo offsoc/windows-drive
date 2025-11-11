@@ -406,7 +406,7 @@
     <value>由于文件最近更改过多而跳过。应用程序将自动重试</value>
   </data>
   <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
-    <value>Live Photo cannot be uploaded.</value>
+    <value>Live Photo 无法上传。</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>文件或文件夹不匹配</value>
@@ -1289,7 +1289,7 @@
     <value>设置同步前，本地文件夹必须为空</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeDiverged">
-    <value>Local volume serial number has changed. Set up a new sync folder.</value>
+    <value>本地卷序列号已更改。设置新的同步文件夹。</value>
   </data>
   <data name="MappingErrorCode_Value_LocalVolumeNotSupported">
     <value>不支持的本地驱动器类型。请尝试在不同的本地驱动器上设置同步文件夹。</value>
@@ -1445,13 +1445,13 @@
     <value>改进功能</value>
   </data>
   <data name="SecondFactorInputPage_Value_Fido2">
-    <value>Security key</value>
+    <value>安全密钥</value>
   </data>
   <data name="SecondFactorInputPage_Value_NotSupported">
     <value></value>
   </data>
   <data name="SecondFactorInputPage_Value_Totp">
-    <value>Authenticator app</value>
+    <value>身份验证器应用</value>
   </data>
   <data name="SessionStatus_Value_Ending">
     <value>正在登出...</value>
@@ -1488,7 +1488,7 @@
     <comment>The underscore (_) denotes an access key, which enhances the app's accessibility by allowing users to press the letter following the underscore instead of using a mouse to click the button.</comment>
   </data>
   <data name="SignIn_Button_LearnMore">
-    <value>Learn more</value>
+    <value>了解更多</value>
   </data>
   <data name="SignIn_Button_SignIn">
     <value>登录</value>
@@ -1508,7 +1508,7 @@
     <value>输入身份验证器应用中的代码</value>
   </data>
   <data name="SignIn_Text_No2FAMethodFound">
-    <value>No two-factor authentication method found.</value>
+    <value>未设定双因素身份验证。</value>
   </data>
   <data name="SignIn_Text_Password">
     <value>密码</value>
@@ -1518,10 +1518,10 @@
     <value>副密码</value>
   </data>
   <data name="SignIn_Text_SecurityKey">
-    <value>Insert a security key linked to your Proton Account.</value>
+    <value>插入与您的 Proton Account 关联的安全密钥。</value>
   </data>
   <data name="SignIn_Text_SecurityKeyNotSupported">
-    <value>Your system does not support security key</value>
+    <value>您的系统不支持安全密钥</value>
   </data>
   <data name="SignIn_Text_Username">
     <value>电子邮件或用户名</value>

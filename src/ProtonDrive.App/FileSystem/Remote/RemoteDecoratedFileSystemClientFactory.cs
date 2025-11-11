@@ -2,7 +2,6 @@
 using ProtonDrive.App.Account;
 using ProtonDrive.App.Settings;
 using ProtonDrive.Client.Contracts;
-using ProtonDrive.Sync.Adapter;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.App.FileSystem.Remote;
@@ -26,22 +25,19 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
         _loggerFactory = loggerFactory;
     }
 
-    public IFileSystemClient<string> GetClient(
-        IReadOnlyCollection<RemoteToLocalMapping> mappings,
-        IRevisionUploadAttemptRepository revisionUploadAttemptRepository)
+    public IFileSystemClient<string> GetClient(IReadOnlyCollection<RemoteToLocalMapping> mappings)
     {
         // A dummy (offline) client is created for non-successfully set up mappings.
         // If all mappings on the same remote share are non-successfully set up,
         // the remote file system client for share is still created, but gets abandoned.
         var rootToClientMap =
-            GetOwnVolumeRootToClientMap(mappings, revisionUploadAttemptRepository)
-                .Concat(GetForeignVolumeRootToClientMap(mappings, revisionUploadAttemptRepository))
+            GetOwnVolumeRootToClientMap(mappings)
+                .Concat(GetForeignVolumeRootToClientMap(mappings))
                 .ToDictionary(x => x.Root, x => x.Client);
 
-        return
-            new LoggingFileSystemClientDecorator<string>(
-                _loggerFactory.CreateLogger<LoggingFileSystemClientDecorator<string>>(),
-                new DispatchingFileSystemClient<string>(rootToClientMap));
+        return new LoggingFileSystemClientDecorator<string>(
+            _loggerFactory.CreateLogger<LoggingFileSystemClientDecorator<string>>(),
+            new DispatchingFileSystemClient<string>(rootToClientMap));
     }
 
     private static IFileSystemClient<string> CreateClientForMapping(RemoteToLocalMapping mapping, IFileSystemClient<string> clientForShare)
@@ -52,13 +48,12 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
     }
 
     private IEnumerable<(RootInfo<string> Root, IFileSystemClient<string> Client)> GetOwnVolumeRootToClientMap(
-        IEnumerable<RemoteToLocalMapping> mappings,
-        IRevisionUploadAttemptRepository revisionUploadAttemptRepository)
+        IEnumerable<RemoteToLocalMapping> mappings)
     {
         return from mapping in mappings
                where mapping.Type is MappingType.CloudFiles or MappingType.ForeignDevice or MappingType.HostDeviceFolder
                group mapping by (mapping.Remote.VolumeId, mapping.Remote.ShareId) into shareMappings
-               let shareClient = CreateOwnVolumeClientForShare(shareMappings.Key.VolumeId, shareMappings.Key.ShareId, revisionUploadAttemptRepository)
+               let shareClient = CreateOwnVolumeClientForShare(shareMappings.Key.VolumeId, shareMappings.Key.ShareId)
                from shareMapping in shareMappings
                select (
                    Root: CreateRoot(shareMapping),
@@ -66,8 +61,7 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
     }
 
     private IEnumerable<(RootInfo<string> Root, IFileSystemClient<string> Client)> GetForeignVolumeRootToClientMap(
-        IReadOnlyCollection<RemoteToLocalMapping> mappings,
-        IRevisionUploadAttemptRepository revisionUploadAttemptRepository)
+        IReadOnlyCollection<RemoteToLocalMapping> mappings)
     {
         var sharedWithMeRootFolderMapping = mappings.FirstOrDefault(m => m.Type is MappingType.SharedWithMeRootFolder);
 
@@ -82,7 +76,7 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
 
         return from mapping in mappings
                where mapping.Type is MappingType.SharedWithMeItem
-               let client = CreateClientForSharedWithMeItem(mapping, revisionUploadAttemptRepository)
+               let client = CreateClientForSharedWithMeItem(mapping)
                select (
                    Root: CreateRoot(mapping),
                    Client: CreateClientForMapping(mapping, client));
@@ -120,22 +114,16 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
 
     private IFileSystemClient<string> CreateOwnVolumeClientForShare(
         string volumeId,
-        string shareId,
-        IRevisionUploadAttemptRepository revisionUploadAttemptRepository)
+        string shareId)
     {
         var parameters = new FileSystemClientParameters(volumeId, shareId);
 
         var undecoratedClient = _undecoratedClientFactory.CreateClient(parameters);
 
-        // TODO: use this decorator only for legacy (non-SDK) file system clients
-        var draftCleaningClient = new DraftCleaningFileSystemClientDecorator(revisionUploadAttemptRepository, undecoratedClient);
-
-        return new RemoteSpaceCheckingFileSystemClientDecorator(_userService, new StorageReservationHandler(), draftCleaningClient);
+        return new RemoteSpaceCheckingFileSystemClientDecorator(_userService, new StorageReservationHandler(), undecoratedClient);
     }
 
-    private IFileSystemClient<string> CreateClientForSharedWithMeItem(
-        RemoteToLocalMapping mapping,
-        IRevisionUploadAttemptRepository revisionUploadAttemptRepository)
+    private IFileSystemClient<string> CreateClientForSharedWithMeItem(RemoteToLocalMapping mapping)
     {
         var volumeId = mapping.Remote.VolumeId ?? throw new InvalidOperationException("Remote volume ID is not specified");
         var shareId = mapping.Remote.ShareId ?? throw new InvalidOperationException("Remote share ID is not specified");
@@ -146,7 +134,7 @@ internal sealed class RemoteDecoratedFileSystemClientFactory
 
         IFileSystemClient<string> decoratedClient = mapping.Remote.IsReadOnly
             ? new ReadOnlyFileSystemClientDecorator(undecoratedClient)
-            : new DraftCleaningFileSystemClientDecorator(revisionUploadAttemptRepository, undecoratedClient);
+            : undecoratedClient;
 
         if (mapping.Remote.RootItemType is LinkType.File)
         {

@@ -8,7 +8,6 @@
     "DriveBaseUrl": "https://drive-api.proton.me/drive/",
     "FeatureBaseUrl": "https://drive-api.proton.me/feature/",
     "ContactsBaseUrl": "https://drive-api.proton.me/contacts/",
-    "DocsBaseUrl": "https://drive-api.proton.me/docs/",
     "ClientVersion": "windows-drive@{AppVersion}",
     "UserAgent": "ProtonDrive/{AppVersion} ({SystemInfo})",
     "ContentType": "application/vnd.protonmail.api+json",

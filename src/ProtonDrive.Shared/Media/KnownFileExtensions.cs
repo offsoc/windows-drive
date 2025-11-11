@@ -13,6 +13,11 @@ public sealed class KnownFileExtensions
         ".jpg",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
+    public static readonly FrozenSet<string> WebPImageExtensions = new HashSet<string>
+    {
+        ".webp",
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
     public static readonly FrozenSet<string> OtherImageExtensions = new HashSet<string>
     {
         ".apng",
@@ -21,11 +26,9 @@ public sealed class KnownFileExtensions
         ".heic",
         ".ico",
         ".png",
-        ".svg",
         ".tif",
         ".tiff",
         ".vdnMicrosoftIcon",
-        ".webp",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     public static readonly FrozenSet<string> RawImageExtensions = new HashSet<string>
@@ -60,6 +63,11 @@ public sealed class KnownFileExtensions
         ".rwl",
         ".rwz",
         ".x3f",
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+    public static readonly FrozenSet<string> VectorImageExtensions = new HashSet<string>
+    {
+        ".svg",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     public static readonly FrozenSet<string> VideoExtensions = new HashSet<string>
@@ -128,6 +136,10 @@ public sealed class KnownFileExtensions
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     public static readonly FrozenSet<string> ImageExtensions =
-        JpegExtensions.Concat(OtherImageExtensions).Concat(RawImageExtensions)
+        JpegExtensions
+            .Concat(WebPImageExtensions)
+            .Concat(OtherImageExtensions)
+            .Concat(RawImageExtensions)
+            .Concat(VectorImageExtensions)
             .ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 }

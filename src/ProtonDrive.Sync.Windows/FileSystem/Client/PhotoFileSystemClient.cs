@@ -173,7 +173,10 @@ internal sealed class PhotoFileSystemClient : IPhotoFileSystemClient<long>
     private static bool FileExtensionIsSupported(string path)
     {
         var extension = Path.GetExtension(path);
-        return KnownFileExtensions.ImageExtensions.Contains(extension) || KnownFileExtensions.VideoExtensions.Contains(extension);
+
+        return
+            KnownFileExtensions.ImageExtensions.Contains(extension) ||
+            KnownFileExtensions.VideoExtensions.Contains(extension);
     }
 
     private static bool EntryIsNotSystemItem(string path)

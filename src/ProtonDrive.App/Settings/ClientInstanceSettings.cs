@@ -6,45 +6,26 @@ namespace ProtonDrive.App.Settings;
 
 public sealed class ClientInstanceSettings
 {
-    private readonly object _synchronizationLock = new();
     private readonly IRepository<ClientInstanceSettingsDto> _repository;
     private readonly Version _currentVersion;
 
-    private Lazy<ClientInstanceSettingsState> _state;
+    private readonly Lazy<ClientInstanceSettingsState> _state;
 
     public ClientInstanceSettings(IRepositoryFactory repositoryFactory, AppConfig appConfig)
     {
         _currentVersion = appConfig.AppVersion;
         _repository = repositoryFactory.GetRepository<ClientInstanceSettingsDto>("ClientInstanceSettings.json");
 
-        _state = new(LoadOrCreateState);
+        _state = new Lazy<ClientInstanceSettingsState>(LoadOrCreateState);
     }
 
     public string ClientInstanceId => _state.Value.ClientInstanceId;
 
     public double RolloutEligibilityThreshold => _state.Value.RolloutEligibilityThreshold;
 
-    public (DateTimeOffset? Time, Version? Version) LastSanitization
-    {
-        get => (_state.Value.LastSanitizationTime, _state.Value.LastSanitizationVersion);
-        set => ApplyStateTransformation((state, value) => state with { LastSanitizationTime = value.Time, LastSanitizationVersion = value.Version }, value);
-    }
-
     private static double GenerateRolloutEligibilityThreshold()
     {
         return (double)RandomNumberGenerator.GetInt32(int.MaxValue) / int.MaxValue;
-    }
-
-    private void ApplyStateTransformation<TValue>(Func<ClientInstanceSettingsState, TValue, ClientInstanceSettingsState> transform, TValue value)
-    {
-        lock (_synchronizationLock)
-        {
-            var newState = transform.Invoke(_state.Value, value);
-
-            _state = new Lazy<ClientInstanceSettingsState>(newState);
-
-            _repository.Set((newState, _currentVersion));
-        }
     }
 
     private ClientInstanceSettingsState LoadOrCreateState()
@@ -77,7 +58,7 @@ public sealed class ClientInstanceSettings
             rolloutEligibilityThreshold = dto.RolloutEligibilityThreshold.Value;
         }
 
-        var state = new ClientInstanceSettingsState(clientInstanceId, rolloutEligibilityThreshold, dto.LastSanitizationTime, dto.LastSanitizationVersion);
+        var state = new ClientInstanceSettingsState(clientInstanceId, rolloutEligibilityThreshold);
 
         if (requiresSaving)
         {
@@ -89,23 +70,17 @@ public sealed class ClientInstanceSettings
 
     private sealed record ClientInstanceSettingsState(
         string ClientInstanceId,
-        double RolloutEligibilityThreshold,
-        DateTimeOffset? LastSanitizationTime,
-        Version? LastSanitizationVersion);
+        double RolloutEligibilityThreshold);
 
     private sealed record ClientInstanceSettingsDto(
         string? ClientInstanceId = null,
         double? RolloutEligibilityThreshold = null,
-        Version? RolloutEligibilityThresholdVersion = null,
-        DateTimeOffset? LastSanitizationTime = null,
-        Version? LastSanitizationVersion = null)
+        Version? RolloutEligibilityThresholdVersion = null)
     {
         public static implicit operator ClientInstanceSettingsDto((ClientInstanceSettingsState State, Version CurrentVersion) x)
             => new(
                 x.State.ClientInstanceId,
                 x.State.RolloutEligibilityThreshold,
-                x.CurrentVersion,
-                x.State.LastSanitizationTime,
                 x.CurrentVersion);
     }
 }

@@ -26,6 +26,7 @@ internal sealed class MainViewModel
     private readonly Func<OfferViewModel> _offerViewModelFactory;
     private readonly IDialogService _dialogService;
     private readonly IExternalHyperlinks _externalHyperlinks;
+    private readonly IForkingSessionUrlOpener _forkingSessionUrlOpener;
     private readonly IUpgradeStoragePlanAvailabilityVerifier _upgradeStoragePlanAvailabilityVerifier;
     private readonly IScheduler _scheduler;
 
@@ -52,6 +53,7 @@ internal sealed class MainViewModel
         Func<OfferViewModel> offerViewModelFactory,
         IDialogService dialogService,
         IExternalHyperlinks externalHyperlinks,
+        IForkingSessionUrlOpener forkingSessionUrlOpener,
         IUpgradeStoragePlanAvailabilityVerifier upgradeStoragePlanAvailabilityVerifier,
         NotificationBadgeProvider notificationBadges,
         [FromKeyedServices("Dispatcher")] IScheduler scheduler)
@@ -62,6 +64,7 @@ internal sealed class MainViewModel
         _offerViewModelFactory = offerViewModelFactory;
         _dialogService = dialogService;
         _externalHyperlinks = externalHyperlinks;
+        _forkingSessionUrlOpener = forkingSessionUrlOpener;
         _upgradeStoragePlanAvailabilityVerifier = upgradeStoragePlanAvailabilityVerifier;
         _scheduler = scheduler;
 
@@ -72,7 +75,7 @@ internal sealed class MainViewModel
 
         ReportBugCommand = new RelayCommand(ReportBug);
         GetMoreStorageCommand = new RelayCommand(GetMoreStorage, CanGetMoreStorage);
-        OpenOfferCommand = new RelayCommand(OpenOffer, CanOpenOffer);
+        OpenOfferCommand = new AsyncRelayCommand(OpenOfferAsync, CanOpenOffer);
         OpenWebDashboardCommand = new RelayCommand(OpenWebDashboard);
 
         _page = ToPageViewModel(CurrentMenuItem);
@@ -286,7 +289,7 @@ internal sealed class MainViewModel
         return _offer is not null;
     }
 
-    private void OpenOffer()
+    private async Task OpenOfferAsync(CancellationToken cancellationToken)
     {
         var offer = _offer;
         if (offer is null)
@@ -297,8 +300,8 @@ internal sealed class MainViewModel
         if (!string.Equals(_user?.Currency, "USD", StringComparison.OrdinalIgnoreCase))
         {
             // In-app offers are in English language and USD currency only. User currency is different,
-            // so we open Proton Drive web instead of offer modal. Drive web should show the translated offer in user currency.
-            _externalHyperlinks.WebClient.Open();
+            // so we open lite account app instead of offer modal. Lite account app is translated and uses user currency.
+            await _forkingSessionUrlOpener.TryOpenUrlAsync(offer.AccountAppUrl, "web-account-lite", cancellationToken).ConfigureAwait(true);
 
             return;
         }

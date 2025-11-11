@@ -29,7 +29,8 @@ internal sealed class Win32ThumbnailGenerationValidator
 
     public bool IsHdPreviewAllowed()
     {
-        if (!KnownFileExtensions.ImageExtensions.Contains(_extension))
+        // We skip large thumbnail generation for vector graphics images, because we cannot obtain image dimensions without generating the thumbnail
+        if (!KnownFileExtensions.ImageExtensions.Contains(_extension) || KnownFileExtensions.VectorImageExtensions.Contains(_extension))
         {
             _logger.LogInformation(
                 "HD preview generation skipped: File extension \"{Extension}\" not supported",
@@ -42,12 +43,12 @@ internal sealed class Win32ThumbnailGenerationValidator
             return false;
         }
 
-        if (KnownFileExtensions.JpegExtensions.Contains(_extension))
+        if (KnownFileExtensions.JpegExtensions.Contains(_extension) || KnownFileExtensions.WebPImageExtensions.Contains(_extension))
         {
             if (imageNumberOfPixelsOnLargestSide <= IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide)
             {
                 _logger.LogInformation(
-                    "HD preview generation skipped: JPEG image too small (largest side smaller or equal than {RequiredSize})",
+                    "HD preview generation skipped: JPEG or WebP image too small (largest side smaller or equal than {RequiredSize})",
                     IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide);
 
                 return false;
@@ -59,7 +60,7 @@ internal sealed class Win32ThumbnailGenerationValidator
         if (imageNumberOfPixelsOnLargestSide < MinHdPreviewNumberOfPixelsOnLargestSide)
         {
             _logger.LogInformation(
-                "HD preview generation skipped: Non JPEG image too small (largest side smaller than {RequiredSize})",
+                "HD preview generation skipped: Non JPEG or WebP image too small (largest side smaller than {RequiredSize})",
                 MinHdPreviewNumberOfPixelsOnLargestSide);
 
             return false;

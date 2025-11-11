@@ -12,4 +12,7 @@ public enum Feature
     DriveWindowsStorageOptimizationDisabled,
     DriveWindowsPhotoImport,
     DriveWindowsOffers,
+    DriveWindowsSdkUploadMain,
+    DriveWindowsSdkDownloadMain,
+    DriveWindowsSdkUploadPhoto,
 }

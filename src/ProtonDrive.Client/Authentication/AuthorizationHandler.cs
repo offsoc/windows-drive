@@ -9,6 +9,7 @@ internal sealed class AuthorizationHandler : DelegatingHandler
 {
     private const string AuthenticationUrlBase = "/auth/v4";
     private const string SessionHeaderName = "x-pm-uid";
+    private const string BearerAuthorizationSchema = "Bearer";
 
     private readonly Lazy<IAuthenticationService> _authenticationService;
     private readonly Lazy<ISessionProvider> _sessionProvider;
@@ -23,9 +24,9 @@ internal sealed class AuthorizationHandler : DelegatingHandler
     {
         // Existence of the session header indicates necessity to pass through the request without handling authorization,
         // the authorization header should already be set.
-        return request.Headers.Authorization?.Scheme == "Bearer" && !request.Headers.TryGetValues(SessionHeaderName, out _)
-            ? SendWithAuthorizationOrEndSessionAsync(request, cancellationToken)
-            : base.SendAsync(request, cancellationToken);
+        return (request.Headers.Authorization?.Scheme == BearerAuthorizationSchema && !request.Headers.Contains(SessionHeaderName))
+                ? SendWithAuthorizationOrEndSessionAsync(request, cancellationToken)
+                : base.SendAsync(request, cancellationToken);
     }
 
     private static async Task<ApiResponse?> GetApiResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
@@ -103,7 +104,7 @@ internal sealed class AuthorizationHandler : DelegatingHandler
 
     private async Task<HttpResponseMessage> SetAuthorizationHeaderAndSendAsync(HttpRequestMessage request, Session session, CancellationToken cancellationToken)
     {
-        request.Headers.Authorization = new AuthenticationHeaderValue(request.Headers.Authorization!.Scheme, session.AccessToken);
+        request.Headers.Authorization = new AuthenticationHeaderValue(request.Headers.Authorization?.Scheme ?? BearerAuthorizationSchema, session.AccessToken);
         var requestDidNotContainHeader = !request.Headers.Remove(SessionHeaderName);
         request.Headers.Add(SessionHeaderName, session.Id);
 

@@ -103,13 +103,12 @@ internal sealed class SyncAgentFactory
         var remoteAdapterDatabase = new RemoteAdapterDatabase(new DatabaseConfig(Path.Combine(_appConfig.AppDataPath, "RemoteAdapter.sqlite")));
         var localAdapterDatabase = new LocalAdapterDatabase(new DatabaseConfig(Path.Combine(_appConfig.AppDataPath, "LocalAdapter.sqlite")));
         var syncEngineDatabase = new SyncEngineDatabase(new DatabaseConfig(Path.Combine(_appConfig.AppDataPath, "SyncEngine.sqlite")));
-        var transferDatabase = new FileTransferDatabase(new DatabaseConfig(Path.Combine(_appConfig.AppDataPath, "FileTransfers.sqlite")));
 
         var remoteEventLogClient = await _remoteEventLogClientFactory
             .GetClientAsync(mappings, remoteAdapterDatabase.PropertyRepository, cancellationToken)
             .ConfigureAwait(false);
 
-        var remoteFileSystemClient = _remoteFileSystemClientFactory.GetClient(mappings, transferDatabase.RevisionUploadAttemptRepository);
+        var remoteFileSystemClient = _remoteFileSystemClientFactory.GetClient(mappings);
 
         var fileUploadAbortionStrategy = new FileUploadAbortionStrategy();
 
@@ -212,7 +211,6 @@ internal sealed class SyncAgentFactory
             remoteAdapterDatabase,
             localAdapterDatabase,
             syncEngineDatabase,
-            transferDatabase,
             stateConsistencyGuard,
             _scheduler,
             _clock,

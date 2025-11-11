@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Proton.Cryptography.Pgp;
+using Proton.Drive.Sdk;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Authentication.Sessions;
 using ProtonDrive.Client.Authentication.Srp;
@@ -24,7 +25,7 @@ using ProtonDrive.Client.Notifications.Contracts;
 using ProtonDrive.Client.Offline;
 using ProtonDrive.Client.RemoteNodes;
 using ProtonDrive.Client.Repository;
-using ProtonDrive.Client.Sanitization;
+using ProtonDrive.Client.Sdk;
 using ProtonDrive.Client.Settings;
 using ProtonDrive.Client.Shares;
 using ProtonDrive.Client.Shares.Events;
@@ -45,12 +46,12 @@ namespace ProtonDrive.Client.Configuration;
 
 public static class ApiClientConfigurator
 {
+    public static readonly string SdkHttpClientName = "Sdk";
     public static readonly string AuthHttpClientName = "Auth";
     public static readonly string CoreHttpClientName = "Core";
     public static readonly string DataHttpClientName = "Data";
     public static readonly string DriveHttpClientName = "Drive";
     public static readonly string FeatureHttpClientName = "Feature";
-    public static readonly string DocsHttpClientName = "Docs";
     public static readonly string ContactsHttpClientName = "Contacts";
     public static readonly string FileRevisionUpdateHttpClientName = "FileRevisionUpdate";
     public static readonly string BlocksHttpClientName = "Blocks";
@@ -139,6 +140,10 @@ public static class ApiClientConfigurator
         services.AddSingleton<IPhotoHashProvider, PhotoHashProvider>();
         services.AddSingleton<IPhotoDuplicateService, PhotoDuplicateService>();
 
+        services.AddApiHttpClient(SdkHttpClientName, GetDriveBaseAddress, GetDriveApiNumberOfRetries, GetDefaultTimeout)
+            .EnableAuthorization()
+            ;
+
         services.AddApiHttpClients(AuthHttpClientName, GetAuthBaseAddress, GetDefaultNumberOfRetries, GetDefaultTimeout)
             .AddApiClient<IAuthenticationApiClient>()
             .AddApiClient<IAuthenticationSessionApiClient>()
@@ -169,10 +174,6 @@ public static class ApiClientConfigurator
             .AddApiClient<IFolderApiClient>()
             .AddApiClient<IFileApiClient>()
             .AddApiClient<IPhotoApiClient>()
-            ;
-
-        services.AddApiHttpClients(DocsHttpClientName, GetDocsBaseAddress, GetDefaultNumberOfRetries, GetDefaultTimeout, useOfflinePolicy: false)
-            .AddApiClient<IDocumentSanitizationApiClient>()
             ;
 
         services.AddApiHttpClients(
@@ -222,6 +223,7 @@ public static class ApiClientConfigurator
             ;
 
         services.AddSingleton<IAddressKeyProvider, AddressKeyProvider>();
+        services.AddSingleton<IAccountClient, SdkAccountClient>();
         services.AddSingleton(provider => new Func<IAddressKeyProvider>(provider.GetRequiredService<IAddressKeyProvider>));
         services.AddSingleton<ICryptographyService, CryptographyService>();
         services.AddSingleton<IRemoteNodeService, RemoteNodeService>();
@@ -260,7 +262,6 @@ public static class ApiClientConfigurator
         static Uri GetDataBaseAddress(DriveApiConfig config) => EnsureEndsWithSlash(config.DataBaseUrl, "Missing Data base URL.");
         static Uri GetDriveBaseAddress(DriveApiConfig config) => EnsureEndsWithSlash(config.DriveBaseUrl, "Missing Drive base URL.");
         static Uri GetPaymentsBaseAddress(DriveApiConfig config) => EnsureEndsWithSlash(config.PaymentsBaseUrl, "Missing Payments base URL.");
-        static Uri GetDocsBaseAddress(DriveApiConfig config) => EnsureEndsWithSlash(config.DocsBaseUrl, "Missing Docs base URL.");
 
         static int GetDefaultNumberOfRetries(DriveApiConfig config) => config.DefaultNumberOfRetries;
         static int GetDriveApiNumberOfRetries(DriveApiConfig config) => config.DriveApiNumberOfRetries;

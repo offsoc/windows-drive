@@ -29,7 +29,6 @@ internal class SyncAgent : IDisposable
     private readonly RemoteAdapterDatabase _remoteAdapterDatabase;
     private readonly LocalAdapterDatabase _localAdapterDatabase;
     private readonly SyncEngineDatabase _syncEngineDatabase;
-    private readonly FileTransferDatabase _fileTransferDatabase;
     private readonly StateConsistencyGuard<long> _stateConsistencyGuard;
     private readonly IClock _clock;
     private readonly IErrorCounter _errorCounter;
@@ -58,7 +57,6 @@ internal class SyncAgent : IDisposable
         RemoteAdapterDatabase remoteAdapterDatabase,
         LocalAdapterDatabase localAdapterDatabase,
         SyncEngineDatabase syncEngineDatabase,
-        FileTransferDatabase fileTransferDatabase,
         StateConsistencyGuard<long> stateConsistencyGuard,
         IScheduler scheduler,
         IClock clock,
@@ -71,7 +69,6 @@ internal class SyncAgent : IDisposable
         _remoteAdapterDatabase = remoteAdapterDatabase;
         _localAdapterDatabase = localAdapterDatabase;
         _syncEngineDatabase = syncEngineDatabase;
-        _fileTransferDatabase = fileTransferDatabase;
         _stateConsistencyGuard = stateConsistencyGuard;
         _clock = clock;
         _errorCounter = errorCounter;
@@ -160,12 +157,10 @@ internal class SyncAgent : IDisposable
         _syncEngineDatabase.Open();
         _remoteAdapterDatabase.Open();
         _localAdapterDatabase.Open();
-        _fileTransferDatabase.Open();
 
         _syncEngineDatabase.Faulted += OnDatabaseFaulted;
         _remoteAdapterDatabase.Faulted += OnDatabaseFaulted;
         _localAdapterDatabase.Faulted += OnDatabaseFaulted;
-        _fileTransferDatabase.Faulted += OnDatabaseFaulted;
 
         await _stateConsistencyGuard.ExecuteAsync(cancellationToken).ConfigureAwait(false);
 
@@ -254,12 +249,10 @@ internal class SyncAgent : IDisposable
         _syncEngineDatabase.Faulted -= OnDatabaseFaulted;
         _remoteAdapterDatabase.Faulted -= OnDatabaseFaulted;
         _localAdapterDatabase.Faulted -= OnDatabaseFaulted;
-        _fileTransferDatabase.Faulted -= OnDatabaseFaulted;
 
         _remoteAdapterDatabase.Close();
         _localAdapterDatabase.Close();
         _syncEngineDatabase.Close();
-        _fileTransferDatabase.Close();
 
         _initialized = false;
         Status = SyncStatus.Terminated;

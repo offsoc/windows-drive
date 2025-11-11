@@ -23,7 +23,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="Polly" />
     <PackageReference Include="Proton.Cryptography" />
+    <PackageReference Include="Proton.Drive.Sdk" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Net.Http.Json" />

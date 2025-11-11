@@ -18,11 +18,6 @@ public enum ErrorScope
     DocumentOpening,
 
     /// <summary>
-    /// Error occurred when attempting to sanitize a Proton document file by adding the file extension
-    /// </summary>
-    DocumentNameMigration,
-
-    /// <summary>
     /// Error occurred when attempting to set up a mapping folder
     /// </summary>
     MappingSetup,
