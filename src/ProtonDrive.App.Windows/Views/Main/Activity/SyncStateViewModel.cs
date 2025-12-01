@@ -6,7 +6,6 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ProtonDrive.App.Authentication;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Sync;
 using ProtonDrive.App.SystemIntegration;
 using ProtonDrive.App.Windows.Services;

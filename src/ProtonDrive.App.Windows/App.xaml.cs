@@ -63,6 +63,11 @@ internal partial class App : IApp, ISessionStateAware, IOnboardingStateAware
 
     public bool IsRestartRequested { get; private set; }
 
+    public Window? GetActiveWindow()
+    {
+        return _signInWindow ?? _onboardingWindow ?? MainWindow;
+    }
+
     public Task<IntPtr> ActivateAsync()
     {
         return Schedule(Activate);
@@ -121,7 +126,7 @@ internal partial class App : IApp, ISessionStateAware, IOnboardingStateAware
 
         _appLifecycleService.Activate();
 
-        var window = _signInWindow ?? _onboardingWindow ?? MainWindow;
+        var window = GetActiveWindow();
 
         return window is null ? IntPtr.Zero : GetWindowHandle(window);
     }
@@ -268,6 +273,11 @@ internal partial class App : IApp, ISessionStateAware, IOnboardingStateAware
 
         if (!isClosing)
         {
+            foreach (Window ownedWindow in _signInWindow.OwnedWindows)
+            {
+                ownedWindow.Close();
+            }
+
             _signInWindow.Close();
         }
 

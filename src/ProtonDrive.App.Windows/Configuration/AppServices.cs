@@ -25,6 +25,7 @@ using ProtonDrive.App.Volumes;
 using ProtonDrive.App.Windows.Authentication;
 using ProtonDrive.App.Windows.Configuration.Hyperlinks;
 using ProtonDrive.App.Windows.Dialogs;
+using ProtonDrive.App.Windows.Dialogs.HumanVerification;
 using ProtonDrive.App.Windows.InterProcessCommunication;
 using ProtonDrive.App.Windows.Services;
 using ProtonDrive.App.Windows.SystemIntegration;
@@ -45,6 +46,7 @@ using ProtonDrive.App.Windows.Views.Shared.Navigation;
 using ProtonDrive.App.Windows.Views.SignIn;
 using ProtonDrive.App.Windows.Views.SystemTray;
 using ProtonDrive.Shared.Features;
+using ProtonDrive.Shared.HumanVerification;
 using ProtonDrive.Shared.Localization;
 using ProtonDrive.Shared.Offline;
 using ProtonDrive.Shared.Reporting;
@@ -91,6 +93,7 @@ internal static class AppServices
             .AddAppServices()
 
             .AddSingleton(new DispatcherScheduler(Dispatcher.CurrentDispatcher))
+            .AddSingleton<IHumanVerifier, HumanVerifier>()
             .AddKeyedSingleton<IScheduler>("Dispatcher", (sp, _) => sp.GetRequiredService<DispatcherScheduler>())
 
             .AddSingleton<IFileSystemDisplayNameAndIconProvider, Win32FileSystemDisplayNameAndIconProvider>()

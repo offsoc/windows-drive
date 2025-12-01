@@ -15,6 +15,8 @@ public sealed class AppConfig
     public string AppLaunchPath { get; internal set; } = string.Empty;
     public string AppDataPath { get; internal set; } = string.Empty;
     public string UserDataPath { get; internal set; } = string.Empty;
+    public string WebView2DataPath { get; internal set; } = string.Empty;
+
     public TimeSpan UserUpdateInterval { get; internal set; }
     public TimeSpan OffersUpdateInterval { get; internal set; }
     public TimeSpan MinFailedSetupRetryInterval { get; internal set; }

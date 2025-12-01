@@ -8,4 +8,5 @@ internal interface IDialogService
     ConfirmationResult ShowConfirmationDialog(ConfirmationDialogViewModelBase dataContext);
     void Show(IDialogViewModel dataContext);
     void ShowDialog(IDialogViewModel dataContext);
+    void ShowHumanVerificationDialog(IDialogViewModel dataContext);
 }

@@ -1,23 +1,19 @@
-﻿using ProtonDrive.App.Windows.Services;
+﻿using Microsoft.Web.WebView2.Wpf;
+using ProtonDrive.App.Windows.Dialogs.HumanVerification;
+using ProtonDrive.App.Windows.Services;
 using ProtonDrive.App.Windows.Views;
+using ProtonDrive.Shared.Configuration;
 
 namespace ProtonDrive.App.Windows.Dialogs;
 
-internal sealed class DialogService : IDialogService
+internal sealed class DialogService(AppConfig appConfig, App app) : IDialogService
 {
-    private readonly App _app;
-
-    public DialogService(App app)
-    {
-        _app = app;
-    }
-
     public ConfirmationResult ShowConfirmationDialog(ConfirmationDialogViewModelBase dataContext)
     {
         var confirmationDialog = new ConfirmationDialogWindow
         {
             DataContext = dataContext,
-            Owner = _app.MainWindow,
+            Owner = app.GetActiveWindow(),
         };
 
         var result = confirmationDialog.ShowDialog();
@@ -35,7 +31,7 @@ internal sealed class DialogService : IDialogService
         var dialog = new DialogWindow
         {
             DataContext = dataContext,
-            Owner = _app.MainWindow,
+            Owner = app.GetActiveWindow(),
         };
 
         dialog.Show();
@@ -46,7 +42,23 @@ internal sealed class DialogService : IDialogService
         var dialog = new DialogWindow
         {
             DataContext = dataContext,
-            Owner = _app.MainWindow,
+            Owner = app.GetActiveWindow(),
+        };
+
+        dialog.ShowDialog();
+    }
+
+    public void ShowHumanVerificationDialog(IDialogViewModel dataContext)
+    {
+        var properties = new CoreWebView2CreationProperties
+        {
+            UserDataFolder = appConfig.WebView2DataPath,
+        };
+
+        var dialog = new HumanVerificationDialogWindow(properties)
+        {
+            DataContext = dataContext,
+            Owner = app.GetActiveWindow(),
         };
 
         dialog.ShowDialog();

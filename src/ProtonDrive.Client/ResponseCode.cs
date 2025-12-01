@@ -32,6 +32,7 @@ public enum ResponseCode
     OutdatedApp = 5003,
     Offline = 7001,
     IncorrectLoginCredentials = 8002,
+    HumanVerificationRequired = 9001,
 
     /// <summary>
     /// Account is disabled

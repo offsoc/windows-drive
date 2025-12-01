@@ -37,6 +37,7 @@
     <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
+    <PackageReference Include="Microsoft.Web.WebView2" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
     <PackageReference Include="morelinq" />
     <PackageReference Include="System.Drawing.Common" />

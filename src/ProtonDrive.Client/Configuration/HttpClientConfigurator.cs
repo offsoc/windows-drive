@@ -4,6 +4,7 @@ using Polly.Extensions.Http;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Cryptography.TimeProvision;
 using ProtonDrive.Client.Offline;
+using ProtonDrive.Shared.HumanVerification;
 using ProtonDrive.Shared.Net.Http;
 
 namespace ProtonDrive.Client.Configuration;
@@ -31,6 +32,7 @@ public static class HttpClientConfigurator
         bool useOfflinePolicy = true)
     {
         builder
+            .AddHttpMessageHandler<HumanVerificationHandler>()
             .AddHttpMessageHandler<TooManyRequestsHandler>()
             .AddHttpMessageHandler<ChunkedTransferEncodingHandler>()
             .AddHttpMessageHandler<AuthorizationHandler>();

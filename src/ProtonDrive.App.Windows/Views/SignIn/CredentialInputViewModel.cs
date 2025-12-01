@@ -19,7 +19,10 @@ internal sealed class CredentialInputViewModel : SessionWorkflowStepWithPassword
     private string? _username;
     private bool _usernameFieldMustBeFocused = true;
 
-    public CredentialInputViewModel(IAuthenticationService authenticationService, IExternalHyperlinks externalHyperlinks, DispatcherScheduler scheduler)
+    public CredentialInputViewModel(
+        IAuthenticationService authenticationService,
+        IExternalHyperlinks externalHyperlinks,
+        DispatcherScheduler scheduler)
         : base(authenticationService)
     {
         _externalHyperlinks = externalHyperlinks;
@@ -28,15 +31,11 @@ internal sealed class CredentialInputViewModel : SessionWorkflowStepWithPassword
         _signInCommand = new AsyncRelayCommand(SignInAsync, CanSignIn);
         ResetPasswordCommand = new RelayCommand(ResetPassword);
         CreateAccountCommand = new RelayCommand(CreateAccount);
-        OpenPrivacyPolicyCommand = new RelayCommand(OpenPrivacyPolicy);
-        OpenTermsAndConditionsCommand = new RelayCommand(OpenTermsAndConditions);
     }
 
     public ICommand SignInCommand => _signInCommand;
     public ICommand ResetPasswordCommand { get; }
     public ICommand CreateAccountCommand { get; }
-    public ICommand OpenPrivacyPolicyCommand { get; }
-    public ICommand OpenTermsAndConditionsCommand { get; }
 
     public bool FirstLoginAttempt { get; set; }
 
@@ -113,16 +112,6 @@ internal sealed class CredentialInputViewModel : SessionWorkflowStepWithPassword
     private void ResetPassword()
     {
         _externalHyperlinks.ResetPassword.Open();
-    }
-
-    private void OpenPrivacyPolicy()
-    {
-        _externalHyperlinks.PrivacyPolicy.Open();
-    }
-
-    private void OpenTermsAndConditions()
-    {
-        _externalHyperlinks.TermsAndConditions.Open();
     }
 
     private bool CanSignIn()

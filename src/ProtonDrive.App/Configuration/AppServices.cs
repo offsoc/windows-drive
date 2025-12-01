@@ -52,6 +52,7 @@ using ProtonDrive.Shared.Devices;
 using ProtonDrive.Shared.Diagnostics;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.Features;
+using ProtonDrive.Shared.HumanVerification;
 using ProtonDrive.Shared.Net.Http;
 using ProtonDrive.Shared.Net.Http.TlsPinning;
 using ProtonDrive.Shared.Offline;
@@ -96,6 +97,7 @@ public static class AppServices
 
                 .AddSingleton<TooManyRequestsBlockedEndpoints>()
                 .AddTransient<TooManyRequestsHandler>()
+                .AddTransient<HumanVerificationHandler>()
 
                 .AddAppUpdateConfig()
                 .AddAppUpdate()

@@ -45,9 +45,9 @@ internal sealed class ForkingSessionUrlOpener : IForkingSessionUrlOpener
         {
             urlWithSessionSelector =
                 new UriBuilder(url)
-                    {
-                        Fragment = "selector=" + sessionSelector,
-                    }
+                {
+                    Fragment = "selector=" + sessionSelector,
+                }
                     .Uri
                     .AbsoluteUri;
         }

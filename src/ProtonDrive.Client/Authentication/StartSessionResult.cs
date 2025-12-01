@@ -11,7 +11,6 @@ public sealed class StartSessionResult
     public string? UserEmailAddress { get; private init; }
     public ApiResponse Response { get; private init; } = ApiResponse.Success;
     public MultiFactorAuthenticationParameters? MultiFactor { get; private set; }
-
     public bool IsSuccess => Code == StartSessionResultCode.Success;
 
     public static StartSessionResult Failure(StartSessionResultCode code, ApiResponse? response = null)
