@@ -60,9 +60,16 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
     }
 
     /// <summary>
-    /// Session ended implicitly.
+    /// Session started.
+    /// The event is raised when resumed the persisted session or started a new one.
     /// </summary>
-    public event EventHandler<ApiResponse>? SessionEnded;
+    public event EventHandler<StartSessionResult>? SessionStarted;
+
+    /// <summary>
+    /// Session ended implicitly (the API closed the session).
+    /// The event is not raised when session ends explicitly (by the request from the app or user).
+    /// </summary>
+    public event EventHandler<ApiResponse>? SessionEndedImplicitly;
 
     private Session? Session
     {
@@ -444,9 +451,15 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
 
         Session = session;
 
-        return session == null
-            ? StartSessionResult.Failure(StartSessionResultCode.SignInRequired, response)
-            : StartSessionResult.Success(session);
+        if (session == null)
+        {
+            return StartSessionResult.Failure(StartSessionResultCode.SignInRequired, response);
+        }
+
+        var result = StartSessionResult.Success(session);
+        OnSessionStarted(result);
+
+        return result;
     }
 
     private Task EndSessionInternalAsync(CancellationToken cancellationToken)
@@ -486,9 +499,14 @@ internal sealed class AuthenticationService : IAuthenticationService, ISessionPr
         }
     }
 
+    private void OnSessionStarted(StartSessionResult result)
+    {
+        SessionStarted?.Invoke(this, result);
+    }
+
     private void OnSessionEnded(ApiResponse reason)
     {
-        SessionEnded?.Invoke(this, reason);
+        SessionEndedImplicitly?.Invoke(this, reason);
     }
 
     private Session? GetPersistedSession()

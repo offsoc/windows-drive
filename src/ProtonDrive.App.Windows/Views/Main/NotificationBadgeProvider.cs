@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using ProtonDrive.App.Account;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Onboarding;
@@ -142,11 +141,11 @@ internal sealed class NotificationBadgeProvider
         Schedule(() => RefreshSyncFolderNotificationBadges(changeType, folder));
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
         _isStorageOptimizationFeatureBadgeEnabled =
-            features.IsEnabled(Feature.DriveWindowsStorageOptimizationNewFeatureBadge) &&
-            !features.IsEnabled(Feature.DriveWindowsStorageOptimizationDisabled);
+            features[Feature.DriveWindowsStorageOptimizationNewFeatureBadge] &&
+            !features[Feature.DriveWindowsStorageOptimizationDisabled];
 
         Schedule(() => RefreshSharedWithMeNotificationBadge(features));
         Schedule(RefreshStorageOptimizationOnboardingBadge);
@@ -163,9 +162,9 @@ internal sealed class NotificationBadgeProvider
         Schedule(() => RefreshPhotosOnboardingBadge(value));
     }
 
-    private void RefreshSharedWithMeNotificationBadge(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    private void RefreshSharedWithMeNotificationBadge(IReadOnlyDictionary<Feature, bool> features)
     {
-        _sharingFeatureIsDisabled = features.IsEnabled(Feature.DriveSharingDisabled) || features.IsEnabled(Feature.DriveSharingEditingDisabled);
+        _sharingFeatureIsDisabled = features[Feature.DriveSharingDisabled] || features[Feature.DriveSharingEditingDisabled];
         SharedWithMeNotificationBadge = GetSharedWithMeNotificationBadge();
     }
 

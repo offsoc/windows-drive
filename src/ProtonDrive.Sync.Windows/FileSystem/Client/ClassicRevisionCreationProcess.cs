@@ -34,8 +34,9 @@ internal class ClassicRevisionCreationProcess : IRevisionCreationProcess<long>
     public NodeInfo<long> FileInfo { get; }
     public NodeInfo<long> BackupInfo { get; set; } = NodeInfo<long>.Empty();
     public bool ImmediateHydrationRequired => true;
+    public bool CanGetContentStream => true;
 
-    public async Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
+    public Stream GetContentStream()
     {
         if (_contentWritingStream is not null)
         {
@@ -44,19 +45,28 @@ internal class ClassicRevisionCreationProcess : IRevisionCreationProcess<long>
 
         try
         {
-            _contentWritingStream = new SafeFileStream(_file.OpenWrite(ownsHandle: false), FileInfo.Id);
+            var stream = new SafeFileStream(_file.OpenWrite(ownsHandle: false), FileInfo.Id);
 
-            if (_progressCallback is not null)
+            if (_finalInfo.Size >= 0)
             {
-                _contentWritingStream = new ProgressReportingStream(_contentWritingStream, _progressCallback);
+                // Reserve disk space to prevent failure while writing file content
+                stream.SetLength(_finalInfo.Size);
             }
 
-            await CopyFileContentAsync(_contentWritingStream, source, cancellationToken).ConfigureAwait(false);
+            _contentWritingStream = _progressCallback is not null ? new WriteOnlyProgressReportingStream(stream, _progressCallback) : stream;
+
+            return _contentWritingStream;
         }
         catch (Exception ex) when (ExceptionMapping.TryMapException(ex, FileInfo.Id, FileInfo.Id != 0, out var mappedException))
         {
             throw mappedException;
         }
+    }
+
+    public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
+    {
+        var destination = GetContentStream();
+        return CopyFileContentAsync(destination, source, cancellationToken);
     }
 
     public Task<NodeInfo<long>> FinishAsync(CancellationToken cancellationToken)
@@ -99,15 +109,7 @@ internal class ClassicRevisionCreationProcess : IRevisionCreationProcess<long>
 
     private static async Task CopyFileContentAsync(Stream destination, Stream source, CancellationToken cancellationToken)
     {
-        // The Drive encrypted file read stream can report Length value different from the length of the unencrypted data.
-        destination.SetLength(source.Length);
         await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
-
-        // Set the Length to the real number of bytes copied.
-        if (destination.Position != destination.Length)
-        {
-            destination.SetLength(destination.Position);
-        }
 
         // Destination should be flushed but not closed so that the local file remains locked.
         // It is needed to set last write time and read the file metadata before releasing the file lock.
@@ -116,6 +118,12 @@ internal class ClassicRevisionCreationProcess : IRevisionCreationProcess<long>
 
     private NodeInfo<long> FinishRevisionCreation()
     {
+        if (_contentWritingStream != null && _contentWritingStream.Position != _contentWritingStream.Length)
+        {
+            // Truncate the file to the real number of bytes written
+            _contentWritingStream.SetLength(_contentWritingStream.Position);
+        }
+
         _file.SetLastWriteTime(_finalInfo);
         _file.SetAttributes(_finalInfo);
 

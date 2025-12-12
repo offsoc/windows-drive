@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Headers;
-using ProtonDrive.Client.Configuration;
 
-namespace ProtonDrive.Client;
+namespace ProtonDrive.Client.Configuration;
 
 internal static class HttpRequestHeadersExtensions
 {

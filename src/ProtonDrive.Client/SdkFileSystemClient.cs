@@ -1,3 +1,10 @@
+using Proton.Drive.Sdk;
+using Proton.Drive.Sdk.Nodes;
+using ProtonDrive.Client.FileUploading;
+using ProtonDrive.Client.MediaTypes;
+using ProtonDrive.Client.RemoteNodes;
+using ProtonDrive.Shared;
+using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
 
@@ -5,15 +12,30 @@ namespace ProtonDrive.Client;
 
 /// <summary>
 /// This client uses the Proton Drive SDK to access the remote file system.
-/// This client allows the hybrid client to be created even when the SDK implementation is not yet fully available.
 /// </summary>
-internal sealed class SdkFileSystemClient : IFileSystemClient<string>
+internal sealed class SdkFileSystemClient : RemoteFileSystemClientBase, IFileSystemClient<string>
 {
-    private readonly FileSystemClientParameters _parameters;
+    private readonly ProtonDriveClient _sdkClient;
+    private readonly IFileContentTypeProvider _fileContentTypeProvider;
 
-    public SdkFileSystemClient(FileSystemClientParameters parameters)
+    private readonly string _volumeId;
+    private readonly string? _virtualParentId;
+    private readonly string? _linkId;
+
+    public SdkFileSystemClient(
+        FileSystemClientParameters parameters,
+        ProtonDriveClient sdkClient,
+        IFileContentTypeProvider fileContentTypeProvider,
+        IRemoteNodeService remoteNodeService,
+        ILinkApiClient linkApiClient)
+    : base(parameters, linkApiClient, remoteNodeService, fileContentTypeProvider)
     {
-        _parameters = parameters;
+        _sdkClient = sdkClient;
+        _fileContentTypeProvider = fileContentTypeProvider;
+
+        _volumeId = parameters.VolumeId;
+        _virtualParentId = parameters.VirtualParentId;
+        _linkId = parameters.LinkId;
     }
 
     public void Connect(string syncRootPath, IFileHydrationDemandHandler<string> fileHydrationDemandHandler)
@@ -41,7 +63,7 @@ internal sealed class SdkFileSystemClient : IFileSystemClient<string>
         throw new NotSupportedException("SDK client implementation is not yet available");
     }
 
-    public Task<IRevisionCreationProcess<string>> CreateFile(
+    public async Task<IRevisionCreationProcess<string>> CreateFile(
         NodeInfo<string> info,
         string? tempFileName,
         IThumbnailProvider thumbnailProvider,
@@ -49,15 +71,89 @@ internal sealed class SdkFileSystemClient : IFileSystemClient<string>
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        EnsureParentId(info.ParentId);
+        Ensure.NotNullOrEmpty(info.Name, nameof(info), nameof(info.Name));
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        CheckParentFolder(await GetRemoteNodeAsync(info.ParentId, cancellationToken).ConfigureAwait(false));
+
+        if (!NodeUid.TryParse($"{_volumeId}~{info.ParentId}", out var parentNodeUid))
+        {
+            throw new FileSystemClientException("Invalid parent node UID", FileSystemErrorCode.Unknown);
+        }
+
+        var mediaType = _fileContentTypeProvider.GetContentType(info.Name);
+
+        var metadata = await fileMetadataProvider.GetMetadataAsync().ConfigureAwait(false);
+
+        var fileUploader = await _sdkClient
+            .GetFileUploaderAsync(
+                parentNodeUid.Value,
+                info.Name,
+                mediaType,
+                info.Size,
+                info.LastWriteTimeUtc,
+                metadata.ConvertToAdditionalMetadataProperties(),
+                overrideExistingDraftByOtherClient: false,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        try
+        {
+            return new SdkRemoteRevisionCreationProcess(
+                fileUploader,
+                info,
+                thumbnailProvider,
+                progressCallback);
+        }
+        catch
+        {
+            fileUploader.Dispose();
+            throw;
+        }
     }
 
-    public Task<IRevision> OpenFileForReading(NodeInfo<string> info, CancellationToken cancellationToken)
+    public async Task<IRevision> OpenFileForReading(NodeInfo<string> info, CancellationToken cancellationToken)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        EnsureId(info.Id);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var remoteFile = ToRemoteFile(await GetRemoteNodeAsync(info.Id, cancellationToken).ConfigureAwait(false));
+
+        CheckMetadata(remoteFile, info);
+        CheckLink(remoteFile, info);
+
+        // Revision ID was not tracked in app versions before 1.4.0, fall back to the current active revision
+        var revisionId = info.RevisionId ?? remoteFile.ActiveRevision?.Id;
+
+        if (!RevisionUid.TryParse(_volumeId + "~" + info.Id + "~" + revisionId, out var revisionUid))
+        {
+            throw new FileSystemClientException(
+                "Invalid file revision UID",
+                FileSystemErrorCode.Unknown);
+        }
+
+        var fileDownloader = await _sdkClient.GetFileDownloaderAsync(revisionUid.Value, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            return new SdkRemoteFileRevision(
+                fileDownloader,
+                remoteFile.CreationTime,
+                remoteFile.ModificationTime,
+                remoteFile.ExtendedAttributes,
+                remoteFile.SizeOnStorage);
+        }
+        catch
+        {
+            fileDownloader.Dispose();
+            throw;
+        }
     }
 
-    public Task<IRevisionCreationProcess<string>> CreateRevision(
+    public async Task<IRevisionCreationProcess<string>> CreateRevision(
         NodeInfo<string> info,
         long size,
         DateTime lastWriteTime,
@@ -67,7 +163,55 @@ internal sealed class SdkFileSystemClient : IFileSystemClient<string>
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        EnsureId(info.Id);
+
+        if (string.IsNullOrEmpty(info.RevisionId))
+        {
+            // File revision was not used in older app versions, its ID value might be missing.
+            // We respond with metadata mismatch error, so that the remote file system adapter knows to refresh the file metadata.
+            throw new FileSystemClientException<string>("File active revision is unknown", FileSystemErrorCode.MetadataMismatch, info.Id);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var remoteFile = ToRemoteFile(await GetRemoteNodeAsync(info.Id, cancellationToken).ConfigureAwait(false));
+        CheckMetadata(remoteFile, info);
+        CheckLink(remoteFile, info);
+
+        if (!RevisionUid.TryParse($"{_volumeId}~{info.Id}~{info.RevisionId}", out var activeRevisionUid))
+        {
+            throw new FileSystemClientException("Invalid active revision UID", FileSystemErrorCode.Unknown);
+        }
+
+        var metadata = await fileMetadataProvider.GetMetadataAsync().ConfigureAwait(false);
+
+        var fileUploader = await _sdkClient
+            .GetFileRevisionUploaderAsync(
+                activeRevisionUid.Value,
+                size,
+                lastWriteTime,
+                metadata.ConvertToAdditionalMetadataProperties(),
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        try
+        {
+            var nodeInfo = info.Copy()
+                .WithParentId(_linkId is null ? remoteFile.ParentId : _virtualParentId)
+                .WithSize(size)
+                .WithLastWriteTimeUtc(lastWriteTime);
+
+            return new SdkRemoteRevisionCreationProcess(
+                fileUploader,
+                nodeInfo,
+                thumbnailProvider,
+                progressCallback);
+        }
+        catch
+        {
+            fileUploader.Dispose();
+            throw;
+        }
     }
 
     public Task MoveAsync(IReadOnlyList<NodeInfo<string>> sourceNodes, NodeInfo<string> destinationInfo, CancellationToken cancellationToken)
@@ -92,16 +236,21 @@ internal sealed class SdkFileSystemClient : IFileSystemClient<string>
 
     public Task DeleteRevision(NodeInfo<string> info, CancellationToken cancellationToken)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        throw new NotSupportedException();
     }
 
     public void SetInSyncState(NodeInfo<string> info)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        throw new NotSupportedException();
     }
 
     public Task HydrateFileAsync(NodeInfo<string> info, CancellationToken cancellationToken)
     {
-        throw new NotSupportedException("SDK client implementation is not yet available");
+        throw new NotSupportedException();
+    }
+
+    private static void CheckParentFolder(RemoteNode remoteNode)
+    {
+        ToRemoteFolder(remoteNode);
     }
 }

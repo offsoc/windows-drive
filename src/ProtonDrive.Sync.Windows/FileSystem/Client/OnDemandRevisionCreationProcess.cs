@@ -20,7 +20,12 @@ internal sealed class OnDemandRevisionCreationProcess : IRevisionCreationProcess
 
     public bool ImmediateHydrationRequired => false;
 
-    public IThumbnailProvider? ThumbnailProvider { get; set; }
+    public bool CanGetContentStream => false;
+
+    public Stream GetContentStream()
+    {
+        throw new NotSupportedException();
+    }
 
     public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {

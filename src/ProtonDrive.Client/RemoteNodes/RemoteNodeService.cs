@@ -348,7 +348,7 @@ internal sealed class RemoteNodeService : IRemoteNodeService
             return PgpVerificationStatus.NotSigned;
         }
 
-        var (sessionKeyToken, _) = contentSessionKey.Export();
+        var sessionKeyToken = contentSessionKey.Export();
         var signatureBytes = Encoding.ASCII.GetBytes(signature);
         var verificationVerdict = decrypter.Verify(sessionKeyToken, signatureBytes);
 

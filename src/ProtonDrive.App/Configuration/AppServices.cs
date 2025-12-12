@@ -458,12 +458,15 @@ public static class AppServices
                 .AddSingleton<TransferPerformanceMeter>()
                 .AddSingleton<ISyncActivityAware>(provider => provider.GetRequiredService<TransferPerformanceMeter>())
                 .AddSingleton<IAccountSwitchingAware>(provider => provider.GetRequiredService<TransferPerformanceMeter>())
+                .AddSingleton<IFeatureFlagsAware>(provider => provider.GetRequiredService<TransferPerformanceMeter>())
 
                 .AddSingleton<GenericFileTransferMetricsFactory>()
                 .AddSingleton<GenericTransferPerformanceMetricsFactory>()
 
                 .AddSingleton<ObservabilityService>()
+                .AddSingleton<IUserStateAware>(provider => provider.GetRequiredService<ObservabilityService>())
                 .AddSingleton<IRemoteSettingsAware>(provider => provider.GetRequiredService<ObservabilityService>())
+                .AddSingleton<IStoppableService>(provider => provider.GetRequiredService<ObservabilityService>())
 
                 .AddSingleton<SyncedItemCounters>()
                 .AddSingleton<SharedWithMeItemCounters>()

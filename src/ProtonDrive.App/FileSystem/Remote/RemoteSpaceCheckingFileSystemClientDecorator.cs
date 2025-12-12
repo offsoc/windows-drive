@@ -34,6 +34,7 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
         {
             var creationProcess = await base.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken)
                 .ConfigureAwait(false);
+
             return new StorageReservingRevisionCreationProcessDecorator(creationProcess, storageReservation, _userService);
         }
         catch
@@ -67,6 +68,7 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
                     progressCallback,
                     cancellationToken)
                 .ConfigureAwait(false);
+
             return new StorageReservingRevisionCreationProcessDecorator(creationProcess, storageReservation, _userService);
         }
         catch
@@ -89,8 +91,10 @@ internal sealed class RemoteSpaceCheckingFileSystemClientDecorator : FileSystemC
 
             var numberOfBlocksInFile = (fileSize + Constants.FileBlockSize - 1) / Constants.FileBlockSize;
 
-            var estimatedEncryptedFileSize = fileSize + (numberOfBlocksInFile * Constants.MaxBlockEncryptionOverhead)
-                                                      + (Constants.MaxThumbnailSize + Constants.MaxBlockEncryptionOverhead);
+            var estimatedEncryptedFileSize = fileSize +
+                (numberOfBlocksInFile * Constants.MaxBlockEncryptionOverhead) +
+                Constants.MaxSmallThumbnailSizeOnRemote +
+                Constants.MaxLargeThumbnailSizeOnRemote;
 
             var availableSpace = user.MaxSpace - user.UsedSpace;
 

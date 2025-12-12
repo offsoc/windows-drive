@@ -5,8 +5,8 @@ using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Client.MediaTypes;
 using ProtonDrive.Client.RemoteNodes;
+using ProtonDrive.Client.Sdk;
 using ProtonDrive.Client.Volumes;
-using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Devices;
 using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.Reporting;
@@ -17,7 +17,6 @@ namespace ProtonDrive.Client;
 internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFactory
 {
     private readonly DriveApiConfig _driveApi;
-    private readonly LocalFeatureFlags _localFeatureFlags;
     private readonly IFeatureFlagProvider _featureFlagProvider;
     private readonly IFileContentTypeProvider _fileContentTypeProvider;
     private readonly IClientInstanceIdentityProvider _clientInstanceIdentityProvider;
@@ -27,6 +26,7 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
     private readonly IFileApiClient _fileApiClient;
     private readonly IPhotoApiClient _photoApiClient;
     private readonly IVolumeApiClient _volumeApiClient;
+    private readonly ISdkClientFactory _sdkClientFactory;
     private readonly ICryptographyService _cryptographyService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IRevisionSealerFactory _revisionSealerFactory;
@@ -37,7 +37,6 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
 
     public RemoteFileSystemClientFactory(
         DriveApiConfig driveApi,
-        LocalFeatureFlags localFeatureFlags,
         IFeatureFlagProvider featureFlagProvider,
         IFileContentTypeProvider fileContentTypeProvider,
         IClientInstanceIdentityProvider clientInstanceIdentityProvider,
@@ -47,6 +46,7 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
         IFileApiClient fileApiClient,
         IPhotoApiClient photoApiClient,
         IVolumeApiClient volumeApiClient,
+        ISdkClientFactory sdkClientFactory,
         ICryptographyService cryptographyService,
         IHttpClientFactory httpClientFactory,
         IRevisionSealerFactory revisionSealerFactory,
@@ -56,7 +56,6 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
         IErrorReporting errorReporting)
     {
         _driveApi = driveApi;
-        _localFeatureFlags = localFeatureFlags;
         _featureFlagProvider = featureFlagProvider;
         _fileContentTypeProvider = fileContentTypeProvider;
         _clientInstanceIdentityProvider = clientInstanceIdentityProvider;
@@ -66,6 +65,7 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
         _fileApiClient = fileApiClient;
         _photoApiClient = photoApiClient;
         _volumeApiClient = volumeApiClient;
+        _sdkClientFactory = sdkClientFactory;
         _cryptographyService = cryptographyService;
         _httpClientFactory = httpClientFactory;
         _revisionSealerFactory = revisionSealerFactory;
@@ -77,11 +77,16 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
 
     public IFileSystemClient<string> CreateClient(FileSystemClientParameters parameters)
     {
+        if (parameters.IsPhotoClient)
+        {
+            return CreateLegacyClient(parameters);
+        }
+
         // The hybrid client will selectively use the legacy and the SDK client based on feature flags per operation
         var legacyClient = CreateLegacyClient(parameters);
         var sdkClient = CreateSdkClient(parameters);
 
-        return new HybridRemoteFileSystemClient(_localFeatureFlags, _featureFlagProvider, legacyClient, sdkClient);
+        return new HybridRemoteFileSystemClient(_featureFlagProvider, legacyClient, sdkClient);
     }
 
     private RemoteFileSystemClient CreateLegacyClient(FileSystemClientParameters parameters)
@@ -103,12 +108,16 @@ internal sealed class RemoteFileSystemClientFactory : IRemoteFileSystemClientFac
             _revisionManifestCreator,
             _blockVerifierFactory,
             _loggerFactory,
-            _reportBlockVerificationOrDecryptionFailure
-        );
+            _reportBlockVerificationOrDecryptionFailure);
     }
 
     private SdkFileSystemClient CreateSdkClient(FileSystemClientParameters parameters)
     {
-        return new SdkFileSystemClient(parameters);
+        return new SdkFileSystemClient(
+            parameters,
+            _sdkClientFactory.GetOrCreateClient(),
+            _fileContentTypeProvider,
+            _remoteNodeService,
+            _linkApiClient);
     }
 }

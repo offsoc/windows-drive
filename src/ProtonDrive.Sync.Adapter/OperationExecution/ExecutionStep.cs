@@ -146,7 +146,7 @@ internal sealed class ExecutionStep<TId, TAltId>
         // Invoking progress callback changes sync activity stage from Preparation into Execution
         progressCallback.Invoke(Progress.Zero);
 
-        await destinationRevision.WriteContentAsync(sourceRevision.GetContentStream(), cancellationToken).ConfigureAwait(false);
+        await sourceRevision.CopyContentToAsync(destinationRevision, cancellationToken).ConfigureAwait(false);
 
         return await FinalizeAsync(destinationRevision, updateDetection, cancellationToken).ConfigureAwait(false);
     }

@@ -31,6 +31,7 @@ internal sealed class FileRevision : IRevision
     }
 
     public long Size { get; }
+    public bool CanGetContentStream => true;
     public DateTime CreationTimeUtc { get; }
     public DateTime LastWriteTimeUtc { get; }
 
@@ -61,6 +62,11 @@ internal sealed class FileRevision : IRevision
                 throw mappedException;
             }
         }
+    }
+
+    public Task CopyContentToAsync(Stream destination, CancellationToken cancellationToken)
+    {
+        return GetContentStream().CopyToAsync(destination, cancellationToken);
     }
 
     public Task<ReadOnlyMemory<byte>?> TryGetThumbnailAsync(int numberOfPixelsOnLargestSide, int maxNumberOfBytes, CancellationToken cancellationToken)

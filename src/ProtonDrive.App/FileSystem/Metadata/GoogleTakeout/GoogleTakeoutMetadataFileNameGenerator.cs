@@ -2,6 +2,8 @@
 
 internal static class GoogleTakeoutMetadataFileNameGenerator
 {
+    public const int GoogleTakeoutFileNameMaxLength = 45;
+
     public static IEnumerable<string> GetFileNameCandidates(string fileName)
     {
         const string metadataFileExtension = ".supplemental-metadata";
@@ -17,11 +19,17 @@ internal static class GoogleTakeoutMetadataFileNameGenerator
 
         yield return fileName + metadataFileExtension + jsonExtension;
 
-        yield return fileName + jsonExtension;
-
-        for (var i = 1; i < metadataFileExtension.Length; i++)
+        for (var i = 1; i <= metadataFileExtension.Length; i++)
         {
             yield return fileName + metadataFileExtension[..^i] + jsonExtension;
+        }
+
+        if (fileName.Length > GoogleTakeoutFileNameMaxLength)
+        {
+            for (var i = 1; i < fileName.Length - GoogleTakeoutFileNameMaxLength; i++)
+            {
+                yield return fileName[..^i] + jsonExtension;
+            }
         }
     }
 }

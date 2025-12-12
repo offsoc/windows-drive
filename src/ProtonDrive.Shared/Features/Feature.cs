@@ -15,4 +15,6 @@ public enum Feature
     DriveWindowsSdkUploadMain,
     DriveWindowsSdkDownloadMain,
     DriveWindowsSdkUploadPhoto,
+    DriveCryptoEncryptBlocksWithPgpAead,
+    DriveCryptoEncryptBlocksWithPgpAeadDisabled,
 }

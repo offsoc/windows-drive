@@ -8,6 +8,6 @@ public interface IFeatureFlagsAware
     /// <summary>
     /// Called when feature flags have changed.
     /// </summary>
-    /// <param name="features">The collection of features and their current enabled state.</param>
-    void OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features);
+    /// <param name="features">The dictionary of features with their current enabled state.</param>
+    void OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features);
 }

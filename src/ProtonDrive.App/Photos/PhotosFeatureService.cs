@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Volumes;
@@ -69,10 +68,10 @@ internal sealed class PhotosFeatureService : IStartableService, IStoppableServic
         ScheduleExternalStateChangeHandling();
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
-        _importFeatureIsRemotelyEnabled = features.IsEnabled(Feature.DriveWindowsPhotoImport);
-        _featureIsReadOnly = features.IsEnabled(Feature.DrivePhotosUploadDisabled) || features.IsEnabled(Feature.DriveAlbumsDisabled);
+        _importFeatureIsRemotelyEnabled = features[Feature.DriveWindowsPhotoImport];
+        _featureIsReadOnly = features[Feature.DrivePhotosUploadDisabled] || features[Feature.DriveAlbumsDisabled];
         ScheduleExternalStateChangeHandling();
     }
 

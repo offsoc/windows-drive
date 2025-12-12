@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Drive.Services.Shared;
 using ProtonDrive.App.Drive.Services.SharedWithMe;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Sync;
@@ -155,14 +154,17 @@ internal sealed class SharedWithMeListViewModel : SortableListViewModel, ISyncFo
 
     public async Task LoadDataAsync()
     {
+        _logger.LogDebug("Loading shared with me data...");
+
         await _initializeData.Value.ConfigureAwait(true);
 
         // TODO:
         // Replace this workaround when global and volume-based events are implemented.
         // Its purpose is to mitigate potential server strain caused by frequent refreshes.
         var isCooldownActive = DateTime.UtcNow - _lastRefreshTime < _refreshCooldownDuration;
-        if (isCooldownActive)
+        if (isCooldownActive && Items.Count > 0)
         {
+            _logger.LogDebug("Cooldown active, skip shared with me data refresh");
             return;
         }
 
@@ -187,11 +189,11 @@ internal sealed class SharedWithMeListViewModel : SortableListViewModel, ISyncFo
             });
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
         Schedule(
             () =>
-                IsFeatureDisabled = features.IsEnabled(Feature.DriveSharingDisabled) || features.IsEnabled(Feature.DriveSharingEditingDisabled));
+                IsFeatureDisabled = features[Feature.DriveSharingDisabled] || features[Feature.DriveSharingEditingDisabled]);
     }
 
     void ISyncStateAware.OnSyncStateChanged(SyncState value)

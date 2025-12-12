@@ -4,7 +4,6 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Settings;
@@ -75,9 +74,9 @@ internal sealed class FolderListViewModel : ObservableObject, ISyncFoldersAware,
         private set => SetProperty(ref _isStorageOptimizationFeatureEnabled, value);
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
-        IsStorageOptimizationFeatureEnabled = !features.IsEnabled(Feature.DriveWindowsStorageOptimizationDisabled);
+        IsStorageOptimizationFeatureEnabled = !features[Feature.DriveWindowsStorageOptimizationDisabled];
         Schedule(ToggleStorageOptimizationCommand.NotifyCanExecuteChanged);
     }
 

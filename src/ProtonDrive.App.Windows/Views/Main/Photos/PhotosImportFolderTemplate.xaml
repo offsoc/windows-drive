@@ -131,6 +131,7 @@
                     Visibility="{Binding ImportStatus, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={x:Static import:PhotoImportFolderStatus.Importing}}"
                     Margin="10,0,0,0">
                     <TextBlock
+                        AutomationProperties.AutomationId="PhotoImportInProgressStatusTextBlock"
                         TextTrimming="CharacterEllipsis"
                         VerticalAlignment="Center">
                         <TextBlock.Text>
@@ -147,6 +148,7 @@
                     Visibility="{Binding ImportStatus, Converter={x:Static converters:ObjectEqualityToVisibilityConverter.NotEqualIsCollapsed}, ConverterParameter={x:Static import:PhotoImportFolderStatus.Succeeded}}"
                     Margin="10,0,0,0">
                     <TextBlock
+                        AutomationProperties.AutomationId="PhotoImportSuccessStatusTextBlock"
                         Foreground="{StaticResource GrayBrush}"
                         TextTrimming="CharacterEllipsis"
                         ToolTip="{Binding Path=ImportStatus, Converter={x:Static converters:EnumToDisplayTextConverter.Instance}}"
@@ -194,6 +196,7 @@
                     Margin="10,0,0,0">
                     <Grid>
                         <TextBlock
+                            AutomationProperties.AutomationId="PhotoImportFailedStatusTextBlock"
                             TextTrimming="CharacterEllipsis"
                             ToolTip="{Binding Path=ImportStatus, Converter={x:Static converters:EnumToDisplayTextConverter.Instance}}"
                             VerticalAlignment="Center">
@@ -213,6 +216,7 @@
                     Margin="10,0,0,0">
                     <Grid>
                         <TextBlock
+                            AutomationProperties.AutomationId="PhotoImportSetupFailedStatusTextBlock"
                             TextTrimming="CharacterEllipsis"
                             ToolTip="{Binding Path=ImportStatus, Converter={x:Static converters:EnumToDisplayTextConverter.Instance}}"
                             VerticalAlignment="Center">
@@ -237,6 +241,7 @@
                     Margin="20,0,0,0" />
 
                 <Menu
+                    AutomationProperties.AutomationId="ImportedPhotoFolderMenu"
                     Grid.Column="6"
                     Background="Transparent"
                     KeyboardNavigation.DirectionalNavigation="Continue"

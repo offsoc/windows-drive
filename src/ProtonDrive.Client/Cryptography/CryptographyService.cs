@@ -225,7 +225,7 @@ internal sealed class CryptographyService : ICryptographyService
     {
         var sessionKey = PgpSessionKey.Generate();
         var keyPacket = publicKey.EncryptSessionKey(sessionKey);
-        var (sessionKeyToken, _) = sessionKey.Export();
+        var sessionKeyToken = sessionKey.Export();
         var sessionKeySignature = signatureKey.Sign(sessionKeyToken);
         var armoredSessionKeySignature = PgpArmorEncoder.Encode(sessionKeySignature, PgpBlockType.Signature);
 

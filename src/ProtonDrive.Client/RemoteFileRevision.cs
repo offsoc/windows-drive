@@ -17,6 +17,8 @@ internal sealed class RemoteFileRevision : IRevision
     }
 
     public long Size => _contentStream.Length;
+    public bool CanGetContentStream => false;
+
     public DateTime CreationTimeUtc { get; }
     public DateTime LastWriteTimeUtc { get; }
 
@@ -27,7 +29,12 @@ internal sealed class RemoteFileRevision : IRevision
 
     public Stream GetContentStream()
     {
-        return _contentStream;
+        throw new NotSupportedException();
+    }
+
+    public Task CopyContentToAsync(Stream destination, CancellationToken cancellationToken)
+    {
+        return _contentStream.CopyToAsync(destination, cancellationToken);
     }
 
     public bool TryGetFileHasChanged(out bool hasChanged)

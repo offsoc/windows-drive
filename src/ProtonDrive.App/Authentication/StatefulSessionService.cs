@@ -47,7 +47,7 @@ public class StatefulSessionService
         _sessionStateAware = sessionStateAware;
         _logger = logger;
 
-        _clientAuthenticationService.SessionEnded += OnClientAuthenticationServiceSessionEnded;
+        _clientAuthenticationService.SessionEndedImplicitly += OnClientAuthenticationServiceSessionEnded;
     }
 
     private SessionState State

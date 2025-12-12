@@ -1,9 +1,13 @@
-﻿namespace ProtonDrive.Client.Contracts;
+﻿using System.Text.Json.Serialization;
+
+namespace ProtonDrive.Client.Contracts;
 
 public sealed class MediaExtendedAttributes
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Width { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Height { get; set; }
 
     /// <summary>
@@ -14,5 +18,6 @@ public sealed class MediaExtendedAttributes
     /// <item><description>When writing the duration, store only whole seconds (discard any fractional part).</description></item>
     /// </list>
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Duration { get; set; }
 }

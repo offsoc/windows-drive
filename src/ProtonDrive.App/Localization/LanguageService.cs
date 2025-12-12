@@ -21,6 +21,7 @@ public sealed class LanguageService : ILanguageService, ILanguageProvider
         "pt-BR",
         "tr",
         "ru",
+        "da-DK",
         "be-BY",
         "cs-CZ",
         "ca-ES",

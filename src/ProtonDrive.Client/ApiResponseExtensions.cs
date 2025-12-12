@@ -1,9 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Net.Mime;
-using System.Net.Sockets;
 using System.Text.Json;
-using Polly.CircuitBreaker;
 
 namespace ProtonDrive.Client;
 
@@ -106,37 +104,9 @@ public static class ApiResponseExtensions
         {
             return await origin.ConfigureAwait(false);
         }
-        catch (BrokenCircuitException ex)
+        catch (Exception exception) when (ExceptionMapping.TryMapHttpClientException(exception, out var mappedException))
         {
-            throw new ApiException(ResponseCode.Offline, "API not available", ex);
-        }
-        catch (HttpRequestException ex) when (ex.StatusCode != null)
-        {
-            throw new ApiException(ex.StatusCode.Value, (ResponseCode)ex.StatusCode.Value, ex.Message, ex);
-        }
-        catch (HttpRequestException ex) when (ex.InnerException is SocketException socketException)
-        {
-            throw new ApiException(ToResponseCode(socketException), socketException.Message, ex);
-        }
-        catch (HttpRequestException ex)
-        {
-            throw new ApiException(ResponseCode.Unknown, ex.InnerException?.Message ?? ex.Message, ex);
-        }
-        catch (TimeoutException ex)
-        {
-            throw new ApiException(ResponseCode.Timeout, "API request timed out", ex);
-        }
-        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
-        {
-            throw new ApiException(ResponseCode.Timeout, "API request timed out", ex);
-        }
-        catch (NotSupportedException ex)
-        {
-            throw new ApiException(ResponseCode.Unknown, "API request failed", ex);
-        }
-        catch (JsonException ex)
-        {
-            throw new ApiException(ResponseCode.Unknown, "Failed to deserialize JSON content", ex);
+            throw mappedException;
         }
     }
 
@@ -179,15 +149,5 @@ public static class ApiResponseExtensions
         }
 
         return default;
-    }
-
-    private static ResponseCode ToResponseCode(SocketException exception)
-    {
-        return (exception.SocketErrorCode is SocketError.ConnectionRefused or
-                                             SocketError.ConnectionAborted or
-                                             SocketError.HostDown or
-                                             SocketError.TimedOut)
-            ? ResponseCode.ServerError
-            : ResponseCode.NetworkError;
     }
 }

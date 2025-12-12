@@ -1,4 +1,3 @@
-using ProtonDrive.Shared.Configuration;
 using ProtonDrive.Shared.Features;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -12,18 +11,15 @@ namespace ProtonDrive.Client;
 /// </summary>
 internal sealed class HybridRemoteFileSystemClient : IFileSystemClient<string>
 {
-    private readonly LocalFeatureFlags _localFeatureFlags;
     private readonly IFeatureFlagProvider _featureFlagProvider;
     private readonly IFileSystemClient<string> _legacyClient;
     private readonly IFileSystemClient<string> _sdkClient;
 
     public HybridRemoteFileSystemClient(
-        LocalFeatureFlags localFeatureFlags,
         IFeatureFlagProvider featureFlagProvider,
         IFileSystemClient<string> legacyClient,
         IFileSystemClient<string> sdkClient)
     {
-        _localFeatureFlags = localFeatureFlags;
         _featureFlagProvider = featureFlagProvider;
         _legacyClient = legacyClient;
         _sdkClient = sdkClient;
@@ -55,7 +51,7 @@ internal sealed class HybridRemoteFileSystemClient : IFileSystemClient<string>
         return await client.CreateFile(info, tempFileName, thumbnailProvider, fileMetadataProvider, progressCallback, cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<IRevisionCreationProcess<string>> CreateRevision(
+    public async Task<IRevisionCreationProcess<string>> CreateRevision(
         NodeInfo<string> info,
         long size,
         DateTime lastWriteTime,
@@ -65,7 +61,9 @@ internal sealed class HybridRemoteFileSystemClient : IFileSystemClient<string>
         Action<Progress>? progressCallback,
         CancellationToken cancellationToken)
     {
-        return _legacyClient.CreateRevision(
+        var client = await GetClientForMainUploadAsync(cancellationToken).ConfigureAwait(false);
+
+        return await client.CreateRevision(
             info,
             size,
             lastWriteTime,
@@ -73,12 +71,14 @@ internal sealed class HybridRemoteFileSystemClient : IFileSystemClient<string>
             thumbnailProvider,
             fileMetadataProvider,
             progressCallback,
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<IRevision> OpenFileForReading(NodeInfo<string> info, CancellationToken cancellationToken)
+    public async Task<IRevision> OpenFileForReading(NodeInfo<string> info, CancellationToken cancellationToken)
     {
-        return _legacyClient.OpenFileForReading(info, cancellationToken);
+        var client = await GetClientForMainDownloadAsync(cancellationToken).ConfigureAwait(false);
+
+        return await client.OpenFileForReading(info, cancellationToken).ConfigureAwait(false);
     }
 
     public Task<NodeInfo<string>> GetInfo(NodeInfo<string> info, CancellationToken cancellationToken)
@@ -133,8 +133,14 @@ internal sealed class HybridRemoteFileSystemClient : IFileSystemClient<string>
 
     private async Task<IFileSystemClient<string>> GetClientForMainUploadAsync(CancellationToken cancellationToken)
     {
-        _ = await _featureFlagProvider.IsEnabledAsync(Feature.DriveWindowsSdkUploadMain, cancellationToken).ConfigureAwait(false);
-        return _localFeatureFlags.DriveSdkEnabled
+        return await _featureFlagProvider.IsEnabledAsync(Feature.DriveWindowsSdkUploadMain, cancellationToken).ConfigureAwait(false)
+            ? _sdkClient
+            : _legacyClient;
+    }
+
+    private async Task<IFileSystemClient<string>> GetClientForMainDownloadAsync(CancellationToken cancellationToken)
+    {
+        return await _featureFlagProvider.IsEnabledAsync(Feature.DriveWindowsSdkDownloadMain, cancellationToken).ConfigureAwait(false)
             ? _sdkClient
             : _legacyClient;
     }

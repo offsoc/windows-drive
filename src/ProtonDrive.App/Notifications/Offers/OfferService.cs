@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using ProtonDrive.App.Account;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings.Remote;
 using ProtonDrive.Client.Contracts;
@@ -90,10 +89,10 @@ internal sealed class OfferService : IStoppableService, IAccountStateAware, IUse
         }
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
         var prevEnabled = _offersEnabled;
-        _offersEnabled = features.IsEnabled(Feature.DriveWindowsOffers);
+        _offersEnabled = features[Feature.DriveWindowsOffers];
 
         if (prevEnabled != _offersEnabled)
         {

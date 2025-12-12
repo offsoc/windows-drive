@@ -45,13 +45,18 @@ public static class HttpClientConfigurator
         }
 
         return builder
-            .AddPolicyHandler((provider, _) => GetRetryPolicy(provider, numberOfRetriesSelector))
+            .AddPolicyHandler((provider, requestMessage) => GetRetryPolicy(provider, requestMessage, numberOfRetriesSelector))
             .AddHttpMessageHandler<CryptographyTimeProvisionHandler>()
             .AddTimeoutHandler(provider => timeoutSelector.Invoke(provider.GetRequiredService<DriveApiConfig>()));
     }
 
-    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(IServiceProvider provider, Func<DriveApiConfig, int> numberOfRetriesSelector)
+    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(IServiceProvider provider, HttpRequestMessage requestMessage, Func<DriveApiConfig, int> numberOfRetriesSelector)
     {
+        if (requestMessage.GetRetryIsDisabled())
+        {
+            return Policy.NoOpAsync<HttpResponseMessage>();
+        }
+
         return HttpPolicyExtensions
             .HandleTransientHttpError()
             .Or<TimeoutException>() // Thrown by TimeoutHandler if the inner call times out

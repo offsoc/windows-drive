@@ -1,6 +1,9 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
+using ProtonDrive.App.Account;
 using ProtonDrive.App.Instrumentation.Observability.TransferPerformance;
+using ProtonDrive.App.Instrumentation.Telemetry.Synchronization;
+using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings.Remote;
 using ProtonDrive.Client;
 using ProtonDrive.Client.Instrumentation.Observability;
@@ -11,21 +14,24 @@ using ProtonDrive.Shared.Threading;
 
 namespace ProtonDrive.App.Instrumentation.Observability;
 
-internal sealed class ObservabilityService : IRemoteSettingsAware
+internal sealed class ObservabilityService : IUserStateAware, IRemoteSettingsAware, IStoppableService
 {
     private readonly IClock _clock;
     private readonly IObservabilityApiClient _observabilityApiClient;
     private readonly GenericFileTransferMetricsFactory _genericFileTransferMetricsFactory;
     private readonly GenericTransferPerformanceMetricsFactory _genericTransferPerformanceMetricsFactory;
+    private readonly IMetricsService _driveClientMetricsService;
     private readonly ILogger<ObservabilityService> _logger;
 
     private readonly CancellationHandle _cancellationHandle = new();
     private readonly TimeSpan _transferPerformanceReportInterval;
     private readonly TimeSpan _period;
+    private readonly SerialScheduler _scheduler = new();
 
     private PeriodicTimer _timer;
     private Task? _timerTask;
     private TickCount _nextTransferPerformanceReportTime;
+    private bool _userHasAPaidPlan;
 
     public ObservabilityService(
         AppConfig appConfig,
@@ -33,12 +39,14 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         IObservabilityApiClient observabilityApiClient,
         GenericFileTransferMetricsFactory genericFileTransferMetricsFactory,
         GenericTransferPerformanceMetricsFactory genericTransferPerformanceMetricsFactory,
+        IMetricsService driveClientMetricsService,
         ILogger<ObservabilityService> logger)
     {
         _clock = clock;
         _observabilityApiClient = observabilityApiClient;
         _genericFileTransferMetricsFactory = genericFileTransferMetricsFactory;
         _genericTransferPerformanceMetricsFactory = genericTransferPerformanceMetricsFactory;
+        _driveClientMetricsService = driveClientMetricsService;
         _logger = logger;
 
         _transferPerformanceReportInterval = appConfig.PeriodicTransferPerformanceReportInterval;
@@ -46,16 +54,33 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         _timer = new PeriodicTimer(_period);
     }
 
+    void IUserStateAware.OnUserStateChanged(UserState value)
+    {
+        _userHasAPaidPlan = value.SubscriptionPlanCode is not null && value.SubscriptionPlanCode != PeriodicReportConstants.FreePlan;
+    }
+
     void IRemoteSettingsAware.OnRemoteSettingsChanged(RemoteSettings settings)
     {
         if (settings.IsTelemetryEnabled)
         {
-            Start();
+            Schedule(Start);
         }
         else
         {
-            Stop();
+            Schedule(Stop);
         }
+    }
+
+    Task IStoppableService.StopAsync(CancellationToken cancellationToken)
+    {
+        Schedule(Stop);
+        return WaitForCompletionAsync();
+    }
+
+    internal Task WaitForCompletionAsync()
+    {
+        // Wait for all scheduled tasks to complete
+        return Schedule(() => { });
     }
 
     private void Start()
@@ -66,6 +91,7 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         }
 
         Clear();
+        _driveClientMetricsService.Start();
 
         _nextTransferPerformanceReportTime = _clock.TickCount + _transferPerformanceReportInterval;
         _timer = new PeriodicTimer(_period);
@@ -79,6 +105,8 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
             return;
         }
 
+        _driveClientMetricsService.Stop();
+
         _cancellationHandle.Cancel();
         _timerTask = null;
         _timer.Dispose();
@@ -90,7 +118,7 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         {
             while (await _timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
-                await SendMetricsAsync(cancellationToken).ConfigureAwait(false);
+                await Schedule(SendMetricsAsync, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -121,11 +149,13 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         var uploadMetrics = _genericFileTransferMetricsFactory.GetFileUploadMetrics();
         var downloadMetrics = _genericFileTransferMetricsFactory.GetFileDownloadMetrics();
         var performanceMetrics = GetTransferPerformanceMetrics();
+        var driveClientMetrics = _driveClientMetricsService.GetMetrics(_userHasAPaidPlan);
 
         var metrics = Enumerable.Empty<ObservabilityMetric>()
             .Concat(uploadMetrics)
             .Concat(downloadMetrics)
             .Concat(performanceMetrics)
+            .Concat(driveClientMetrics)
             .ToList();
 
         return new ObservabilityMetrics(metrics);
@@ -149,5 +179,15 @@ internal sealed class ObservabilityService : IRemoteSettingsAware
         _nextTransferPerformanceReportTime = now + _transferPerformanceReportInterval;
 
         return _genericTransferPerformanceMetricsFactory.GetMetrics();
+    }
+
+    private Task Schedule(Action action)
+    {
+        return _scheduler.Schedule(action);
+    }
+
+    private Task Schedule(Func<CancellationToken, Task> action, CancellationToken cancellationToken)
+    {
+        return _scheduler.Schedule(action, cancellationToken);
     }
 }

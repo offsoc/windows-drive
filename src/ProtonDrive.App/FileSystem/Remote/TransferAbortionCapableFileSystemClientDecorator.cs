@@ -58,6 +58,7 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
         }
 
         public long Size => _decoratedInstance.Size;
+        public bool CanGetContentStream => _decoratedInstance.CanGetContentStream;
         public DateTime CreationTimeUtc => _decoratedInstance.CreationTimeUtc;
         public DateTime LastWriteTimeUtc => _decoratedInstance.LastWriteTimeUtc;
 
@@ -99,6 +100,8 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
 
         public Stream GetContentStream()
         {
+            // GetContentStream is called when downloading, because local revisions support obtaining content stream, but remote ones don't.
+            // Abortion due to local file content change is relevant for uploading only.
             return new AbortionCapableStream(_decoratedInstance.GetContentStream(), this);
         }
 
@@ -107,42 +110,99 @@ internal sealed class TransferAbortionCapableFileSystemClientDecorator<TAltId> :
             return _decoratedInstance.TryGetFileHasChanged(out hasChanged);
         }
 
-        private sealed class AbortionCapableStream : WrappingStream
+        public Task CopyContentToAsync(Stream destination, CancellationToken cancellationToken)
         {
-            private readonly AbortionCapableRevisionDecorator _owner;
+            return _decoratedInstance.CopyContentToAsync(destination, cancellationToken);
+        }
 
-            public AbortionCapableStream(Stream origin, AbortionCapableRevisionDecorator owner)
-                : base(origin)
+        private sealed class AbortionCapableStream(Stream inner, AbortionCapableRevisionDecorator owner) : WrappingStream(inner)
+        {
+            public override long Length
             {
-                _owner = owner;
+                get
+                {
+                    var length = base.Length;
+
+                    if (length != owner.Size)
+                    {
+                        ThrowFileHasChanged();
+                    }
+
+                    return length;
+                }
+            }
+
+            public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            {
+                ThrowIfAbortionRequested();
+
+                return HandleFileTransferCompletion(
+                    await base.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false),
+                    count);
+            }
+
+            public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+            {
+                ThrowIfAbortionRequested();
+
+                return HandleFileTransferCompletion(
+                    await base.ReadAsync(buffer, cancellationToken).ConfigureAwait(false),
+                    buffer.Length);
             }
 
             public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
             {
-                using var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _owner.AbortionToken);
+                using var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, owner.AbortionToken);
 
                 try
                 {
                     await base.CopyToAsync(destination, bufferSize, linkedToken.Token).ConfigureAwait(false);
 
-                    if (_owner.TryGetFileHasChanged(out var fileHasChanged) && fileHasChanged)
-                    {
-                        _owner.AbortionStrategy.HandleFileChanged(_owner.Id);
-
-                        linkedToken.Token.ThrowIfCancellationRequested();
-                    }
+                    ThrowIfFileHasChanged();
                 }
-                catch (Exception exception) when (exception is TaskCanceledException or OperationCanceledException)
+                catch (Exception exception) when (exception is OperationCanceledException)
                 {
-                    if (_owner.AbortionToken.IsCancellationRequested)
-                    {
-                        throw new FileSystemClientException(
-                            "File transfer aborted. File has changed before the transfer was completed",
-                            FileSystemErrorCode.TransferAbortedDueToFileChange,
-                            exception);
-                    }
-
+                    ThrowIfAbortionRequested();
                     throw;
+                }
+            }
+
+            private int HandleFileTransferCompletion(int numberOfBytesRead, int maxNumberOfBytesToRead)
+            {
+                ThrowIfAbortionRequested();
+
+                if (numberOfBytesRead == 0 && maxNumberOfBytesToRead != 0)
+                {
+                    ThrowIfFileHasChanged();
+                }
+
+                return numberOfBytesRead;
+            }
+
+            private void ThrowIfFileHasChanged()
+            {
+                if (!owner.TryGetFileHasChanged(out var fileHasChanged) || !fileHasChanged)
+                {
+                    return;
+                }
+
+                ThrowFileHasChanged();
+            }
+
+            private void ThrowFileHasChanged()
+            {
+                owner.AbortionStrategy.HandleFileChanged(owner.Id);
+
+                ThrowIfAbortionRequested();
+            }
+
+            private void ThrowIfAbortionRequested()
+            {
+                if (owner.AbortionToken.IsCancellationRequested)
+                {
+                    throw new FileSystemClientException(
+                        "File transfer aborted. File has changed before the transfer was completed",
+                        FileSystemErrorCode.TransferAbortedDueToFileChange);
                 }
             }
         }

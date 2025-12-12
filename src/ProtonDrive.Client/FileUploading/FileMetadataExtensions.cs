@@ -1,4 +1,6 @@
-﻿using ProtonDrive.Client.Contracts;
+﻿using System.Text.Json;
+using Proton.Drive.Sdk.Nodes;
+using ProtonDrive.Client.Contracts;
 using ProtonDrive.Sync.Shared.FileSystem;
 
 namespace ProtonDrive.Client.FileUploading;
@@ -47,5 +49,38 @@ internal static class FileMetadataExtensions
             Device = metadata.CameraDevice,
             Orientation = metadata.CameraOrientation,
         };
+    }
+
+    public static IEnumerable<AdditionalMetadataProperty>? ConvertToAdditionalMetadataProperties(this FileMetadata? metadata)
+    {
+        if (metadata is null)
+        {
+            return null;
+        }
+
+        List<AdditionalMetadataProperty>? result = null;
+
+        var cameraAttributes = metadata.GetCameraExtendedAttributes();
+        if (cameraAttributes is not null)
+        {
+            result ??= new List<AdditionalMetadataProperty>(3);
+            result.Add(new AdditionalMetadataProperty(nameof(ExtendedAttributes.Camera), JsonSerializer.SerializeToElement(cameraAttributes)));
+        }
+
+        var locationAttributes = metadata.GetLocationExtendedAttributes();
+        if (locationAttributes is not null)
+        {
+            result ??= new List<AdditionalMetadataProperty>(2);
+            result.Add(new AdditionalMetadataProperty(nameof(ExtendedAttributes.Location), JsonSerializer.SerializeToElement(locationAttributes)));
+        }
+
+        var mediaAttributes = metadata.GetMediaExtendedAttributes();
+        if (mediaAttributes is not null)
+        {
+            result ??= new List<AdditionalMetadataProperty>(1);
+            result.Add(new AdditionalMetadataProperty(nameof(ExtendedAttributes.Media), JsonSerializer.SerializeToElement(mediaAttributes)));
+        }
+
+        return result;
     }
 }

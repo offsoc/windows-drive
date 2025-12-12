@@ -3,10 +3,12 @@
 public sealed class LocalFeatureFlags
 {
     public bool UpgradeStorageOnboardingStepEnabled { get; internal set; }
-    public bool OffersEnabled { get; internal set; }
+    public bool? OffersEnabled { get; internal set; }
+    public bool? DriveSdkEnabled { get; internal set; }
+    public bool? DriveCryptoEncryptBlocksWithPgpAeadEnabled { get; internal set; }
 
-    public bool DriveSdkEnabled { get; internal set; }
-
+    // When the feature flag is not present (null), it has no effect.
+    // When the feature flag has a value, it overrides the corresponding remote feature flag, if any.
     // Example of feature flag property:
-    // public bool SomeFeatureEnabled { get; internal set; }
+    // public bool? SomeFeatureEnabled { get; internal set; }
 }

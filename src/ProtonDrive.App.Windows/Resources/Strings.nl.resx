@@ -121,7 +121,7 @@
     <value></value>
   </data>
   <data name="AccountDisplayStatus_Value_SessionError">
-    <value>Aanmelding mislukt.</value>
+    <value>Aanmelding mislukt</value>
   </data>
   <data name="AccountDisplayStatus_Value_SettingUp">
     <value>Instellen...</value>

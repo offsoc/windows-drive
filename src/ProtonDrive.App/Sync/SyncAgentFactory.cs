@@ -110,7 +110,7 @@ internal sealed class SyncAgentFactory
 
         var remoteFileSystemClient = _remoteFileSystemClientFactory.GetClient(mappings);
 
-        var fileUploadAbortionStrategy = new FileUploadAbortionStrategy();
+        var fileUploadAbortionStrategy = new FileUploadAbortionStrategy(_loggerFactory.CreateLogger<FileUploadAbortionStrategy>());
 
         var remoteAdapter = new GenericAdapter<long, string>(
             _loggerFactory,

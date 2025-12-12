@@ -288,11 +288,11 @@ internal sealed class SyncStateViewModel
             });
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
         _scheduler.Schedule(
             () =>
-                IsRemoteNodeRenamingDisabled = features.IsEnabled(Feature.DriveWindowsRemoteNodeRenamingDisabled));
+                IsRemoteNodeRenamingDisabled = features[Feature.DriveWindowsRemoteNodeRenamingDisabled]);
     }
 
     private static bool ItemSyncHasFailed(object item)

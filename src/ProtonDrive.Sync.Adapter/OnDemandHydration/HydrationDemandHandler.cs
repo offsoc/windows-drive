@@ -61,29 +61,39 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
         {
             _syncActivity.OnProgress(syncActivityItem, Progress.Zero);
 
-            var sourceRevision = await OpenFileForReadingAsync(nodeModel, cancellationToken).ConfigureAwait(false);
+            var source = await OpenFileForReadingAsync(nodeModel, cancellationToken).ConfigureAwait(false);
 
-            syncActivityItem = syncActivityItem with
+            await using (source.ConfigureAwait(false))
             {
-                Stage = SyncActivityStage.Execution,
-            };
-
-            _syncActivity.OnProgress(syncActivityItem, Progress.Zero);
-
-            var destinationContent = new ProgressReportingStream(hydrationDemand.HydrationStream, NotifyProgressChanged);
-
-            await using (destinationContent.ConfigureAwait(false))
-            {
-                var initialLength = destinationContent.Length;
-
-                await HydrateFileAsync(destinationContent, sourceRevision, cancellationToken).ConfigureAwait(false);
-
-                var sizeMismatch = destinationContent.Length - initialLength;
-                if (sizeMismatch != 0)
+                syncActivityItem = syncActivityItem with
                 {
-                    LogSizeMismatch(nodeModel.Id, sizeMismatch);
+                    Stage = SyncActivityStage.Execution,
+                };
 
-                    await ScheduleExecution(() => CorrectFileSize(nodeModel, hydrationDemand, cancellationToken), cancellationToken).ConfigureAwait(false);
+                _syncActivity.OnProgress(syncActivityItem, Progress.Zero);
+
+                var destination = new WriteOnlyProgressReportingStream(hydrationDemand.HydrationStream, NotifyProgressChanged);
+
+                await using (destination.ConfigureAwait(false))
+                {
+                    // Hydration stream length equals to the placeholder file size
+                    var initialLength = destination.Length;
+
+                    await HydrateFileAsync(destination, source, cancellationToken).ConfigureAwait(false);
+
+                    if (destination.Position < destination.Length)
+                    {
+                        // It was less data hydrated than the placeholder file size
+                        destination.SetLength(destination.Position);
+                    }
+
+                    var sizeMismatch = destination.Length - initialLength;
+                    if (sizeMismatch != 0)
+                    {
+                        LogSizeMismatch(nodeModel.Id, sizeMismatch);
+
+                        await ScheduleExecution(() => CorrectFileSize(nodeModel, hydrationDemand, cancellationToken), cancellationToken).ConfigureAwait(false);
+                    }
                 }
             }
 
@@ -115,7 +125,7 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
                 throw;
             }
 
-            LogCancellation();
+            LogCancellation(errorCode, errorMessage);
         }
 
         return;
@@ -154,12 +164,14 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
                 mismatch);
         }
 
-        void LogCancellation()
+        void LogCancellation(FileSystemErrorCode errorCode, string? errorMessage)
         {
             _logger.LogInformation(
-                "On-demand hydration of \"{FileName}\" with external Id={ExternalId} was cancelled",
+                "On-demand hydration of \"{FileName}\" with external Id={ExternalId} was cancelled: {ErrorCode} ({ErrorMessage})",
                 fileNameToLog,
-                hydrationDemand.FileInfo.GetCompoundId());
+                hydrationDemand.FileInfo.GetCompoundId(),
+                errorCode,
+                errorMessage);
         }
     }
 
@@ -218,20 +230,9 @@ internal sealed class HydrationDemandHandler<TId, TAltId> : IFileHydrationDemand
         return await _fileRevisionProvider.OpenFileForReadingAsync(mappedNodeId.Value, nodeModel.ContentVersion, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task HydrateFileAsync(Stream destinationContent, IRevision sourceRevision, CancellationToken cancellationToken)
+    private Task HydrateFileAsync(Stream destination, IRevision source, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var sourceContent = sourceRevision.GetContentStream();
-        await using (sourceContent.ConfigureAwait(false))
-        {
-            await sourceContent.CopyToAsync(destinationContent, cancellationToken).ConfigureAwait(false);
-
-            if (destinationContent.Position < destinationContent.Length)
-            {
-                destinationContent.SetLength(destinationContent.Position);
-            }
-        }
+        return source.CopyContentToAsync(destination, cancellationToken);
     }
 
     [DebuggerHidden]

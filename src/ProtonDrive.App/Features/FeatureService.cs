@@ -1,5 +1,4 @@
 ﻿using System.Collections.Frozen;
-using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
 using ProtonDrive.App.Account;
@@ -20,6 +19,9 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
 {
     // If the API is not returning a feature flag/kill switch, we can safely consider it as "disabled".
     private const bool FallbackValueForMissingFeatureFlag = false;
+
+    private static readonly IReadOnlyDictionary<Feature, bool> FallbackFeatureFlags =
+        Enum.GetValues<Feature>().ToDictionary(x => x, _ => FallbackValueForMissingFeatureFlag);
 
     private readonly IFeatureApiClient _featureApiClient;
     private readonly IRepository<IReadOnlyDictionary<Feature, bool>> _repository;
@@ -93,22 +95,32 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
     {
         /* There are two cases of how local feature flag (there is no local kill switch) affects
          * remote feature flag values:
-         * - If the remote feature flag exists, the enabled local feature flag overrides the remote feature flag value
-         * by making it enabled. If remote kill switch exists, it's value is not affected.
+         * - If the remote feature flag exists, the local feature flag overrides the remote feature flag value.
+         * If remote kill switch exists, it's value is not affected.
          * - If the remote feature flag does not exist, but kill switch exists, the disabled local feature flag
          * overrides the remote kill switch value and makes it enabled.
          */
 
-        if (localFeatureFlags.OffersEnabled)
+        if (localFeatureFlags.OffersEnabled.HasValue)
         {
-            yield return (Feature.DriveWindowsOffers, IsEnabled: true);
+            yield return (Feature.DriveWindowsOffers, IsEnabled: localFeatureFlags.OffersEnabled.Value);
         }
 
-        if (localFeatureFlags.DriveSdkEnabled)
+        if (localFeatureFlags.DriveSdkEnabled.HasValue)
         {
-            yield return (Feature.DriveWindowsSdkDownloadMain, IsEnabled: true);
-            yield return (Feature.DriveWindowsSdkUploadMain, IsEnabled: true);
+            yield return (Feature.DriveWindowsSdkDownloadMain, IsEnabled: localFeatureFlags.DriveSdkEnabled.Value);
+            yield return (Feature.DriveWindowsSdkUploadMain, IsEnabled: localFeatureFlags.DriveSdkEnabled.Value);
         }
+
+        if (localFeatureFlags.DriveCryptoEncryptBlocksWithPgpAeadEnabled.HasValue)
+        {
+            yield return (Feature.DriveCryptoEncryptBlocksWithPgpAead, IsEnabled: localFeatureFlags.DriveCryptoEncryptBlocksWithPgpAeadEnabled.Value);
+        }
+    }
+
+    private static string GetFeatureValueForLogging(bool isEnabled)
+    {
+        return isEnabled ? "Enabled" : "Disabled";
     }
 
     private async Task EnsureFeaturesAreRetrievedAtLeastOnce(CancellationToken cancellationToken)
@@ -131,9 +143,12 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
 
     private bool IsEnabled(Feature feature)
     {
-        return
-            (_localFeatureOverrides.TryGetValue(feature, out var enabled) && enabled) ||
-            (_cachedFeatureFlags.TryGetValue(feature, out enabled) && enabled);
+        if (_localFeatureOverrides.TryGetValue(feature, out var isEnabled))
+        {
+            return isEnabled;
+        }
+
+        return _cachedFeatureFlags.TryGetValue(feature, out isEnabled) && isEnabled;
     }
 
     private void Start()
@@ -143,7 +158,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
             return; // Task already started
         }
 
-        _logger.LogInformation("Feature service is starting");
+        _logger.LogDebug("Feature service is starting");
         _timer = _periodicTimerFactory.Invoke(_period);
         _timerTask = GetTimerTaskAsync(_cancellationHandle.Token);
     }
@@ -155,7 +170,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
             return;
         }
 
-        _logger.LogInformation("Feature service is stopping");
+        _logger.LogDebug("Feature service is stopping");
         _timerTask = null;
         _firstRefreshFeaturesTask = null;
         _cancellationHandle.Cancel();
@@ -194,7 +209,9 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
                         ? new (Feature Feature, bool IsEnabled)?((featureFlag, x.Enabled))
                         : null)
                 .Where(x => x is not null)
-                .ToDictionary(x => x!.Value.Feature, y => y!.Value.IsEnabled);
+                .Cast<(Feature Feature, bool IsEnabled)>()
+                .UnionBy(FallbackFeatureFlags.Select(x => (Feature: x.Key, IsEnabled: x.Value)), x => x.Feature)
+                .ToFrozenDictionary(x => x.Feature, y => y.IsEnabled);
 
             UpdateFeatureFlags(latestFeatureFlags);
         }
@@ -204,7 +221,7 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
         }
     }
 
-    private void UpdateFeatureFlags(Dictionary<Feature, bool> latestFeatureFlags)
+    private void UpdateFeatureFlags(IReadOnlyDictionary<Feature, bool> latestFeatureFlags)
     {
         var featureFlagComparisons = latestFeatureFlags.FullJoin(
             _cachedFeatureFlags,
@@ -214,44 +231,68 @@ public sealed class FeatureService : IFeatureFlagProvider, IStartableService, IA
             y => (Feature: y.Key, IsEnabled: FallbackValueForMissingFeatureFlag, WasEnabled: y.Value),
             (x, y) => (Feature: x.Key, IsEnabled: x.Value, WasEnabled: y.Value)).ToList();
 
-        var changedFeatureFlags = featureFlagComparisons.Where(x => x.IsEnabled != x.WasEnabled);
+        var changedFeatureFlags = featureFlagComparisons.Where(x => x.IsEnabled != x.WasEnabled).ToDictionary(x => x.Feature, x => x.IsEnabled);
 
-        if (!changedFeatureFlags.Any())
+        if (changedFeatureFlags.Count == 0)
         {
             return;
         }
 
-        _cachedFeatureFlags = latestFeatureFlags.AsReadOnly();
+        LogChangedFeatureFlags(changedFeatureFlags, includeDisabled: true);
+
+        _cachedFeatureFlags = latestFeatureFlags;
         NotifyFeatureFlagsChange();
         _repository.Set(_cachedFeatureFlags);
     }
 
     private void LoadCache()
     {
-        var flags = _repository.Get();
+        var cachedFlags = _repository.Get();
 
-        _featuresFetchedAtLeastOnce = flags is not null;
+        _featuresFetchedAtLeastOnce = cachedFlags is not null;
 
-        _cachedFeatureFlags = flags ?? ImmutableDictionary<Feature, bool>.Empty;
+        var flags = (cachedFlags ?? FallbackFeatureFlags).UnionBy(FallbackFeatureFlags, x => x.Key).ToDictionary().AsReadOnly();
 
+        _cachedFeatureFlags = flags;
+
+        LogChangedFeatureFlags(flags, includeDisabled: false);
         NotifyFeatureFlagsChange();
     }
 
     private void NotifyFeatureFlagsChange()
     {
-        var featureOverrides = _localFeatureOverrides.Select(x => (x.Key, x.Value));
-        var cachedFeatureFlags = _cachedFeatureFlags.Select(x => (x.Key, x.Value));
+        var featureFlags = _localFeatureOverrides.UnionBy(_cachedFeatureFlags, x => x.Key);
 
-        var featureFlags = featureOverrides.UnionBy(cachedFeatureFlags, x => x.Key);
-
-        OnFeatureFlagsChanged(featureFlags.ToList().AsReadOnly());
+        OnFeatureFlagsChanged(featureFlags.ToDictionary().AsReadOnly());
     }
 
-    private void OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    private void OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
         foreach (var listener in _featureFlagsAware.Value)
         {
             listener.OnFeatureFlagsChanged(features);
+        }
+    }
+
+    private void LogChangedFeatureFlags(IReadOnlyDictionary<Feature, bool> changedFeatureFlags, bool includeDisabled)
+    {
+        foreach (var (feature, isEnabled) in changedFeatureFlags)
+        {
+            if (_localFeatureOverrides.TryGetValue(feature, out var overrideIsEnabled))
+            {
+                _logger.LogInformation(
+                    "Feature flag \"{FeatureFlag}\" is {Value} (overriden to {OverrideValue})",
+                    feature,
+                    GetFeatureValueForLogging(isEnabled),
+                    GetFeatureValueForLogging(overrideIsEnabled));
+            }
+            else if (includeDisabled || isEnabled)
+            {
+                _logger.LogInformation(
+                    "Feature flag \"{FeatureFlag}\" is {Value}",
+                    feature,
+                    GetFeatureValueForLogging(isEnabled));
+            }
         }
     }
 }

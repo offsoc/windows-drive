@@ -152,11 +152,6 @@ internal sealed class RemoteFileReadStream : Stream
 
                 await _pipeline.Completion.ConfigureAwait(false);
             }
-
-            if (destination.CanSeek)
-            {
-                destination.SetLength(destination.Position);
-            }
         }
     }
 
@@ -318,11 +313,6 @@ internal sealed class RemoteFileReadStream : Stream
             ?? throw new ApiException(ResponseCode.InvalidValue, "The specified file has no active revision to download.");
 
         var sequencer = new MessageSequencer<WriteToDestinationJob>(message => message.Index);
-
-        if (destination.CanSeek && destination.Length < Length)
-        {
-            destination.SetLength(Length);
-        }
 
         await DownloadThumbnailBlocksAsync(activeRevision, cancellationToken).ConfigureAwait(false);
 

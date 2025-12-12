@@ -3,7 +3,6 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ProtonDrive.App.Devices;
-using ProtonDrive.App.Features;
 using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Onboarding;
 using ProtonDrive.App.Settings;
@@ -180,9 +179,9 @@ internal sealed class MyComputerViewModel
         Schedule(RefreshOnboarding);
     }
 
-    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyCollection<(Feature Feature, bool IsEnabled)> features)
+    void IFeatureFlagsAware.OnFeatureFlagsChanged(IReadOnlyDictionary<Feature, bool> features)
     {
-        _isStorageOptimizationFeatureEnabled = !features.IsEnabled(Feature.DriveWindowsStorageOptimizationDisabled);
+        _isStorageOptimizationFeatureEnabled = !features[Feature.DriveWindowsStorageOptimizationDisabled];
         RefreshOnboarding();
     }
 

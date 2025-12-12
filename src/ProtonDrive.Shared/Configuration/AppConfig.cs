@@ -33,6 +33,7 @@ public sealed class AppConfig
 
     public TimeSpan PeriodicTelemetryReportInterval { get; internal set; }
     public TimeSpan PeriodicObservabilityReportInterval { get; internal set; }
+    public TimeSpan PeriodicFailuresImpactedUsersReportInterval { get; internal set; }
     public TimeSpan PeriodicTransferPerformanceReportInterval { get; internal set; }
     public TimeSpan MaxInactivityPeriodBetweenFileTransfers { get; internal set; }
 

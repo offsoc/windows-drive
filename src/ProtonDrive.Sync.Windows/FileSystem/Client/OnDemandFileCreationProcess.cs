@@ -18,6 +18,13 @@ internal sealed class OnDemandFileCreationProcess : IRevisionCreationProcess<lon
 
     public bool ImmediateHydrationRequired => false;
 
+    public bool CanGetContentStream => false;
+
+    public Stream GetContentStream()
+    {
+        throw new NotSupportedException();
+    }
+
     public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();

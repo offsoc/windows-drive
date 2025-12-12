@@ -1,5 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Text.Json;
+using Polly.CircuitBreaker;
+using Proton.Drive.Sdk;
+using Proton.Drive.Sdk.Nodes;
+using Proton.Drive.Sdk.Nodes.Download;
+using Proton.Drive.Sdk.Nodes.Upload.Verification;
+using Proton.Sdk;
 using ProtonDrive.Client.Cryptography;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Sync.Shared.FileSystem;
@@ -8,6 +16,19 @@ namespace ProtonDrive.Client;
 
 internal static class ExceptionMapping
 {
+    public static bool TryMapSdkClientException(Exception exception, string? id, bool includeObjectId, [MaybeNullWhen(false)] out Exception mappedException)
+    {
+        mappedException = null;
+
+        if (TryMapException(exception, id, includeObjectId, out mappedException))
+        {
+            return true;
+        }
+
+        // Proton SDK and Proton Drive SDK lets some HTTP client exceptions to bubble up
+        return TryMapHttpClientException(exception, out var apiException) && TryMapException(apiException, id, includeObjectId, out mappedException);
+    }
+
     public static bool TryMapException(Exception exception, string? id, bool includeObjectId, [MaybeNullWhen(false)] out Exception mappedException)
     {
         mappedException = exception switch
@@ -18,6 +39,23 @@ internal static class ExceptionMapping
             IOException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
             AggregateException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
             BlockVerificationFailedException => CreateFileSystemClientException(FileSystemErrorCode.IntegrityFailure),
+
+            // Proton SDK exceptions
+            ProtonApiException ex => CreateFileSystemClientException(ToErrorCode(ex.Code)),
+
+            // Proton Drive SDK exceptions
+            NodeKeyAndSessionKeyMismatchException => CreateFileSystemClientException(FileSystemErrorCode.IntegrityFailure),
+            SessionKeyAndDataPacketMismatchException => CreateFileSystemClientException(FileSystemErrorCode.IntegrityFailure),
+            NodeMetadataDecryptionException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
+            FileContentsDecryptionException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
+            NodeWithSameNameExistsException => CreateFileSystemClientException(FileSystemErrorCode.DuplicateName),
+            RevisionDraftConflictException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
+            InvalidNodeTypeException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
+            ProtonDriveException => CreateFileSystemClientException(FileSystemErrorCode.Unknown),
+
+            // Proton SDK and Proton Drive SDK lets some HTTP client exceptions to bubble up
+            not null when TryMapHttpClientException(exception, out var apiException) => CreateFileSystemClientException(ToErrorCode(apiException.ResponseCode)),
+
             _ => null,
         };
 
@@ -25,18 +63,47 @@ internal static class ExceptionMapping
 
         FileSystemClientException<string> CreateFileSystemClientException(FileSystemErrorCode errorCode)
         {
-            var isMessageAuthoritative = exception is ApiException { Message: not null } or ApiException { IsMessageAuthoritative: true } or IOException;
+            var isMessageAuthoritative = exception
+                is ApiException { IsMessageAuthoritative: true }
+                or ProtonApiException
+                or ProtonDriveException { InnerException: ProtonApiException }
+                or IOException;
 
             return new FileSystemClientException<string>(
                 $"{errorCode}",
                 errorCode,
-                objectId: includeObjectId ? id : default,
+                objectId: includeObjectId ? id : null,
                 exception)
             {
                 // ApiException might contain the error message suitable for displaying in the UI
                 IsInnerExceptionMessageAuthoritative = isMessageAuthoritative,
             };
         }
+    }
+
+    public static bool TryMapHttpClientException(Exception exception, [MaybeNullWhen(false)] out ApiException mappedException)
+    {
+        mappedException = exception switch
+        {
+            BrokenCircuitException ex => new ApiException(ResponseCode.Offline, "API not available", ex),
+            HttpRequestException { StatusCode: not null } ex => new ApiException(ex.StatusCode.Value, (ResponseCode)ex.StatusCode.Value, ex.Message, ex),
+            HttpRequestException { InnerException: SocketException socketException } ex => new ApiException(ToResponseCode(socketException), socketException.Message, ex),
+            HttpRequestException ex => new ApiException(ResponseCode.Unknown, ex.InnerException?.Message ?? ex.Message, ex),
+            TimeoutException ex => new ApiException(ResponseCode.Timeout, "API request timed out", ex),
+            TaskCanceledException { InnerException: TimeoutException } ex => new ApiException(ResponseCode.Timeout, "API request timed out", ex),
+            NotSupportedException ex => new ApiException(ResponseCode.Unknown, "API request failed", ex),
+            JsonException ex => new ApiException(ResponseCode.Unknown, "Failed to deserialize JSON content", ex),
+
+            _ => null,
+        };
+
+        return mappedException is not null;
+    }
+
+    private static FileSystemErrorCode ToErrorCode(Proton.Sdk.Api.ResponseCode value)
+    {
+        // Proton SDK API response codes match legacy API response codes
+        return ToErrorCode((ResponseCode)value);
     }
 
     private static FileSystemErrorCode ToErrorCode(ResponseCode value) => value switch
@@ -56,4 +123,14 @@ internal static class ExceptionMapping
         ResponseCode.MainPhotoAlreadyInAlbum => FileSystemErrorCode.MainPhotoAlreadyInAlbum,
         _ => FileSystemErrorCode.Unknown,
     };
+
+    private static ResponseCode ToResponseCode(SocketException exception)
+    {
+        return (exception.SocketErrorCode is SocketError.ConnectionRefused or
+            SocketError.ConnectionAborted or
+            SocketError.HostDown or
+            SocketError.TimedOut)
+            ? ResponseCode.ServerError
+            : ResponseCode.NetworkError;
+    }
 }

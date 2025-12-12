@@ -96,7 +96,7 @@ internal sealed class FileSizeCorrectionPipeline<TId, TAltId> : IFileSizeCorrect
         {
             var fileNameToLog = _logger.GetSensitiveValueForLogging(initialNodeModel.Name);
             _logger.LogInformation(
-                "Skipping size correction of \"{FileName}\" with Id={Id} ({ExternalId}), Adapter Tree node has diverged",
+                "Skipping size correction of \"{FileName}\" with Id={Id} {ExternalId}, Adapter Tree node has diverged",
                 fileNameToLog,
                 initialNodeModel.Id,
                 initialNodeModel.AltId);
@@ -152,7 +152,7 @@ internal sealed class FileSizeCorrectionPipeline<TId, TAltId> : IFileSizeCorrect
     {
         var nameToLog = _logger.GetSensitiveValueForLogging(nodeInfo.Name);
         _logger.LogInformation(
-            "Corrected size of file \"{FileName}\" with Id={Id} ({ExternalId}), ContentVersion={ContentVersion}",
+            "Corrected size of file \"{FileName}\" with Id={Id} {ExternalId}, ContentVersion={ContentVersion}",
             nameToLog,
             operation.Model.Id,
             nodeInfo.GetCompoundId(),
@@ -163,7 +163,7 @@ internal sealed class FileSizeCorrectionPipeline<TId, TAltId> : IFileSizeCorrect
     {
         var nameToLog = _logger.GetSensitiveValueForLogging(nodeInfo.Name);
         _logger.LogWarning(
-            "Failed to correct size of file \"{FileName}\" with Id={Id} ({ExternalId}), ContentVersion={ContentVersion}: {ErrorMessage}",
+            "Failed to correct size of file \"{FileName}\" with Id={Id} {ExternalId}, ContentVersion={ContentVersion}: {ErrorMessage}",
             nameToLog,
             operation.Model.Id,
             nodeInfo.GetCompoundId(),

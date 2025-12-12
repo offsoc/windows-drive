@@ -24,7 +24,10 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
 
         FileInfo = fileInfo;
 
-        _destinationStream = new HashingStream(destinationStream, HashAlgorithmName.SHA1);
+        _destinationStream = new HashingStream(
+            new SafeRemoteFileStream(destinationStream, FileInfo.Id),
+            HashAlgorithmName.SHA1);
+
         _uploadedBlocks = uploadedBlocks;
         _blockSize = blockSize;
 
@@ -34,12 +37,29 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
     public NodeInfo<string> FileInfo { get; }
     public NodeInfo<string> BackupInfo { get; set; } = NodeInfo<string>.Empty();
     public bool ImmediateHydrationRequired => true;
+    public virtual bool CanGetContentStream => true;
 
-    public async Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
+    public virtual Stream GetContentStream()
     {
-        var destination = new SafeRemoteFileStream(_destinationStream, FileInfo.Id);
+        // The Drive encrypted file write stream requires the Length to be set before writing the content
+        _destinationStream.SetLength(FileInfo.Size);
 
-        await CopyFileContentAsync(destination, source, cancellationToken).ConfigureAwait(false);
+        return _destinationStream;
+    }
+
+    public virtual async Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
+    {
+        var destination = GetContentStream();
+
+        await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
+
+        if (destination.Position != destination.Length)
+        {
+            // TODO: throw meaningful exception here instead of relying on RemoteFileWriteStream to do that.
+            destination.SetLength(destination.Position);
+        }
+
+        await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<NodeInfo<string>> FinishAsync(CancellationToken cancellationToken)
@@ -61,11 +81,6 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
         }
     }
 
-    public void Dispose()
-    {
-        _destinationStream.Dispose();
-    }
-
     public ValueTask DisposeAsync()
     {
         return _destinationStream.DisposeAsync();
@@ -78,23 +93,6 @@ internal class RemoteRevisionCreationProcess : IRevisionCreationProcess<string>
             Blocks = _uploadedBlocks,
             Sha1Digest = GetSha1Digest(),
         };
-    }
-
-    protected virtual async Task CopyFileContentAsync(Stream destination, Stream source, CancellationToken cancellationToken)
-    {
-        // The Drive encrypted file read stream can report Length value different from the length of the unencrypted data.
-        // The Drive encrypted file write stream requires the Length to be set before copying the content.
-        destination.SetLength(source.Length);
-        await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
-
-        // Set the Length to the real number of bytes copied.
-        if (destination.Position != destination.Length)
-        {
-            // TODO: throw meaningful exception here instead of relying on RemoteFileWriteStream to do that.
-            destination.SetLength(destination.Position);
-        }
-
-        await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private void ValidateUpload()

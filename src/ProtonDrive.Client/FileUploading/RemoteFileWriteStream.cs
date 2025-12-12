@@ -20,10 +20,9 @@ internal sealed class RemoteFileWriteStream : Stream
 {
     public const int HdPreviewBlockIndex = 0;
     public const int ThumbnailBlockIndex = -1;
-    public const int DefaultBlockSize = 4 * 1024 * 1024; // 4MiB
+    public const int DefaultBlockSize = Constants.FileBlockSize;
 
     private const int UploadDegreeOfParallelism = 3; // Max number of blocks uploaded concurrently
-    private const int MarginForEncryptionOverhead = 512;
 
     private readonly IFileApiClient _fileApiClient;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -83,7 +82,7 @@ internal sealed class RemoteFileWriteStream : Stream
         _reportBlockVerificationFailure = reportBlockVerificationFailure;
         _progressCallback = progressCallback;
 
-        BlockSize = blockSizeOverride ?? DefaultBlockSize;
+        BlockSize = blockSizeOverride ?? Constants.FileBlockSize;
 
         (_pipelineStart, _pipeline) = CreateUploadPipeline();
     }
@@ -309,8 +308,7 @@ internal sealed class RemoteFileWriteStream : Stream
 
     private async Task<bool> SendThumbnailToPipelineIfApplicableAsync(CancellationToken cancellationToken)
     {
-        const int maxNumberOfBytesOnRemote = 60 * 1024; // 60 KiB
-        const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
+        const int maxNumberOfBytes = Constants.MaxSmallThumbnailSizeOnRemote - Constants.MaxThumbnailEncryptionOverhead;
 
         var thumbnail = await _thumbnailProvider.TryGetThumbnailAsync(IThumbnailProvider.MaxThumbnailNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
         if (thumbnail == null || thumbnail.Value.IsEmpty)
@@ -332,8 +330,7 @@ internal sealed class RemoteFileWriteStream : Stream
 
     private async Task<bool> SendHdPreviewToPipelineIfApplicableAsync(CancellationToken cancellationToken)
     {
-        const int maxNumberOfBytesOnRemote = 1024 * 1024; // 1 MiB
-        const int maxNumberOfBytes = maxNumberOfBytesOnRemote - MarginForEncryptionOverhead;
+        const int maxNumberOfBytes = Constants.MaxLargeThumbnailSizeOnRemote - Constants.MaxThumbnailEncryptionOverhead;
 
         var thumbnail = await _thumbnailProvider.TryGetThumbnailAsync(IThumbnailProvider.MaxHdPreviewNumberOfPixelsOnLargestSide, maxNumberOfBytes, cancellationToken).ConfigureAwait(false);
         if (thumbnail == null || thumbnail.Value.IsEmpty)

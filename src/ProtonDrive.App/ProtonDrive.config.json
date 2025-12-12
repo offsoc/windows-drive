@@ -38,6 +38,7 @@
   "NumberOfDaysBeforeRemovingInstallationLogFiles": 90,
   "PeriodicTelemetryReportInterval": "00:30:00",
   "PeriodicObservabilityReportInterval": "00:00:10",
+  "PeriodicFailuresImpactedUsersReportInterval": "00:05:00",
   "PeriodicTransferPerformanceReportInterval": "00:01:00",
   "MaxInactivityPeriodBetweenFileTransfers": "00:00:10",
   "ActivityQueryInterval": "06:00:00",
@@ -97,7 +98,7 @@
     }
   },
   "FeatureManagement": {
-    "UpgradeStorageOnboardingStepEnabled": false
+    "UpgradeStorageOnboardingStepEnabled": true
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.Async", "Serilog.Sinks.File" ],

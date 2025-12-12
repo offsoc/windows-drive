@@ -406,7 +406,7 @@
     <value>Файл прапушчаны, бо ён змяняўся зусім нядаўна. Праграма аўтаматычна паўторыць спробу.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MainPhotoAlreadyInAlbum">
-    <value>Live Photo не могуць быць запампаваны.</value>
+    <value>Немагчыма запампаваць Live Photo.</value>
   </data>
   <data name="FileSystemErrorCode_Value_MetadataMismatch">
     <value>Неадпаведнасць файла або папкі</value>

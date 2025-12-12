@@ -199,10 +199,16 @@ internal sealed class DispatchingFileSystemClient<TId> : IFileSystemClient<TId>
         public NodeInfo<TId> BackupInfo
         {
             get => _owner.AddRoot(_origin.BackupInfo, _root);
-            set => _origin.BackupInfo = value.Copy().WithRoot(default);
+            set => _origin.BackupInfo = value.Copy().WithRoot(null);
         }
 
         public bool ImmediateHydrationRequired => _origin.ImmediateHydrationRequired;
+        public bool CanGetContentStream => _origin.CanGetContentStream;
+
+        public Stream GetContentStream()
+        {
+            return _origin.GetContentStream();
+        }
 
         public Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
         {

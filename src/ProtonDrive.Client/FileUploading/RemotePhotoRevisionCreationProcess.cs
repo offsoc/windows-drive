@@ -26,31 +26,19 @@ internal sealed class RemotePhotoRevisionCreationProcess : RemoteRevisionCreatio
         _logger = logger;
     }
 
-    protected override RevisionSealingParameters GetRevisionSealingParameters()
+    public override bool CanGetContentStream => false;
+
+    public override Stream GetContentStream() => throw new NotSupportedException();
+
+    public override async Task WriteContentAsync(Stream source, CancellationToken cancellationToken)
     {
-        var revisionSealingParameters = base.GetRevisionSealingParameters();
+        var destination = base.GetContentStream();
 
-        var defaultCaptureTimeUtc = _creationTimeUtc < _lastWriteTimeUtc ? _creationTimeUtc : _lastWriteTimeUtc;
-
-        return new PhotoRevisionSealingParameters
-        {
-            Blocks = revisionSealingParameters.Blocks,
-            Sha1Digest = revisionSealingParameters.Sha1Digest,
-            DefaultCaptureTimeUtc = defaultCaptureTimeUtc,
-            MainPhotoLinkId = FileInfo.MainPhotoLinkId,
-        };
-    }
-
-    protected override async Task CopyFileContentAsync(Stream destination, Stream source, CancellationToken cancellationToken)
-    {
-        // The Drive encrypted file write stream requires the Length to be set before copying the content.
-        // The Drive encrypted file read stream can report Length value different from the length of the unencrypted data.
-        destination.SetLength(source.Length);
         await source.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
 
-        // Set the Length to the real number of bytes copied.
-        if (destination.Position != destination.Length)
+        if (destination.Position != FileInfo.Size)
         {
+            // The source stream provided less data than it was declared
             _logger.LogWarning(
                 "File size changed while being uploaded: " +
                 "destination position {Position:N0} differs from destination length {Length:N0} " +
@@ -66,5 +54,20 @@ internal sealed class RemotePhotoRevisionCreationProcess : RemoteRevisionCreatio
         }
 
         await destination.FlushAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    protected override RevisionSealingParameters GetRevisionSealingParameters()
+    {
+        var revisionSealingParameters = base.GetRevisionSealingParameters();
+
+        var defaultCaptureTimeUtc = _creationTimeUtc < _lastWriteTimeUtc ? _creationTimeUtc : _lastWriteTimeUtc;
+
+        return new PhotoRevisionSealingParameters
+        {
+            Blocks = revisionSealingParameters.Blocks,
+            Sha1Digest = revisionSealingParameters.Sha1Digest,
+            DefaultCaptureTimeUtc = defaultCaptureTimeUtc,
+            MainPhotoLinkId = FileInfo.MainPhotoLinkId,
+        };
     }
 }

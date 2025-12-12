@@ -5,7 +5,6 @@ using ProtonDrive.App.Mapping;
 using ProtonDrive.App.Mapping.SyncFolders;
 using ProtonDrive.App.Services;
 using ProtonDrive.App.Settings;
-using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Shared.Extensions;
 using ProtonDrive.Shared.IO;
 using ProtonDrive.Shared.Logging;

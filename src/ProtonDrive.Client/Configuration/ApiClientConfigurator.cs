@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Proton.Cryptography.Pgp;
 using Proton.Drive.Sdk;
+using Proton.Sdk.Telemetry;
 using ProtonDrive.Client.Authentication;
 using ProtonDrive.Client.Authentication.Sessions;
 using ProtonDrive.Client.Authentication.Srp;
@@ -18,6 +19,9 @@ using ProtonDrive.Client.Devices;
 using ProtonDrive.Client.Features;
 using ProtonDrive.Client.FileUploading;
 using ProtonDrive.Client.Instrumentation.Observability;
+using ProtonDrive.Client.Instrumentation.Observability.Download;
+using ProtonDrive.Client.Instrumentation.Observability.Integrity;
+using ProtonDrive.Client.Instrumentation.Observability.Upload;
 using ProtonDrive.Client.Instrumentation.Telemetry;
 using ProtonDrive.Client.MediaTypes;
 using ProtonDrive.Client.Notifications;
@@ -26,6 +30,7 @@ using ProtonDrive.Client.Offline;
 using ProtonDrive.Client.RemoteNodes;
 using ProtonDrive.Client.Repository;
 using ProtonDrive.Client.Sdk;
+using ProtonDrive.Client.Sdk.Metrics;
 using ProtonDrive.Client.Settings;
 using ProtonDrive.Client.Shares;
 using ProtonDrive.Client.Shares.Events;
@@ -69,6 +74,24 @@ public static class ApiClientConfigurator
     public static IServiceCollection AddFileSystemClient(this IServiceCollection services)
     {
         services.AddSingleton<IFileContentTypeProvider, FileContentTypeProvider>();
+
+        services.AddSingleton<ITelemetry, SdkDiagnostics>();
+        services.AddSingleton<SdkFeatureFlagProvider>();
+        services.AddSingleton<ISdkClientFactory, SdkClientFactory>();
+
+        services.AddSingleton<SdkMetrics>();
+        services.AddSingleton<UploadMetrics>();
+        services.AddSingleton<DownloadMetrics>();
+        services.AddSingleton<IntegrityMetrics>();
+
+        services.AddSingleton<UploadMetricsCollector>();
+        services.AddSingleton<DownloadMetricsCollector>();
+        services.AddSingleton<IntegrityMetricsCollector>();
+
+        services.AddSingleton<IMetricsService, MetricsService>();
+        services.AddSingleton<UploadMetricsMapper>();
+        services.AddSingleton<DownloadMetricsMapper>();
+        services.AddSingleton<IntegrityMetricsMapper>();
 
         services.AddSingleton<IRemoteFileSystemClientFactory, RemoteFileSystemClientFactory>();
         services.AddSingleton<IRemoteEventLogClientFactory, RemoteEventLogClientFactory>();
@@ -140,7 +163,7 @@ public static class ApiClientConfigurator
         services.AddSingleton<IPhotoHashProvider, PhotoHashProvider>();
         services.AddSingleton<IPhotoDuplicateService, PhotoDuplicateService>();
 
-        services.AddApiHttpClient(SdkHttpClientName, GetDriveBaseAddress, GetDriveApiNumberOfRetries, GetDefaultTimeout)
+        services.AddApiHttpClient(SdkHttpClientName, GetDriveBaseAddress, GetDriveApiNumberOfRetries, _ => Timeout.InfiniteTimeSpan)
             .EnableAuthorization()
             ;
 
